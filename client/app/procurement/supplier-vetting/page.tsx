@@ -61,7 +61,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.
 function StatusBadge({ status }: { status: string }) {
   const cfg = STATUS_CONFIG[status] ?? { label: status, color: "text-black bg-slate-500/10 border-slate-500/20", icon: null };
   return (
-    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${cfg.color}`}>
+    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.6875rem] font-bold border ${cfg.color}`}>
       {cfg.icon}{cfg.label}
     </span>
   );
@@ -108,7 +108,7 @@ function CreateModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-slate-100 p-6 shadow-xl">
+      <div className="w-full max-w-md rounded-xl border border-slate-200 bg-slate-100 p-6 shadow-xl">
         <h2 className="mb-4 text-lg font-bold text-slate-900">Tạo yêu cầu xét duyệt NCC</h2>
         {error && (
           <div className="mb-4 rounded-lg bg-red-500/10 border border-red-500/20 px-3 py-2 text-sm text-red-400">{error}</div>
@@ -120,7 +120,7 @@ function CreateModal({
               value={supplierId}
               onChange={(e) => setSupplierId(e.target.value)}
               placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-900 focus:border-blue-600/50 focus:outline-none"
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-[0.8125rem] text-[#64748B] font-medium placeholder:text-slate-400 focus:border-blue-600/50 focus:outline-none"
             />
           </div>
           <div>
@@ -131,7 +131,7 @@ function CreateModal({
               value={priceVsMarket}
               onChange={(e) => setPriceVsMarket(e.target.value)}
               placeholder="-15.5 nghĩa là rẻ hơn 15.5%"
-              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-900 focus:border-blue-600/50 focus:outline-none"
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-[0.8125rem] text-[#64748B] font-medium placeholder:text-slate-400 focus:border-blue-600/50 focus:outline-none"
             />
           </div>
           <div>
@@ -140,11 +140,11 @@ function CreateModal({
               rows={3}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-900 focus:border-blue-600/50 focus:outline-none resize-none"
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-[0.8125rem] text-[#64748B] font-medium placeholder:text-slate-400 focus:border-blue-600/50 focus:outline-none resize-none"
             />
           </div>
           <div className="flex justify-end gap-3 pt-2">
-            <button type="button" onClick={onClose} className="rounded-lg px-4 py-2 text-sm text-slate-900 hover:text-slate-900">Huỷ</button>
+            <button type="button" onClick={onClose} className="rounded-lg px-4 py-2 text-[0.8125rem] text-[#64748B] font-medium hover:text-slate-900">Huỷ</button>
             <button type="submit" disabled={loading} className="btn-primary flex items-center gap-2 disabled:opacity-50">
               {loading && <Loader2 size={14} className="animate-spin" />}Tạo
             </button>
@@ -210,7 +210,7 @@ export default function SupplierVettingListPage() {
       {/* Filters */}
       <div className="mb-6 flex flex-wrap items-center gap-4">
         <div className="flex-1 min-w-[300px] flex gap-3">
-          <div className="h-14 w-14 bg-slate-100 border border-slate-200 rounded-2xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
+          <div className="h-14 w-14 bg-slate-100 border border-slate-200 rounded-xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
             <Search size={20} className="text-blue-600" />
           </div>
           <div className="relative flex-1">
@@ -218,7 +218,7 @@ export default function SupplierVettingListPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Tìm nhà cung cấp..."
-              className="w-full h-14 pl-6 pr-4 bg-slate-100 border border-slate-200 rounded-2xl text-sm font-bold text-slate-900 placeholder:text-slate-900/40 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all"
+              className="w-full h-14 pl-6 pr-4 bg-slate-100 border border-slate-200 rounded-xl text-sm font-bold text-slate-900 placeholder:text-slate-400/40 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all"
             />
           </div>
         </div>
@@ -228,7 +228,7 @@ export default function SupplierVettingListPage() {
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="h-14 pl-12 pr-10 bg-slate-100 border border-slate-200 rounded-2xl text-sm font-bold text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all appearance-none cursor-pointer min-w-[200px]"
+              className="h-14 pl-12 pr-10 bg-slate-100 border border-slate-200 rounded-xl text-sm font-bold text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all appearance-none cursor-pointer min-w-[200px]"
             >
               <option value="ALL">Tất cả trạng thái</option>
               {Object.keys(STATUS_CONFIG).map((s) => (
@@ -294,4 +294,5 @@ export default function SupplierVettingListPage() {
     </main>
   );
 }
+
 

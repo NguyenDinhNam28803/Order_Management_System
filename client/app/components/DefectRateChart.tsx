@@ -1,6 +1,6 @@
-﻿"use client";
+"use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   LineChart,
   Line,
@@ -9,58 +9,16 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  ReferenceArea,
-  ReferenceDot,
 } from "recharts";
-import { ScanLine, AlertTriangle, X, Loader2 } from "lucide-react";
+import { TrendingUp, AlertTriangle, Loader2 } from "lucide-react";
 import Cookies from "js-cookie";
-
-// Constants for data generation
-const TOTAL_DAYS = 365;
-const HIDDEN_ISSUE_START = 105;
-const HIDDEN_ISSUE_END = 119;
-const HIDDEN_ISSUE_START_RATE = 1.2;
-const HIDDEN_ISSUE_END_RATE = 4.5;
 
 // Interface for chart data point
 interface DataPoint {
   day: number;
   dayLabel: string;
   defectRate: number;
-  isHiddenIssue: boolean;
 }
-
-/**
- * Generate mock defect rate data for 365 days
- * - Most days: random value between 1% and 10%
- * - Days 105-119: linear increase from 1.2% to 4.5% (hidden issue pattern)
- */
-const generateMockData = (): DataPoint[] => {
-  const data: DataPoint[] = [];
-
-  for (let day = 1; day <= TOTAL_DAYS; day++) {
-    let defectRate: number;
-    const isHiddenIssue = day >= HIDDEN_ISSUE_START && day <= HIDDEN_ISSUE_END;
-
-    if (isHiddenIssue) {
-      // Linear interpolation for hidden issue days
-      const progress = (day - HIDDEN_ISSUE_START) / (HIDDEN_ISSUE_END - HIDDEN_ISSUE_START);
-      defectRate = HIDDEN_ISSUE_START_RATE + progress * (HIDDEN_ISSUE_END_RATE - HIDDEN_ISSUE_START_RATE);
-    } else {
-      // Random value between 1% and 10% for normal days
-      defectRate = Math.random() * 9 + 1; // 1 to 10
-    }
-
-    data.push({
-      day,
-      dayLabel: `Day ${day}`,
-      defectRate: parseFloat(defectRate.toFixed(2)),
-      isHiddenIssue,
-    });
-  }
-
-  return data;
-};
 
 /**
  * Custom tooltip component for the chart
@@ -75,18 +33,12 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label })
   if (active && payload && payload.length > 0) {
     const data = payload[0].payload;
     return (
-      <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
-        <p className="font-semibold text-gray-800">{label}</p>
-        <p className="text-blue-600">
-          <span className="font-medium">Defect Rate: </span>
+      <div className="bg-white p-3 border border-slate-200 rounded-lg shadow-lg">
+        <p className="font-semibold text-slate-800">{label}</p>
+        <p className="text-[#2563EB]">
+          <span className="font-medium">Tỷ lệ lỗi: </span>
           {data.defectRate.toFixed(2)}%
         </p>
-        {data.isHiddenIssue && (
-          <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
-            <AlertTriangle size={14} />
-            Hidden Issue Zone
-          </p>
-        )}
       </div>
     );
   }
@@ -95,92 +47,77 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label })
 
 /**
  * DefectRateChart Component
- * Interactive line chart displaying 365 days of defect rate data
- * with hidden issue detection feature
+ * Line chart displaying the supplier's defect rate history (365 days).
  */
 const DefectRateChart: React.FC<{ supplierId: string | null }> = ({ supplierId }) => {
   const [data, setData] = useState<DataPoint[]>([]);
   const [loading, setLoading] = useState(false);
-  const [isScanning, setIsScanning] = useState(false);
 
   useEffect(() => {
     if (supplierId) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setLoading(true);
       fetch(`${process.env.NEXT_PUBLIC_API_URL}/quality/suppliers/${supplierId}/history`, {
-        headers: { 'Authorization': `Bearer ${Cookies.get('token') ?? ''}` }
+        headers: { Authorization: `Bearer ${Cookies.get("token") ?? ""}` },
       })
-      .then(res => res.json())
-      .then(data => {
-        const rawData: Record<string, unknown>[] = Array.isArray(data) ? data : (data.data || []);
-        const formattedData = rawData.map((item, index: number) => ({
-          day: index + 1,
-          dayLabel: String(item.dayLabel || `Ngày ${index + 1}`),
-          defectRate: Number(item.defectRate) || 0,
-          isHiddenIssue: false
-        }));
-        setData(formattedData);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error("Lỗi tải dữ liệu:", err);
-        setLoading(false);
-      });
+        .then((res) => res.json())
+        .then((res) => {
+          const rawData = Array.isArray(res) ? res : (res.data || []);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const formattedData = rawData.map((item: any, index: number) => ({
+            day: index + 1,
+            dayLabel: item.dayLabel || `Ngày ${index + 1}`,
+            defectRate: Number(item.defectRate) || 0,
+          }));
+          setData(formattedData);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error("Lỗi tải dữ liệu:", err);
+          setLoading(false);
+        });
     }
   }, [supplierId]);
 
-  // Toggle scan mode
-  const handleScanToggle = () => {
-    setIsScanning((prev) => !prev);
-  };
-
   if (!supplierId) {
     return (
-      <div className="w-full h-[400px] bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] flex flex-col items-center justify-center text-[#6b7280]">
+      <div className="w-full h-[400px] bg-slate-100 rounded-xl border border-slate-200 flex flex-col items-center justify-center text-slate-500">
         <AlertTriangle size={48} className="mb-4 opacity-20" />
         <p className="font-bold text-lg">Chưa chọn nhà cung cấp</p>
-        <p className="text-sm">Vui lòng chọn nhà cung cấp từ danh sách ở trên để xem dữ liệu lỗi trực quan.</p>
-      </div>
-    );
-  }
-
-  if (loading) {
-    return (
-      <div className="w-full h-[400px] flex items-center justify-center">
-        <Loader2 className="animate-spin text-[#2563EB]" size={32} />
+        <p className="text-sm">Vui lòng chọn nhà cung cấp ở trên để xem dữ liệu lỗi trực quan.</p>
       </div>
     );
   }
 
   return (
-    <div className="w-full bg-white rounded-xl shadow-lg p-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <div>
-          <h2 className="text-xl font-bold text-gray-800">Defect Rate History</h2>
-          <p className="text-sm text-gray-500 mt-1">Phân tích dữ liệu thực tế</p>
+    <div className="erp-card">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="h-9 w-9 rounded-lg bg-[#2563EB]/10 text-[#2563EB] flex items-center justify-center shrink-0">
+          <TrendingUp size={18} />
         </div>
-        <button
-          onClick={handleScanToggle}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
-            isScanning ? "bg-red-100 text-red-700" : "bg-blue-600 text-white"
-          }`}
-        >
-          {isScanning ? <X size={18} /> : <ScanLine size={18} />}
-          <span>{isScanning ? "Clear Scan" : "Scan for Hidden Issues"}</span>
-        </button>
+        <div>
+          <h2 className="text-base font-bold text-slate-900">Phân tích xu hướng tỷ lệ lỗi</h2>
+          <p className="text-xs text-slate-500">Dữ liệu thực tế 365 ngày</p>
+        </div>
       </div>
 
-      <div className="w-full h-[400px] min-h-[400px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey="dayLabel" />
-            <YAxis tickFormatter={(v) => `${v}%`} />
-            <Tooltip />
-            <Line type="monotone" dataKey="defectRate" stroke="#3b82f6" strokeWidth={2} dot={false} />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+      {loading ? (
+        <div className="w-full h-[400px] flex items-center justify-center">
+          <Loader2 className="animate-spin text-[#2563EB]" size={32} />
+        </div>
+      ) : (
+        <div className="w-full h-[400px] min-h-[400px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+              <XAxis dataKey="dayLabel" tick={{ fontSize: 11, fill: "#94A3B8" }} />
+              <YAxis tickFormatter={(v) => `${v}%`} tick={{ fontSize: 11, fill: "#94A3B8" }} />
+              <Tooltip content={<CustomTooltip />} />
+              <Line type="monotone" dataKey="defectRate" stroke="#2563EB" strokeWidth={2} dot={false} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      )}
     </div>
   );
 };

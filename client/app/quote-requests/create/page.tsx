@@ -65,35 +65,35 @@ export default function CreateQuoteRequestPage() {
     return (
         <div className="p-6 max-w-5xl mx-auto space-y-6">
             <header className="flex items-center gap-4">
-                <Link href="/quote-requests" className="p-2.5 bg-[#F1F5F9] rounded-xl shadow-sm border border-[rgba(148,163,184,0.1)] hover:bg-slate-100 transition-colors text-slate-900">
+                <Link href="/quote-requests" className="p-2.5 bg-[#F1F5F9] rounded-xl shadow-sm border border-slate-200 hover:bg-slate-100 transition-colors text-slate-900">
                     <ArrowLeft size={20} />
                 </Link>
                 <div>
                     <h1 className="text-2xl font-black text-slate-900 tracking-tight">Tạo yêu cầu báo giá mới</h1>
-                    <p className="text-sm text-slate-900 font-bold italic">Gửi danh sách yêu cầu tới Thu mua để cập nhật báo giá nhanh nhất</p>
+                    <p className="text-[0.8125rem] text-[#64748B] font-medium italic">Gửi danh sách yêu cầu tới Thu mua để cập nhật báo giá nhanh nhất</p>
                 </div>
             </header>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Form Main */}
                 <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-[#F1F5F9] p-8 rounded-xl shadow-xl border border-[rgba(148,163,184,0.1)] space-y-8">
+                    <div className="bg-[#F1F5F9] p-8 rounded-xl shadow-xl border border-slate-200 space-y-8">
                         <div className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="group space-y-2">
-                                    <label className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-900 group-focus-within:text-[#2563EB] transition-colors">
+                                    <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#64748B] group-focus-within:text-[#2563EB] transition-colors">
                                         <FileText size={14} /> Tiêu đề yêu cầu
                                     </label>
                                     <input 
                                         type="text"
                                         placeholder="Ví dụ: Báo giá linh kiện..."
-                                        className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl px-6 py-4 text-sm font-bold text-slate-900 placeholder:text-slate-900 focus:ring-2 focus:ring-[#2563EB] transition-all"
+                                        className="w-full bg-[#FFFFFF] border border-slate-200 rounded-xl px-6 py-4 text-sm font-bold text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-[#2563EB] transition-all"
                                         value={formData.title}
                                         onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                                     />
                                 </div>
                                 <div className="group space-y-2">
-                                    <label className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-900 group-focus-within:text-[#2563EB] transition-colors">
+                                    <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#64748B] group-focus-within:text-[#2563EB] transition-colors">
                                         <Calendar size={14} /> Ngày cần hàng
                                     </label>
                                     <div className="relative">
@@ -102,7 +102,7 @@ export default function CreateQuoteRequestPage() {
                                                 type="text"
                                                 readOnly
                                                 placeholder="Chọn ngày..."
-                                                className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl px-6 py-4 text-sm font-bold text-slate-900 placeholder:text-slate-900 group-focus-within/date:ring-2 group-focus-within/date:ring-[#2563EB] transition-all"
+                                                className="w-full bg-[#FFFFFF] border border-slate-200 rounded-xl px-6 py-4 text-sm font-bold text-slate-900 placeholder:text-slate-400 group-focus-within/date:ring-2 group-focus-within/date:ring-[#2563EB] transition-all"
                                                 value={formData.requiredDate ? (() => {
                                                     const [y, m, d] = formData.requiredDate.split('-');
                                                     return `${d}-${m}-${y}`;
@@ -116,7 +116,7 @@ export default function CreateQuoteRequestPage() {
                                                 onClick={(e) => (e.currentTarget as HTMLInputElement & { showPicker?: () => void }).showPicker?.()}
                                             />
                                         </div>
-                                        <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-slate-900">
+                                        <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-[#94A3B8]">
                                             <Calendar size={16} />
                                         </div>
                                     </div>
@@ -124,12 +124,12 @@ export default function CreateQuoteRequestPage() {
                             </div>
 
                             <div className="group space-y-2">
-                                <label className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-900 group-focus-within:text-[#2563EB] transition-colors">
+                                <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#64748B] group-focus-within:text-[#2563EB] transition-colors">
                                     <FileText size={14} /> Ghi chú/Chi tiết
                                 </label>
                                 <textarea 
                                     placeholder="Nêu rõ mục đích và các yêu cầu kỹ thuật đặc biệt nếu có..."
-                                    className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl px-6 py-4 text-sm font-medium h-32 resize-none placeholder:italic placeholder:font-normal text-slate-900 placeholder:text-slate-900 focus:ring-2 focus:ring-[#2563EB] transition-all"
+                                    className="w-full bg-[#FFFFFF] border border-slate-200 rounded-xl px-6 py-4 text-sm font-medium h-32 resize-none placeholder:italic placeholder:font-normal text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-[#2563EB] transition-all"
                                     value={formData.description}
                                     onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                                 />
@@ -137,9 +137,9 @@ export default function CreateQuoteRequestPage() {
                         </div>
 
                         {/* Item List Management */}
-                        <div className="space-y-6 pt-6 border-t border-[rgba(148,163,184,0.1)]">
+                        <div className="space-y-6 pt-6 border-t border-slate-200">
                             <div className="flex justify-between items-center">
-                                <h3 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-900">
+                                <h3 className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#64748B]">
                                     <Package size={16} className="text-[#2563EB]" /> <span className="text-slate-900">Danh mục mặt hàng cần báo giá</span>
                                 </h3>
                                 <button 
@@ -152,13 +152,13 @@ export default function CreateQuoteRequestPage() {
 
                             <div className="space-y-4">
                                 {items.map((item, idx) => (
-                                    <div key={idx} className="group relative grid grid-cols-12 gap-x-4 p-5 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/20 shadow-sm transition-all animate-in fade-in slide-in-from-top-2">
+                                    <div key={idx} className="group relative grid grid-cols-12 gap-x-4 p-5 bg-[#FFFFFF] rounded-xl border border-slate-200 hover:border-[#2563EB]/20 shadow-sm transition-all animate-in fade-in slide-in-from-top-2">
                                         <div className="col-span-12 lg:col-span-6 space-y-1.5">
                                             <label className="text-[10px] font-black uppercase tracking-tighter text-slate-900 ml-1">Tên mặt hàng/Mục đích</label>
                                             <input 
                                                 type="text"
                                                 placeholder="Nhập tên mặt hàng..."
-                                                className="w-full bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-lg px-4 py-2 text-xs font-bold text-slate-900 placeholder:text-slate-900 focus:ring-2 focus:ring-[#2563EB]"
+                                                className="w-full bg-[#F1F5F9] border border-slate-200 rounded-lg px-4 py-2 text-xs font-bold text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-[#2563EB]"
                                                 value={item.productName}
                                                 onChange={(e) => updateItem(idx, "productName", e.target.value)}
                                             />
@@ -167,7 +167,7 @@ export default function CreateQuoteRequestPage() {
                                             <label className="text-[10px] font-black uppercase tracking-tighter text-slate-900 flex items-center gap-1 justify-center"><Hash size={10} /> Số lượng</label>
                                             <input 
                                                 type="number"
-                                                className="w-full bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-lg px-4 py-2 text-xs font-bold text-center text-slate-900 focus:ring-2 focus:ring-[#2563EB]"
+                                                className="w-full bg-[#F1F5F9] border border-slate-200 rounded-lg px-4 py-2 text-xs font-bold text-center text-slate-900 focus:ring-2 focus:ring-[#2563EB]"
                                                 value={item.qty}
                                                 onChange={(e) => updateItem(idx, "qty", parseInt(e.target.value))}
                                             />
@@ -176,7 +176,7 @@ export default function CreateQuoteRequestPage() {
                                             <label className="text-[10px] font-black uppercase tracking-tighter text-slate-900 flex items-center gap-1 justify-center"><Layers size={10} /> Đơn vị</label>
                                             <input 
                                                 type="text"
-                                                className="w-full bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-lg px-4 py-2 text-xs font-bold text-center text-slate-900 placeholder:text-slate-900 focus:ring-2 focus:ring-[#2563EB] uppercase"
+                                                className="w-full bg-[#F1F5F9] border border-slate-200 rounded-lg px-4 py-2 text-xs font-bold text-center text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-[#2563EB] uppercase"
                                                 placeholder="Cái/Bộ..."
                                                 value={item.unit}
                                                 onChange={(e) => updateItem(idx, "unit", e.target.value)}
@@ -185,7 +185,7 @@ export default function CreateQuoteRequestPage() {
                                         <div className="col-span-12 lg:col-span-1 flex items-end justify-center pb-1">
                                             <button 
                                                 onClick={() => removeItem(idx)}
-                                                className="p-2 text-black hover:text-rose-600 hover:bg-rose-500/10 rounded-lg transition-all"
+                                                className="p-2 text-slate-900 hover:text-rose-600 hover:bg-rose-500/10 rounded-lg transition-all"
                                             >
                                                 <Trash2 size={18} />
                                             </button>
@@ -199,10 +199,10 @@ export default function CreateQuoteRequestPage() {
 
                 {/* Info Panel & Actions */}
                 <div className="lg:col-span-1 space-y-6">
-                    <div className="bg-[#F1F5F9] p-8 rounded-xl shadow-2xl text-slate-900 space-y-6 border border-[rgba(148,163,184,0.1)]">
-                        <div className="border-b border-[rgba(148,163,184,0.1)] pb-4">
+                    <div className="bg-[#F1F5F9] p-8 rounded-xl shadow-2xl text-slate-900 space-y-6 border border-slate-200">
+                        <div className="border-b border-slate-200 pb-4">
                             <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 mb-2 italic underline underline-offset-4 decoration-[#2563EB]">Xác nhận gửi</h3>
-                            <p className="text-[11px] text-slate-900 leading-relaxed font-medium">Bản tin báo giá sẽ được chuyển tới bộ phận Thu mua để tiến hành RFQ tới các nhà cung cấp.</p>
+                            <p className="text-[11px] text-[#64748B] leading-relaxed font-medium">Bản tin báo giá sẽ được chuyển tới bộ phận Thu mua để tiến hành RFQ tới các nhà cung cấp.</p>
                         </div>
                         
                         <div className="space-y-4 pt-2">
@@ -217,7 +217,7 @@ export default function CreateQuoteRequestPage() {
                             <button 
                                 onClick={() => handleAction(false)}
                                 disabled={!isValid}
-                                className={`w-full flex items-center justify-center gap-3 bg-[#0F172A] text-white font-black py-4 rounded-xl hover:bg-slate-800 transition-all active:scale-95 border border-[rgba(148,163,184,0.1)] ${!isValid ? 'opacity-30 cursor-not-allowed' : ''}`}
+                                className={`w-full flex items-center justify-center gap-3 bg-[#0F172A] text-white font-black py-4 rounded-xl hover:bg-slate-800 transition-all active:scale-95 border border-slate-200 ${!isValid ? 'opacity-30 cursor-not-allowed' : ''}`}
                             >
                                 <Save size={20} />
                                 Lưu bản nháp
@@ -225,15 +225,15 @@ export default function CreateQuoteRequestPage() {
                         </div>
                     </div>
 
-                    <div className="bg-[#F1F5F9] p-6 rounded-xl border border-dashed border-[rgba(148,163,184,0.1)]">
-                        <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-900 mb-4">Mẹo nhỏ</h4>
+                    <div className="bg-[#F1F5F9] p-6 rounded-xl border border-dashed border-slate-200">
+                        <h4 className="text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B] mb-4">Mẹo nhỏ</h4>
                         <ul className="space-y-4">
                             {[
                                 "Ghi chú rõ yêu cầu kỹ thuật sẽ giúp bạn nhận báo giá chính xác hơn.",
                                 "Bạn có thể đính kèm tài liệu chi tiết sau khi lưu bản nháp.",
                                 "Thời gian phản hồi trung bình cho báo giá máy chủ là 2-3 ngày làm việc."
                             ].map((tip, i) => (
-                                <li key={i} className="flex gap-3 text-xs font-medium text-slate-900 leading-relaxed italic">
+                                <li key={i} className="flex gap-3 text-xs font-medium text-[#64748B] leading-relaxed italic">
                                     <div className="w-1.5 h-1.5 rounded-full bg-[#2563EB] mt-1.5 shrink-0" />
                                     {tip}
                                 </li>

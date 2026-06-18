@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Plus, Edit2, Trash2, Search, DollarSign, Building, Eye, X } from "lucide-react";
+import PageHeader from "../../components/shared/PageHeader";
 import { useProcurement, Department, CurrencyCode } from "../../context/ProcurementContext";
 import ConfirmDialog from "../../components/shared/ConfirmDialog";
 import { formatVND, parseMoney } from "../../utils/formatUtils";
@@ -122,21 +123,23 @@ export default function CostCentersPage() {
                 onConfirm={confirmState.onConfirm}
                 onCancel={() => setConfirmState(s => ({ ...s, open: false }))}
             />
-            <div className="mt-8 flex justify-between items-end mb-10 border-b border-[rgba(148,163,184,0.1)] pb-8">
-                <div>
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tight uppercase">Quản lý Cost Center</h1>
-                    <p className="text-sm text-slate-900 mt-1 font-medium italic">CẤU HÌNH BỘ PHẬN VÀ PHÂN BỔ NGÂN SÁCH ĐỊNH MỨC</p>
-                </div>
-                <button
-                    onClick={() => handleOpenModal()}
-                    className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
-                >
-                    <Plus size={18} /> Thêm Cost Center
-                </button>
-            </div>
+            <PageHeader
+                icon={DollarSign}
+                iconColor="blue"
+                title="Quản lý Cost Center"
+                subtitle="Cấu hình bộ phận và phân bổ ngân sách định mức."
+                actions={
+                    <button
+                        onClick={() => handleOpenModal()}
+                        className="btn-primary flex items-center gap-2"
+                    >
+                        <Plus size={16} /> Thêm Cost Center
+                    </button>
+                }
+            />
 
-            <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)]">
-                <div className="p-5 bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center">
+            <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden bg-[#F1F5F9] border border-slate-200">
+                <div className="p-5 bg-[#FFFFFF] border-b border-slate-200 flex justify-between items-center">
                     <div className="flex items-center gap-3">
                         <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">Hệ thống:</span>
                         <div className="status-pill status-approved py-0.5 px-3">{costCenters?.length || 0} Đơn vị</div>
@@ -144,7 +147,7 @@ export default function CostCentersPage() {
                     <div className="flex items-center gap-4">
                         <button 
                             onClick={toggleMyDept}
-                            className={`text-[10px] font-black px-4 py-2 rounded-xl transition-all border ${isMyDept ? 'bg-[#2563EB] text-white border-[#2563EB]' : 'bg-transparent text-white border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/30'}`}
+                            className={`text-[10px] font-black px-4 py-2 rounded-xl transition-all border ${isMyDept ? 'bg-[#2563EB] text-white border-[#2563EB]' : 'bg-transparent text-white border-slate-200 hover:border-[#2563EB]/30'}`}
                         >
                             {isMyDept ? "PHÒNG BAN CỦA TÔI" : "TẤT CẢ ĐƠN VỊ"}
                         </button>
@@ -152,7 +155,7 @@ export default function CostCentersPage() {
                         <select
                             value={selectedDeptId}
                             onChange={(e) => setSelectedDeptId(e.target.value)}
-                            className="erp-input py-2 text-[10px] font-bold w-48 shadow-sm bg-[#FFFFFF] border-[rgba(148,163,184,0.1)] text-slate-900 outline-none"
+                            className="erp-input py-2 text-[10px] font-bold w-48 shadow-sm bg-[#FFFFFF] border-slate-200 text-slate-900 outline-none"
                         >
                             <option value="">Tất cả phòng ban</option>
                             {departments?.map(dept => (
@@ -161,13 +164,13 @@ export default function CostCentersPage() {
                         </select>
 
                         <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-900" size={14} />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]" size={14} />
                             <input
                                 type="text"
                                 placeholder="Tìm kiếm mã hoặc tên..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="erp-input pl-10 py-2 text-xs w-64 h-10 shadow-sm bg-[#FFFFFF] border-[rgba(148,163,184,0.1)] text-slate-900 placeholder:text-slate-900"
+                                className="erp-input pl-10 py-2 text-xs w-64 h-10 shadow-sm bg-[#FFFFFF] border-slate-200 text-slate-900 placeholder:text-[#94A3B8]"
                             />
                         </div>
                     </div>
@@ -201,7 +204,7 @@ export default function CostCentersPage() {
                                 const usagePercent = annual > 0 ? (used / annual) * 100 : 0;
 
                                 return (
-                                    <tr key={cc.id} className="hover:bg-[#FFFFFF]/50 transition-colors border-b border-[rgba(148,163,184,0.1)]">
+                                    <tr key={cc.id} className="hover:bg-[#FFFFFF]/50 transition-colors border-b border-slate-200">
                                         <td className="py-5">
                                             <div className="flex items-center gap-4">
                                                 <div className="h-10 w-10 rounded-lg bg-[#2563EB]/10 flex items-center justify-center text-[#2563EB] border border-[#2563EB]/20">
@@ -248,14 +251,14 @@ export default function CostCentersPage() {
                                             <div className="flex justify-end gap-2">
                                                 <button
                                                     onClick={() => handleViewDetail(cc.id)}
-                                                    className="p-2 border border-[rgba(148,163,184,0.1)] rounded-lg hover:bg-[#FFFFFF] transition-colors text-slate-900 hover:text-[#2563EB]"
+                                                    className="p-2 border border-slate-200 rounded-lg hover:bg-[#FFFFFF] transition-colors text-slate-900 hover:text-[#2563EB]"
                                                     title="Xem chi tiết"
                                                 >
                                                     <Eye size={14} />
                                                 </button>
                                                 <button
                                                     onClick={() => handleOpenModal(cc)}
-                                                    className="p-2 border border-[rgba(148,163,184,0.1)] rounded-lg hover:bg-[#FFFFFF] transition-colors text-slate-900 hover:text-[#2563EB]"
+                                                    className="p-2 border border-slate-200 rounded-lg hover:bg-[#FFFFFF] transition-colors text-slate-900 hover:text-[#2563EB]"
                                                     title="Sửa"
                                                 >
                                                     <Edit2 size={14} />
@@ -285,9 +288,9 @@ export default function CostCentersPage() {
             {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#FFFFFF]/80 backdrop-blur-sm p-4 animate-in fade-in duration-300">
-                    <div className="bg-[#F1F5F9] rounded-xl w-full max-w-xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)] animate-in zoom-in-95 duration-200">
+                    <div className="bg-[#F1F5F9] rounded-xl w-full max-w-xl overflow-hidden shadow-2xl border border-slate-200 animate-in zoom-in-95 duration-200">
                         <div className="p-8">
-                            <div className="flex justify-between items-center mb-8 border-b border-[rgba(148,163,184,0.1)] pb-4">
+                            <div className="flex justify-between items-center mb-8 border-b border-slate-200 pb-4">
                                 <h2 className="text-xl font-bold text-slate-900">
                                     {editingCC ? "Cập nhật Cost Center" : "Thêm Trung tâm Chi phí"}
                                 </h2>
@@ -383,9 +386,9 @@ export default function CostCentersPage() {
             {/* Detail Modal */}
             {showDetailModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#FFFFFF]/80 backdrop-blur-sm p-4 animate-in fade-in duration-300">
-                    <div className="bg-[#F1F5F9] rounded-xl w-full max-w-2xl overflow-hidden shadow-2xl border border-[rgba(148,163,184,0.1)] animate-in zoom-in-95 duration-200">
+                    <div className="bg-[#F1F5F9] rounded-xl w-full max-w-2xl overflow-hidden shadow-2xl border border-slate-200 animate-in zoom-in-95 duration-200">
                         <div className="p-8">
-                             <div className="flex justify-between items-center mb-8 border-b border-[rgba(148,163,184,0.1)] pb-4">
+                             <div className="flex justify-between items-center mb-8 border-b border-slate-200 pb-4">
                                 <h2 className="text-xl font-bold text-slate-900">Chi tiết Trung tâm Chi phí</h2>
                                 <button onClick={() => setShowDetailModal(false)} className="text-slate-900 hover:text-slate-900"><X size={20}/></button>
                             </div>
@@ -397,7 +400,7 @@ export default function CostCentersPage() {
                                 </div>
                             ) : viewingCC ? (
                                 <div className="space-y-8">
-                                    <div className="grid grid-cols-2 gap-8 p-6 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-inner">
+                                    <div className="grid grid-cols-2 gap-8 p-6 bg-[#FFFFFF] rounded-xl border border-slate-200 shadow-inner">
                                         <div className="form-group">
                                             <label className="erp-label">Mã định danh</label>
                                             <div className="text-sm font-bold text-[#2563EB] tracking-wider">{viewingCC.code}</div>
@@ -427,9 +430,9 @@ export default function CostCentersPage() {
                                         <div className="max-h-64 overflow-y-auto pr-2 space-y-3">
                                             {viewingCC.budgetAllocations && viewingCC.budgetAllocations.length > 0 ? (
                                                 viewingCC.budgetAllocations.map((alloc) => (
-                                                    <div key={alloc.id} className="flex justify-between items-center p-4 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/30 transition-all shadow-sm">
+                                                    <div key={alloc.id} className="flex justify-between items-center p-4 rounded-xl bg-[#FFFFFF] border border-slate-200 hover:border-[#2563EB]/30 transition-all shadow-sm">
                                                         <div className="flex items-center gap-4">
-                                                            <div className="h-10 w-10 rounded-lg bg-[#F1F5F9] flex items-center justify-center text-[#2563EB] font-bold text-xs border border-[rgba(148,163,184,0.1)]">
+                                                            <div className="h-10 w-10 rounded-lg bg-[#F1F5F9] flex items-center justify-center text-[#2563EB] font-bold text-xs border border-slate-200">
                                                                 {alloc.budgetPeriod?.periodNumber ? `Q${alloc.budgetPeriod.periodNumber}` : 'FY'}
                                                             </div>
                                                             <div>
@@ -439,12 +442,12 @@ export default function CostCentersPage() {
                                                         </div>
                                                         <div className="text-right">
                                                             <div className="text-sm font-bold text-slate-900">{formatVND(alloc.allocatedAmount)}</div>
-                                                            <div className="text-[9px] font-bold text-black uppercase tracking-tighter">Đã ghi nhận</div>
+                                                            <div className="text-[0.6875rem] font-bold text-[#64748B] uppercase tracking-tighter">Đã ghi nhận</div>
                                                         </div>
                                                     </div>
                                                 ))
                                             ) : (
-                                                <div className="py-12 text-center bg-[#FFFFFF] rounded-xl border border-dashed border-[rgba(148,163,184,0.2)]">
+                                                <div className="py-12 text-center bg-[#FFFFFF] rounded-xl border border-dashed border-slate-200">
                                                     <p className="text-xs font-medium text-slate-900 italic">Chưa có dữ liệu phân bổ ngân sách chi tiết cho đơn vị này</p>
                                                 </div>
                                             )}
@@ -453,7 +456,7 @@ export default function CostCentersPage() {
 
                                     <button
                                         onClick={() => setShowDetailModal(false)}
-                                        className="w-full btn-secondary py-3 text-slate-900 bg-[#FFFFFF] border-[rgba(148,163,184,0.1)]"
+                                        className="w-full btn-secondary py-3 text-slate-900 bg-[#FFFFFF] border-slate-200"
                                     >
                                         Đóng thông tin
                                     </button>

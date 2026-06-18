@@ -47,7 +47,7 @@ export default function SimulationPanel() {
                     <div className="flex items-center gap-3">
                         <Zap size={18} className="animate-pulse" />
                         <div>
-                            <div className="text-[9px] font-black uppercase tracking-[0.2em] opacity-80">Simulation Core</div>
+                            <div className="text-[0.6875rem] font-black uppercase tracking-[0.2em] opacity-80">Simulation Core</div>
                             <div className="text-xs font-black uppercase tracking-widest">{workflow}</div>
                         </div>
                     </div>
@@ -60,7 +60,7 @@ export default function SimulationPanel() {
                 <div className="p-6 space-y-6 bg-slate-900/40">
                     <div className="flex justify-between items-end">
                         <div className="space-y-1">
-                            <div className="text-[10px] font-black uppercase tracking-widest text-black">Bước {step} của {currentSteps.length}</div>
+                            <div className="text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B]">Bước {step} của {currentSteps.length}</div>
                             <div className="text-sm font-black text-slate-900 italic uppercase tracking-tighter">{stepLabel}</div>
                         </div>
                         <div className="text-2xl font-black text-slate-900/10">0{step}</div>

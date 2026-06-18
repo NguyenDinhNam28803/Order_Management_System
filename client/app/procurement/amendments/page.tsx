@@ -1,12 +1,13 @@
 ﻿"use client";
 
 import React, { useState } from "react";
-import { 
-    ShieldAlert, Plus, Search, Filter, 
+import {
+    ShieldAlert, Plus, Search, Filter,
     ArrowRight, ChevronRight, X, History,
     Eye, Edit3, CheckCircle, Clock, AlertTriangle,
-    ArrowLeft, Split, MessageSquare, Save, Ship, FileText
+    ArrowLeft, Split, MessageSquare, Save, Ship, FileText, Edit
 } from "lucide-react";
+import PageHeader from "../../components/shared/PageHeader";
 
 // --- Mock Data ---
 interface AmendmentMock {
@@ -41,34 +42,33 @@ export default function AmendmentsPage() {
     const getBadgeColor = (type: string) => {
         switch (type) {
             case "QUANTITY": return "bg-blue-600/10 text-blue-600 border-blue-600/20";
-            case "PRICE": return "bg-amber-500/10 text-black border-amber-500/20";
-            case "DELIVERY_DATE": return "bg-purple-500/10 text-black border-purple-500/20";
-            case "ITEM_ADD": return "bg-emerald-500/10 text-black border-emerald-500/20";
-            case "ITEM_REMOVE": return "bg-rose-500/10 text-black border-rose-500/20";
+            case "PRICE": return "bg-amber-500/10 text-amber-700 border-amber-500/20";
+            case "DELIVERY_DATE": return "bg-purple-500/10 text-purple-700 border-purple-500/20";
+            case "ITEM_ADD": return "bg-emerald-500/10 text-emerald-700 border-emerald-500/20";
+            case "ITEM_REMOVE": return "bg-rose-500/10 text-rose-700 border-rose-500/20";
             default: return "bg-slate-100 text-slate-900 border-slate-200";
         }
     };
 
     return (
-        <main className="p-6 space-y-6">
+        <div className="space-y-6">
             <div className="max-w-[1600px] mx-auto space-y-6">
                 {view === "list" ? (
                     <div className="space-y-6">
-                        <div className="page-header">
-                            <div>
-                                <h1 className="page-title">ĐIỀU CHỈNH ĐƠN HÀNG (AMENDMENTS)</h1>
-                                <p className="text-slate-900 font-bold text-sm tracking-tight flex items-center gap-2">
-                                    <AlertTriangle size={14} className="text-amber-500" /> 
-                                    Quản lý lịch sử thay đổi và điều khoản phát sinh của PO
-                                </p>
-                            </div>
-                            <button
-                                onClick={() => setView("create")}
-                                className="btn-primary text-xs uppercase tracking-[0.2em]"
-                            >
-                                <Plus size={18} className="transition-transform group-hover:rotate-90" /> Tạo Amendment
-                            </button>
-                        </div>
+                        <PageHeader
+                            icon={Edit}
+                            iconColor="amber"
+                            title="Điều chỉnh đơn hàng (Amendment)"
+                            subtitle="Quản lý lịch sử thay đổi và điều khoản phát sinh của PO"
+                            actions={
+                                <button
+                                    onClick={() => setView("create")}
+                                    className="btn-primary text-xs uppercase tracking-[0.2em]"
+                                >
+                                    <Plus size={18} className="transition-transform group-hover:rotate-90" /> Tạo Amendment
+                                </button>
+                            }
+                        />
 
                         <div className="erp-card table-card">
                             <div className="overflow-x-auto">
@@ -88,12 +88,12 @@ export default function AmendmentsPage() {
                                             <tr key={am.id} className="hover:bg-white/30 transition-all group">
                                                 <td className="px-8 py-8 font-bold text-slate-900">Đơn hàng</td>
                                                 <td className="px-8 py-8">
-                                                    <span className="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-900">
+                                                    <span className="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-[0.6875rem] font-bold text-slate-900">
                                                         {am.amendmentNumber}
                                                     </span>
                                                 </td>
                                                 <td className="px-8 py-8">
-                                                    <span className={`px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest border ${getBadgeColor(am.changeType)}`}>
+                                                    <span className={`px-4 py-2 rounded-xl text-[0.6875rem] font-bold uppercase tracking-widest border ${getBadgeColor(am.changeType)}`}>
                                                         {am.changeType}
                                                     </span>
                                                 </td>
@@ -139,7 +139,7 @@ export default function AmendmentsPage() {
                     />
                 )}
             </div>
-            </main>
+        </div>
         
     );
 }
@@ -172,13 +172,13 @@ function AmendmentForm({ onCancel, onSave }: { onCancel: () => void, onSave: (da
             <div className="erp-card table-card">
                 <div className="p-10 border-b border-slate-200 bg-white flex items-center justify-between">
                     <div>
-                        <h2 className="text-2xl font-bold text-slate-900 uppercase leading-none mb-2">TẠO ĐIỀU CHỈNH ĐƠN HÀNG</h2>
-                        <p className="text-xs text-slate-900 font-bold uppercase tracking-widest uppercase">Amendment #{amendmentNumber}</p>
+                        <h2 className="text-base font-bold text-[#0F172A] uppercase leading-none mb-2">TẠO ĐIỀU CHỈNH ĐƠN HÀNG</h2>
+                        <p className="text-xs text-[#64748B] font-medium uppercase tracking-widest">Amendment #{amendmentNumber}</p>
                     </div>
-                    <div className="p-4 bg-slate-100 rounded-3xl border border-slate-200 shadow-inner flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-2xl bg-blue-600 flex items-center justify-center text-white"><FileText size={20} /></div>
+                    <div className="p-4 bg-slate-100 rounded-xl border border-slate-200 shadow-inner flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white"><FileText size={20} /></div>
                         <div className="text-right">
-                             <p className="text-[10px] font-bold text-slate-900 uppercase leading-none mb-1">Hiện đang chỉnh sửa:</p>
+                             <p className="text-[0.6875rem] font-bold text-slate-900 uppercase leading-none mb-1">Hiện đang chỉnh sửa:</p>
                              <p className="text-base font-bold text-blue-600">PO-2026-001</p>
                         </div>
                     </div>
@@ -186,10 +186,10 @@ function AmendmentForm({ onCancel, onSave }: { onCancel: () => void, onSave: (da
 
                 <div className="p-10 space-y-10">
                     <div className="grid md:grid-cols-2 gap-8">
-                        <div className="space-y-3">
-                            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-900 ml-1">Loại thay đổi *</label>
-                            <select 
-                                className="w-full bg-white border border-slate-200 rounded-2xl px-6 py-5 text-sm font-bold text-slate-900 outline-none focus:bg-slate-100 focus:border-blue-600/30 transition-all"
+                        <div className="space-y-1.5">
+                            <label className="erp-label">Loại thay đổi *</label>
+                            <select
+                                className="erp-input"
                                 value={formData.changeType}
                                 onChange={(e) => setFormData({ ...formData, changeType: e.target.value as AmendmentMock["changeType"] })}
                             >
@@ -200,13 +200,13 @@ function AmendmentForm({ onCancel, onSave }: { onCancel: () => void, onSave: (da
                                 <option value="ITEM_REMOVE">Gỡ hạng mục (Item Remove)</option>
                             </select>
                         </div>
-                        <div className="space-y-3">
-                            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-900 ml-1">Lý do điều chỉnh *</label>
+                        <div className="space-y-1.5">
+                            <label className="erp-label">Lý do điều chỉnh *</label>
                             <div className="relative">
-                                <MessageSquare className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-900" size={18} />
-                                <input 
-                                    type="text" 
-                                    className="w-full bg-white border border-slate-200 rounded-2xl px-6 py-5 text-sm font-bold text-slate-900 outline-none focus:bg-slate-100 focus:border-blue-600/30 transition-all pr-16 placeholder:text-slate-900"
+                                <MessageSquare className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                                <input
+                                    type="text"
+                                    className="erp-input pr-10"
                                     placeholder="Lý do chi tiết..."
                                     value={formData.reason}
                                     onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
@@ -216,23 +216,23 @@ function AmendmentForm({ onCancel, onSave }: { onCancel: () => void, onSave: (da
                     </div>
 
                     {/* Comparison Panel */}
-                    <div className="bg-white p-10 rounded-[32px] border border-slate-200 space-y-6">
+                    <div className="bg-white p-10 rounded-xl border border-slate-200 space-y-6">
                         <div className="flex items-center gap-4 mb-4">
                             <Split className="text-blue-600" size={20} />
-                            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-[0.2em]">BẢNG SO SÁNH THAY ĐỔI</h3>
+                            <h3 className="text-xs font-semibold text-[#64748B] uppercase tracking-widest">BẢNG SO SÁNH THAY ĐỔI</h3>
                         </div>
                         <div className="grid md:grid-cols-2 gap-10 items-center">
-                            <div className="bg-slate-100 p-8 rounded-3xl border border-slate-200 shadow-sm">
-                                <p className="text-[10px] font-bold text-slate-900 uppercase tracking-widest mb-4">GIÁ TRỊ CŨ (ORIGINAL)</p>
+                            <div className="bg-slate-100 p-8 rounded-xl border border-slate-200 shadow-sm">
+                                <p className="text-[0.6875rem] font-bold text-slate-900 uppercase tracking-widest mb-4">GIÁ TRỊ CŨ (ORIGINAL)</p>
                                 <p className="text-xl font-bold text-slate-900 line-through leading-none">{formData.originalValue}</p>
                             </div>
-                            <div className="bg-emerald-500 p-8 rounded-3xl text-white shadow-xl shadow-emerald-500/20 relative group overflow-hidden">
+                            <div className="bg-emerald-500 p-8 rounded-xl text-white shadow-xl shadow-emerald-500/20 relative group overflow-hidden">
                                 <div className="absolute right-0 top-0 h-full w-full bg-gradient-to-br from-emerald-400/0 to-emerald-400/50 -translate-x-full group-hover:translate-x-0 transition-transform duration-700"></div>
                                 <div className="relative z-10">
-                                    <p className="text-[10px] font-bold uppercase tracking-widest mb-4 text-emerald-100">GIÁ TRỊ MỚI (NEW VERSION)</p>
+                                    <p className="text-[0.6875rem] font-bold uppercase tracking-widest mb-4 text-emerald-100">GIÁ TRỊ MỚI (NEW VERSION)</p>
                                     <input 
                                         type="text" 
-                                        className="w-full bg-white/20 border border-white/20 rounded-xl px-6 py-4 text-xl font-bold text-slate-900 outline-none focus:bg-white focus:text-emerald-600 transition-all placeholder:text-emerald-200/50"
+                                        className="w-full bg-white/20 border border-white/20 rounded-lg px-4 py-3 text-base font-bold text-white outline-none focus:bg-white focus:text-emerald-700 transition-all placeholder:text-emerald-200/70"
                                         placeholder="Nhập giá trị mới..."
                                         value={formData.newValue}
                                         onChange={(e) => setFormData({ ...formData, newValue: e.target.value })}
@@ -273,20 +273,20 @@ function AmendmentHistoryTimeline({ poNumber, history, onClose, getBadgeColor }:
                              <div className="absolute left-[19px] top-4 bottom-4 w-1 bg-slate-200 rounded-full" />
                              {history.map((am, idx: number) => (
                                  <div key={am.id} className="relative flex items-start gap-8 z-10">
-                                     <div className="w-10 h-10 rounded-2xl bg-slate-100 border border-slate-200 shadow-xl flex items-center justify-center text-slate-900 shrink-0 font-bold text-xs">
+                                     <div className="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 shadow-xl flex items-center justify-center text-slate-900 shrink-0 font-bold text-xs">
                                          {am.amendmentNumber}
                                      </div>
-                                     <div className="flex-1 bg-white p-6 rounded-[28px] border border-slate-200">
+                                     <div className="flex-1 bg-white p-6 rounded-xl border border-slate-200">
                                          <div className="flex justify-between items-start mb-4">
                                               <span className={`px-3 py-1 rounded-lg text-[8px] font-bold uppercase border ${getBadgeColor(am.changeType)}`}>
                                                   {am.changeType}
                                               </span>
-                                              <span className="text-[10px] font-bold text-slate-900">{am.createdAt ? new Date(am.createdAt).toLocaleString('vi-VN') : '—'}</span>
+                                              <span className="text-[0.6875rem] font-bold text-slate-900">{am.createdAt ? new Date(am.createdAt).toLocaleString('vi-VN') : '—'}</span>
                                          </div>
                                          <div className="flex items-center gap-4 mb-4">
                                               <span className="text-xs font-bold text-slate-900 line-through">{am.originalValue}</span>
                                               <ArrowRight size={12} className="text-blue-600" />
-                                              <span className="text-sm font-bold text-black">{am.newValue}</span>
+                                              <span className="text-sm font-bold text-[#0F172A]">{am.newValue}</span>
                                          </div>
                                          <p className="text-[11px] text-slate-900 font-medium leading-relaxed italic">
                                              &quot;{am.reason}&quot;
@@ -310,4 +310,5 @@ function AmendmentHistoryTimeline({ poNumber, history, onClose, getBadgeColor }:
         </div>
     );
 }
+
 

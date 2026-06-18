@@ -7,6 +7,7 @@ import type { AuditLog } from "../../types/api-types";
 import {
     History, Search, Filter, Calendar, Shield, ExternalLink, RefreshCw
 } from "lucide-react";
+import PageHeader from "../../components/shared/PageHeader";
 
 export default function AuditLogsPage() {
     const [page, setPage] = useState(1);
@@ -34,53 +35,50 @@ export default function AuditLogsPage() {
     });
 
     const getActionColor = (action: string) => {
-        if (action.includes("CREATE")) return "text-black bg-emerald-500/10 border border-emerald-500/20";
+        if (action.includes("CREATE")) return "text-emerald-700 bg-emerald-500/10 border border-emerald-500/20";
         if (action.includes("UPDATE") || action.includes("PATCH")) return "text-[#2563EB] bg-[#2563EB]/10 border border-[#2563EB]/20";
-        if (action.includes("DELETE")) return "text-black bg-rose-500/10 border border-rose-500/20";
-        if (action.includes("APPROVE")) return "text-black bg-purple-500/10 border border-purple-500/20";
-        return "text-slate-900 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)]";
+        if (action.includes("DELETE")) return "text-rose-600 bg-rose-500/10 border border-rose-500/20";
+        if (action.includes("APPROVE")) return "text-purple-700 bg-purple-500/10 border border-purple-500/20";
+        return "text-slate-900 bg-[#F1F5F9] border border-slate-200";
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const entityTypes = Array.from(new Set(auditLogs.map((l: AuditLog) => l.entityType)));
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#F8FAFC] text-slate-900">
             {selectedLog && <AuditLogDetailModal data={selectedLog.newValue ?? {}} onClose={() => setSelectedLog(null)} />}
             
-            <div className="flex justify-between items-center mb-10">
-                <div className="flex items-center gap-3">
-                    <div className="p-3 bg-[#2563EB] text-white rounded-xl shadow-lg shadow-[#2563EB]/20">
-                        <Shield size={24} />
-                    </div>
-                    <div>
-                        <h1 className="text-2xl font-black text-slate-900 tracking-tight">Nhật ký Hệ thống (Audit Logs)</h1>
-                        <p className="text-slate-900 text-sm font-medium">Truy vết mọi hoạt động và thay đổi dữ liệu trên hệ thống</p>
-                    </div>
-                </div>
-                <button 
-                    onClick={() => refetch()}
-                    className="flex items-center gap-2 px-4 py-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl hover:bg-slate-100 text-slate-900 transition-all shadow-sm"
-                >
-                    <RefreshCw size={18} className={isLoading ? "animate-spin" : ""} /> Làm mới dữ liệu
-                </button>
-            </div>
+            <PageHeader
+                icon={Shield}
+                iconColor="blue"
+                title="Nhật ký Hệ thống (Audit Logs)"
+                subtitle="Truy vết mọi hoạt động và thay đổi dữ liệu trên hệ thống."
+                actions={
+                    <button
+                        onClick={() => refetch()}
+                        className="btn-secondary flex items-center gap-2"
+                    >
+                        <RefreshCw size={16} className={isLoading ? "animate-spin" : ""} /> Làm mới dữ liệu
+                    </button>
+                }
+            />
 
-            <div className="bg-[#F1F5F9] p-4 rounded-xl shadow-xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)] flex flex-wrap gap-4 items-center mb-6">
+            <div className="bg-[#F1F5F9] p-4 rounded-xl shadow-xl shadow-[#2563EB]/5 border border-slate-200 flex flex-wrap gap-4 items-center mb-6">
                 <div className="flex-1 min-w-[300px] relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-900" size={18} />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]" size={18} />
                     <input 
                         type="text" 
                         placeholder="Tìm theo hành động, mã đối tượng, người thực hiện..." 
-                        className="w-full pl-10 pr-4 py-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 text-slate-900 placeholder:text-slate-900 text-sm"
+                        className="w-full pl-10 pr-4 py-2 bg-[#FFFFFF] border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 text-slate-900 placeholder:text-[#94A3B8] text-sm"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
                 <div className="flex items-center gap-2 text-sm">
-                    <Filter size={18} className="text-slate-900" />
+                    <Filter size={18} className="text-[#94A3B8]" />
                     <select 
-                        className="bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 text-slate-900 text-sm"
+                        className="bg-[#FFFFFF] border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 text-slate-900 text-sm"
                         value={entityFilter}
                         onChange={(e) => setEntityFilter(e.target.value)}
                     >
@@ -92,10 +90,10 @@ export default function AuditLogsPage() {
                 </div>
             </div>
 
-            <div className="bg-[#F1F5F9] rounded-xl shadow-xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)] overflow-hidden">
+            <div className="bg-[#F1F5F9] rounded-xl shadow-xl shadow-[#2563EB]/5 border border-slate-200 overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="erp-table text-xs">
-                        <thead className="border-b border-[rgba(148,163,184,0.1)] tracking-wider">
+                        <thead className="border-b border-slate-200 tracking-wider">
                             <tr>
                                 <th className="px-6 py-4">Thời gian</th>
                                 <th className="px-6 py-4">Người thực hiện</th>
@@ -105,7 +103,7 @@ export default function AuditLogsPage() {
                                 <th className="px-6 py-4 text-right">Chi tiết</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-[rgba(148,163,184,0.1)] text-sm">
+                        <tbody className="divide-y divide-slate-100 text-sm">
                             {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                             {filteredLogs.length > 0 ? filteredLogs.map((log: AuditLog) => (
                                 <tr key={log.id} className="hover:bg-[#FFFFFF]/30 transition-colors group">
@@ -122,7 +120,7 @@ export default function AuditLogsPage() {
                                             </div>
                                             <div>
                                                 <p className="font-bold text-slate-900">{log.user?.fullName || "Hệ thống"}</p>
-                                                <p className="text-[10px] text-slate-900 uppercase">{log.user?.role}</p>
+                                                <p className="text-[10px] text-[#64748B] uppercase">{log.user?.role}</p>
                                             </div>
                                         </div>
                                     </td>
@@ -158,18 +156,18 @@ export default function AuditLogsPage() {
                     </table>
                 </div>
                 {result && (
-                    <div className="flex items-center justify-between p-4 bg-[#FFFFFF] border-t border-[rgba(148,163,184,0.1)] text-sm">
+                    <div className="flex items-center justify-between p-4 bg-[#FFFFFF] border-t border-slate-200 text-sm">
                         <p>Trang {result.page} / {Math.max(1, Math.ceil((result.total || 1) / (result.limit || 1)))}</p>
                         <div className="flex gap-2">
                             <button 
                                 disabled={page === 1}
                                 onClick={() => setPage(p => p - 1)}
-                                className="px-3 py-1 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded hover:bg-[#2563EB]/5 disabled:opacity-50"
+                                className="px-3 py-1 bg-[#F1F5F9] border border-slate-200 rounded hover:bg-[#2563EB]/5 disabled:opacity-50"
                             >Trước</button>
                             <button 
                                 disabled={result && page >= Math.ceil((result.total || 1) / (result.limit || 1))}
                                 onClick={() => setPage(p => p + 1)}
-                                className="px-3 py-1 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded hover:bg-[#2563EB]/5 disabled:opacity-50"
+                                className="px-3 py-1 bg-[#F1F5F9] border border-slate-200 rounded hover:bg-[#2563EB]/5 disabled:opacity-50"
                             >Sau</button>
                         </div>
                     </div>

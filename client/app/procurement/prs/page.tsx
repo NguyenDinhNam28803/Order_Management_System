@@ -1,10 +1,9 @@
 ﻿"use client";
 
 import { useState, useMemo } from "react";
-import { useProcurement, PR, PRItem } from "../../context/ProcurementContext";
-import { ERPTableColumn } from "../../components/shared/ERPTable";
-import { formatVND } from "../../utils/formatUtils";
-import ERPTable from "../../components/shared/ERPTable";
+import { useProcurement, PR } from "../../context/ProcurementContext";
+import ERPTable, { ERPTableColumn } from "../../components/shared/ERPTable";
+import { formatVND, formatDate } from "../../utils/formatUtils";
 import { 
     Search, ListFilter, ArrowRight, 
     FileText, CheckCircle, 
@@ -14,17 +13,10 @@ import {
     UserPlus, Settings} from "lucide-react";
 import Link from "next/link";
 
-// Local interfaces removed in favor of global definitions in ProcurementContext.
+
 export default function ProcurementControlPage() {
     const { prs, currentUser, apiFetch, refreshData, notify, organizations } = useProcurement();
     const [searchTerm, setSearchTerm] = useState("");
-
-    const formatDate = (ds?: string) => {
-        if (!ds) return "N/A";
-        const d = new Date(ds);
-        if (isNaN(d.getTime())) return ds;
-        return `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
-    };
 
     const [statusFilter, setStatusFilter] = useState("ALL");
     const [deptFilter, setDeptFilter] = useState("ALL");
@@ -111,7 +103,7 @@ export default function ProcurementControlPage() {
                     </div>
                     <div className="flex flex-col">
                         <span className="font-bold text-slate-900 tracking-tight">Yêu cầu mua</span>
-                        <span className="text-[9px] text-slate-900 font-bold uppercase">{formatDate(row.createdAt)}</span>
+                        <span className="text-[0.6875rem] text-slate-900 font-bold uppercase">{formatDate(row.createdAt)}</span>
                     </div>
                 </div>
             )
@@ -120,7 +112,7 @@ export default function ProcurementControlPage() {
             label: "Loại",
             key: "type",
             render: (row: PR) => (
-                <span className={`px-2 py-1 rounded-md text-[9px] font-bold uppercase tracking-widest ${row.type === 'CATALOG' ? 'bg-blue-600/10 text-black' : 'bg-purple-500/10 text-black'}`}>
+                <span className={`px-2 py-1 rounded-md text-[0.6875rem] font-bold uppercase tracking-widest ${row.type === 'CATALOG' ? 'bg-blue-600/10 text-blue-700' : 'bg-purple-500/10 text-purple-700'}`}>
                     {row.type || 'NON-CATALOG'}
                 </span>
             )
@@ -156,7 +148,7 @@ export default function ProcurementControlPage() {
             key: "requiredDate",
             render: (row: PR) => (
                 <div className="flex flex-col items-center px-4">
-                    <span className="px-2 py-1 bg-rose-500/10 text-black rounded-md text-[10px] font-bold uppercase tracking-widest border border-rose-500/20 overflow-hidden whitespace-nowrap">
+                    <span className="px-2 py-1 bg-rose-500/10 text-rose-700 rounded-md text-[10px] font-bold uppercase tracking-widest border border-rose-500/20 overflow-hidden whitespace-nowrap">
                         {formatDate(row.requiredDate)}
                     </span>
                 </div>
@@ -167,8 +159,8 @@ export default function ProcurementControlPage() {
             key: "totalEstimate",
             render: (row: PR) => (
                 <div className="text-right">
-                    <div className="font-bold text-black text-sm">{formatVND(row.totalEstimate || 0)} ₫</div>
-                    <div className="text-[9px] text-slate-900 font-bold uppercase tracking-widest">Base Amount</div>
+                    <div className="font-bold text-slate-900 text-sm">{formatVND(row.totalEstimate || 0)} ₫</div>
+                    <div className="text-[0.6875rem] text-slate-900 font-bold uppercase tracking-widest">Base Amount</div>
                 </div>
             )
         },
@@ -197,7 +189,7 @@ export default function ProcurementControlPage() {
                     {row.status === 'IN_SOURCING' && (
                         <Link 
                             href={`/procurement/rfq/create?prId=${row.id}`}
-                            className="inline-flex items-center gap-2 bg-amber-500/10 text-black border border-amber-500/20 px-4 py-2 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-amber-500/20 transition-all shadow-sm active:scale-95"
+                            className="inline-flex items-center gap-2 bg-amber-500/10 text-amber-700 border border-amber-500/20 px-4 py-2 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-amber-500/20 transition-all shadow-sm active:scale-95"
                         >
                             Quản lý RFQ
                         </Link>
@@ -215,6 +207,13 @@ export default function ProcurementControlPage() {
                 </div>
             )
         }
+    ];
+
+    const stats = [
+        { label: "Tổng số PR", value: prs.length, icon: FileText, color: "text-slate-500", bg: "bg-slate-50" },
+        { label: "Chờ Tìm Nguồn", value: prs.filter((p: PR) => p.status === 'APPROVED').length, icon: Zap, color: "text-amber-500", bg: "bg-amber-50" },
+        { label: "Đang Báo Giá", value: prs.filter((p: PR) => p.status === 'IN_SOURCING').length, icon: Send, color: "text-blue-500", bg: "bg-blue-50" },
+        { label: "Hoàn tất PO", value: prs.filter((p: PR) => p.status === 'PO_CREATED').length, icon: CheckCircle, color: "text-emerald-500", bg: "bg-emerald-50" },
     ];
 
     return (
@@ -241,7 +240,7 @@ export default function ProcurementControlPage() {
                                     placeholder="Tìm kiếm theo mã PR, tiêu đề hoặc người yêu cầu..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full h-14 pl-6 pr-4 bg-white border border-slate-200 rounded-2xl text-sm font-bold text-slate-900 placeholder:text-slate-900/40 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all"
+                                    className="w-full h-14 pl-6 pr-4 bg-white border border-slate-200 rounded-2xl text-sm font-bold text-slate-900 placeholder:text-slate-400/40 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all"
                                 />
                             </div>
                         </div>
@@ -362,23 +361,23 @@ export default function ProcurementControlPage() {
 
 function StatusPill({ status }: { status: string }) {
     const config: Record<string, { bg: string, text: string, border: string, label: string }> = {
-        'DRAFT': { bg: 'bg-slate-500/10', text: 'text-black', border: 'border-slate-500/20', label: 'Nháp' },
-        'PENDING': { bg: 'bg-amber-500/10', text: 'text-black', border: 'border-amber-500/20', label: 'Chờ duyệt' },
-        'PENDING_APPROVAL': { bg: 'bg-amber-500/10', text: 'text-black', border: 'border-amber-500/20', label: 'Chờ phê duyệt' },
-        'SUBMITTED': { bg: 'bg-blue-600/10', text: 'text-black', border: 'border-blue-600/20', label: 'Đã gửi' },
-        'UNDER_REVIEW': { bg: 'bg-purple-500/10', text: 'text-black', border: 'border-purple-500/20', label: 'Đang xem xét' },
-        'APPROVED': { bg: 'bg-emerald-500/10', text: 'text-black', border: 'border-emerald-500/20', label: 'Đã duyệt' },
-        'REJECTED': { bg: 'bg-rose-500/10', text: 'text-black', border: 'border-rose-500/20', label: 'Từ chối' },
-        'CANCELLED': { bg: 'bg-gray-500/10', text: 'text-black', border: 'border-gray-500/20', label: 'Đã hủy' },
-        'COMPLETED': { bg: 'bg-cyan-500/10', text: 'text-black', border: 'border-cyan-500/20', label: 'Hoàn thành' },
-        'IN_SOURCING': { bg: 'bg-orange-500/10', text: 'text-black', border: 'border-orange-500/20', label: 'Đang báo giá' },
-        'PO_CREATED': { bg: 'bg-indigo-500/10', text: 'text-black', border: 'border-indigo-500/20', label: 'Đã tạo PO' },
+        'DRAFT': { bg: 'bg-slate-500/10', text: 'text-slate-600', border: 'border-slate-500/20', label: 'Nháp' },
+        'PENDING': { bg: 'bg-amber-500/10', text: 'text-amber-700', border: 'border-amber-500/20', label: 'Chờ duyệt' },
+        'PENDING_APPROVAL': { bg: 'bg-amber-500/10', text: 'text-amber-700', border: 'border-amber-500/20', label: 'Chờ phê duyệt' },
+        'SUBMITTED': { bg: 'bg-blue-600/10', text: 'text-indigo-700', border: 'border-blue-600/20', label: 'Đã gửi' },
+        'UNDER_REVIEW': { bg: 'bg-purple-500/10', text: 'text-purple-700', border: 'border-purple-500/20', label: 'Đang xem xét' },
+        'APPROVED': { bg: 'bg-emerald-500/10', text: 'text-emerald-700', border: 'border-emerald-500/20', label: 'Đã duyệt' },
+        'REJECTED': { bg: 'bg-rose-500/10', text: 'text-rose-700', border: 'border-rose-500/20', label: 'Từ chối' },
+        'CANCELLED': { bg: 'bg-gray-500/10', text: 'text-rose-700', border: 'border-gray-500/20', label: 'Đã hủy' },
+        'COMPLETED': { bg: 'bg-cyan-500/10', text: 'text-purple-700', border: 'border-cyan-500/20', label: 'Hoàn thành' },
+        'IN_SOURCING': { bg: 'bg-orange-500/10', text: 'text-amber-700', border: 'border-orange-500/20', label: 'Đang báo giá' },
+        'PO_CREATED': { bg: 'bg-indigo-500/10', text: 'text-indigo-700', border: 'border-indigo-500/20', label: 'Đã tạo PO' },
     };
 
     const style = config[status] || { ...config['DRAFT'], label: status.replace(/_/g, ' ') };
     return (
         <div className="min-w-[110px]">
-            <span className={`inline-block px-3 py-1.5 rounded-lg font-bold text-[9px] uppercase tracking-widest ${style.bg} ${style.text} border ${style.border}`}>
+            <span className={`inline-block px-3 py-1.5 rounded-lg font-bold text-[0.6875rem] uppercase tracking-widest ${style.bg} ${style.text} border ${style.border}`}>
                 {style.label}
             </span>
         </div>

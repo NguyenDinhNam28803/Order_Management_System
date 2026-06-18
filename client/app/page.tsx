@@ -99,11 +99,11 @@ export default function Dashboard() {
         ];
 
         return (
-            <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
+            <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#F8FAFC] text-slate-900">
                 {/* HEADER - Minimal Clean Design */}
-                <header className="flex items-center justify-between mb-6 pb-4 border-b border-[rgba(148,163,184,0.1)]">
+                <header className="flex items-center justify-between mb-6 pb-4 border-b border-slate-200">
                     <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-xl bg-[#F1F5F9] border border-slate-200 flex items-center justify-center">
                             <span className="text-lg font-black text-[#2563EB]">{currentUser?.name?.charAt(0) || currentUser?.fullName?.charAt(0) || 'U'}</span>
                         </div>
                         <div>
@@ -112,7 +112,7 @@ export default function Dashboard() {
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                         <Link href="/quote-requests/create" className="px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 rounded-xl font-bold text-xs hover:bg-slate-100 hover:text-slate-900 transition-all">
+                         <Link href="/quote-requests/create" className="px-4 py-2.5 bg-[#F1F5F9] border border-slate-200 text-slate-900 rounded-xl font-bold text-xs hover:bg-slate-100 hover:text-slate-900 transition-all">
                              + Báo giá
                          </Link>
                          <div className="relative">
@@ -125,34 +125,34 @@ export default function Dashboard() {
                             </button>
                             
                             {isSimDropdownOpen && (
-                                <div className="absolute top-full right-0 mt-3 w-72 bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
-                                    <Link href="/pr/create" className="flex items-center gap-4 p-5 hover:bg-slate-100 transition-colors border-b border-[rgba(148,163,184,0.1)] text-left w-full translate-z-0">
+                                <div className="absolute top-full right-0 mt-3 w-72 bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                                    <Link href="/pr/create" className="flex items-center gap-4 p-5 hover:bg-slate-100 transition-colors border-b border-slate-200 text-left w-full translate-z-0">
                                         <div className="p-3 bg-[#2563EB]/10 text-[#2563EB] rounded-xl"><Plus size={18} /></div>
                                         <div>
-                                            <div className="text-[10px] font-black uppercase text-slate-900 mb-1 tracking-widest">Tạo quy trình thủ công</div>
-                                            <div className="text-[9px] text-slate-900 font-bold uppercase leading-tight">Vào PR trực tiếp</div>
+                                            <div className="text-[0.6875rem] font-bold uppercase text-slate-900 mb-1 tracking-widest">Tạo quy trình thủ công</div>
+                                            <div className="text-[0.6875rem] text-[#64748B] font-medium uppercase leading-tight">Vào PR trực tiếp</div>
                                         </div>
                                     </Link>
-                                    <button 
+                                    <button
                                         // eslint-disable-next-line react-hooks/rules-of-hooks
                                         onClick={() => { useProcurement().startSimulation("CATALOG"); setIsSimDropdownOpen(false); }}
-                                        className="flex items-center gap-4 p-5 hover:bg-slate-100 transition-colors border-b border-[rgba(148,163,184,0.1)] w-full text-left"
+                                        className="flex items-center gap-4 p-5 hover:bg-slate-100 transition-colors border-b border-slate-200 w-full text-left"
                                     >
-                                        <div className="p-3 bg-emerald-500/10 text-black rounded-xl"><Zap size={18} /></div>
+                                        <div className="p-3 bg-emerald-500/10 text-emerald-600 rounded-xl"><Zap size={18} /></div>
                                         <div>
-                                             <div className="text-[10px] font-black uppercase text-slate-900 mb-1 tracking-widest">Giả lập Catalog</div>
-                                             <div className="text-[9px] text-slate-900 font-bold uppercase leading-tight">Demo full-flow từ Catalog</div>
+                                             <div className="text-[0.6875rem] font-bold uppercase text-slate-900 mb-1 tracking-widest">Giả lập Catalog</div>
+                                             <div className="text-[0.6875rem] text-[#64748B] font-medium uppercase leading-tight">Demo full-flow từ Catalog</div>
                                         </div>
                                     </button>
-                                    <button 
+                                    <button
                                         // eslint-disable-next-line react-hooks/rules-of-hooks
                                         onClick={() => { useProcurement().startSimulation("NON_CATALOG"); setIsSimDropdownOpen(false); }}
                                         className="flex items-center gap-4 p-5 hover:bg-slate-100 transition-colors w-full text-left"
                                     >
-                                        <div className="p-3 bg-purple-500/10 text-black rounded-xl"><RotateCcw size={18} /></div>
+                                        <div className="p-3 bg-purple-500/10 text-purple-600 rounded-xl"><RotateCcw size={18} /></div>
                                         <div>
-                                             <div className="text-[10px] font-black uppercase text-slate-900 mb-1 tracking-widest">Giả lập Non-Catalog (AI)</div>
-                                             <div className="text-[9px] text-slate-900 font-bold uppercase leading-tight">Demo quote sync Supplier/AI</div>
+                                             <div className="text-[0.6875rem] font-bold uppercase text-slate-900 mb-1 tracking-widest">Giả lập Non-Catalog (AI)</div>
+                                             <div className="text-[0.6875rem] text-[#64748B] font-medium uppercase leading-tight">Demo quote sync Supplier/AI</div>
                                         </div>
                                     </button>
                                 </div>
@@ -162,8 +162,8 @@ export default function Dashboard() {
                 </header>
 
                 {/* HÀNG 1 — Stats Cards with Reports/Spend Style */}
-                <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl p-6 mb-6">
-                    <h3 className="text-xs font-black uppercase tracking-widest text-slate-900 mb-4 flex items-center gap-2">
+                <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-2xl p-6 mb-6">
+                    <h3 className="text-xs font-bold uppercase tracking-widest text-[#64748B] mb-4 flex items-center gap-2">
                         <Activity size={14} className="text-[#2563EB]" /> Tổng quan hoạt động
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -249,17 +249,17 @@ export default function Dashboard() {
                 <div className="grid grid-cols-1 xl:grid-cols-10 gap-10">
                     {/* GIỮ 60% — Danh sách PR */}
                     <div className="xl:col-span-6 space-y-6">
-                        <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
-                             <div className="p-8 border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center bg-[#FFFFFF]">
+                        <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
+                             <div className="p-8 border-b border-slate-200 flex justify-between items-center bg-[#FFFFFF]">
                                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900 flex items-center gap-3 leading-none">
                                      <FileText size={16} className="text-[#2563EB]" /> Danh sách PR của tôi (gần nhất)
                                  </h3>
-                                 <Link href="/pr" className="text-[9px] font-black uppercase text-[#2563EB] hover:underline bg-[#FFFFFF] px-3 py-1.5 rounded-lg border border-[rgba(148,163,184,0.1)] shadow-sm transition-all hover:scale-105 active:scale-95">Xem tất cả ›</Link>
+                                 <Link href="/pr" className="text-[0.6875rem] font-black uppercase text-[#2563EB] hover:underline bg-[#FFFFFF] px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm transition-all hover:scale-105 active:scale-95">Xem tất cả ›</Link>
                              </div>
                              <div className="overflow-x-auto">
                                  <table className="erp-table text-xs text-left">
                                      <thead>
-                                         <tr className="border-b border-[rgba(148,163,184,0.1)]">
+                                         <tr className="border-b border-slate-200">
                                              <th className="px-8 py-5">Số PR</th>
                                              <th className="px-8 py-5">Tiêu đề (Lý do)</th>
                                              <th className="px-8 py-5">Ngày tạo</th>
@@ -268,7 +268,7 @@ export default function Dashboard() {
                                              <th className="px-8 py-5 text-right">Thao tác</th>
                                          </tr>
                                      </thead>
-                                     <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
+                                     <tbody className="divide-y divide-slate-100">
                                          {loadingMyPrs ? (
                                              [1, 2, 3].map(i => (
                                                  <tr key={i} className="animate-pulse px-8">
@@ -286,12 +286,12 @@ export default function Dashboard() {
                                                      <td className="px-8 py-6 text-slate-900 font-bold text-[10px]">{formatDate(pr.createdAt)}</td>
                                                      <td className="px-8 py-6 font-black text-slate-900 text-right tracking-tight">{formatVND(pr.totalEstimate || 0)}</td>
                                                      <td className="px-8 py-6 text-center">
-                                                         <span className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase border transition-all ${
-                                                             pr.status === "APPROVED" ? "bg-emerald-500/10 text-black border-emerald-500/20" : 
-                                                             pr.status === "REJECTED" ? "bg-rose-500/10 text-black border-rose-500/20" :
-                                                             pr.status === "DRAFT" ? "bg-[#0F172A] text-[#F8FAFC] border-[rgba(148,163,184,0.1)]" :
-                                                             pr.status.includes("PENDING") || pr.status === "SUBMITTED" ? "bg-amber-500/10 text-black border-amber-500/20" :
-                                                             "bg-[#2563EB]/10 text-black border-[#2563EB]/20"
+                                                         <span className={`px-3 py-1.5 rounded-xl text-[0.6875rem] font-black uppercase border transition-all ${
+                                                             pr.status === "APPROVED" ? "bg-emerald-500/10 text-emerald-700 border-emerald-500/20" : 
+                                                             pr.status === "REJECTED" ? "bg-rose-500/10 text-rose-700 border-rose-500/20" :
+                                                             pr.status === "DRAFT" ? "bg-[#0F172A] text-[#F8FAFC] border-slate-200" :
+                                                             pr.status.includes("PENDING") || pr.status === "SUBMITTED" ? "bg-amber-500/10 text-amber-700 border-amber-500/20" :
+                                                             "bg-[#2563EB]/10 text-[#2563EB] border-[#2563EB]/20"
                                                          }`}>
                                                              {getStatusLabel(pr.status)}
                                                          </span>
@@ -301,7 +301,7 @@ export default function Dashboard() {
                                                              {pr.status === "DRAFT" && (
                                                                  <Link href={`/pr/edit/${pr.id}`} className="p-1.5 text-slate-900 hover:text-[#2563EB] hover:bg-[#2563EB]/10 rounded-lg border border-transparent hover:border-[#2563EB]/20 transition-all"><Edit3 size={14} /></Link>
                                                              )}
-                                                             <button disabled={loadingMyPrs} onClick={() => fetchPrDetail(pr.id).then(res => res && setSelectedPRDetails(res))} className="p-1.5 text-slate-900 hover:text-slate-900 hover:bg-slate-100 rounded-lg border border-transparent hover:border-[rgba(148,163,184,0.2)] transition-all">
+                                                             <button disabled={loadingMyPrs} onClick={() => fetchPrDetail(pr.id).then(res => res && setSelectedPRDetails(res))} className="p-1.5 text-slate-900 hover:text-slate-900 hover:bg-slate-100 rounded-lg border border-transparent hover:border-slate-200 transition-all">
                                                                  <Eye size={14} />
                                                              </button>
                                                          </div>
@@ -318,27 +318,27 @@ export default function Dashboard() {
                     {/* GIỮ 40% — QR & NOTI */}
                     <div className="xl:col-span-4 space-y-10">
                         {/* QR Section */}
-                        <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
-                             <div className="p-8 border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center">
+                        <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
+                             <div className="p-8 border-b border-slate-200 flex justify-between items-center">
                                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900 flex items-center gap-3">
                                      <ClipboardList size={16} className="text-[#2563EB]" /> Yêu cầu báo giá (QR)
                                  </h3>
-                                 <Link href="/quote-requests" className="text-[9px] font-black uppercase text-[#2563EB] hover:underline">Xem tất cả ›</Link>
+                                 <Link href="/quote-requests" className="text-[0.6875rem] font-black uppercase text-[#2563EB] hover:underline">Xem tất cả ›</Link>
                              </div>
                              <div className="p-8 space-y-4">
                                  {quoteRequests.length > 0 ? (
                                      [...quoteRequests].sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 3).map(qr => (
-                                         <div key={qr.id} className="flex items-center justify-between p-5 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/20 transition-all group">
+                                         <div key={qr.id} className="flex items-center justify-between p-5 bg-[#FFFFFF] rounded-xl border border-slate-200 hover:border-[#2563EB]/20 transition-all group">
                                              <div className="flex flex-col gap-1">
                                                  <div className="flex items-center gap-2">
                                                      <span className="text-[10px] font-black text-slate-900">{qr.qrNumber}</span>
                                                      <span className={`px-2 py-0.5 rounded-lg text-[8px] font-black uppercase w-fit ${
-                                                         qr.status === 'QUOTED' ? 'bg-emerald-500/10 text-black' : 
-                                                         qr.status === 'SUBMITTED' ? 'bg-[#2563EB]/10 text-black' :
-                                                         'bg-amber-500/10 text-black'
+                                                         qr.status === 'QUOTED' ? 'bg-emerald-500/10 text-emerald-600' : 
+                                                         qr.status === 'SUBMITTED' ? 'bg-[#2563EB]/10 text-[#2563EB]' :
+                                                         'bg-amber-500/10 text-amber-600'
                                                      }`}>{qr.status}</span>
                                                  </div>
-                                                 <span className="text-[9px] font-bold text-slate-900 truncate max-w-[120px]">{qr.title}</span>
+                                                 <span className="text-[0.6875rem] font-bold text-slate-900 truncate max-w-[120px]">{qr.title}</span>
                                              </div>
                                              {qr.status === "QUOTED" ? (
                                                   <button 
@@ -346,12 +346,12 @@ export default function Dashboard() {
                                                         const success = await createPRFromQuoteRequest(qr.id);
                                                         if (success) await refreshData();
                                                     }} 
-                                                    className="px-3 py-1.5 bg-[#2563EB] text-white rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-[#1D4ED8] transition-all active:scale-95 shadow-md shadow-[#2563EB]/10"
+                                                    className="px-3 py-1.5 bg-[#2563EB] text-white rounded-lg text-[0.6875rem] font-black uppercase tracking-widest hover:bg-[#1D4ED8] transition-all active:scale-95 shadow-md shadow-[#2563EB]/10"
                                                   >
                                                     CHUYỂN SANG PR
                                                   </button>
                                              ) : (
-                                                  <span className="text-[9px] font-black text-slate-900 uppercase tracking-widest px-4">Đang xử lý...</span>
+                                                  <span className="text-[0.6875rem] font-black text-slate-900 uppercase tracking-widest px-4">Đang xử lý...</span>
                                              )}
                                          </div>
                                      ))
@@ -364,13 +364,13 @@ export default function Dashboard() {
                         </div>
 
                         {/* Notifications */}
-                        <div className="bg-[#F1F5F9] rounded-xl shadow-2xl shadow-[#2563EB]/5 p-6 text-slate-900 relative overflow-hidden group border border-[rgba(148,163,184,0.1)]">
+                        <div className="bg-[#F1F5F9] rounded-xl shadow-2xl shadow-[#2563EB]/5 p-6 text-slate-900 relative overflow-hidden group border border-slate-200">
                              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-125 transition-transform duration-700">
                                  <Bell size={100} />
                              </div>
                              <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#2563EB] mb-8 leading-none">THÔNG BÁO MỚI NHẤT</h3>
                              <div className="space-y-8 relative">
-                                 <div className="absolute left-1.5 top-2 bottom-2 w-0.5 bg-[rgba(148,163,184,0.2)]" />
+                                 <div className="absolute left-1.5 top-2 bottom-2 w-0.5 bg-slate-100" />
                                  {notifications.map(n => (
                                      <div key={n.id} className="relative flex items-center gap-6 pl-8 group/item">
                                          <div className="absolute left-0 w-3 h-3 rounded-full bg-[#2563EB] border-2 border-[#F1F5F9] z-10 group-hover/item:scale-150 transition-transform"></div>
@@ -408,7 +408,7 @@ export default function Dashboard() {
     function ActionRequired({ items, onConvert }: { items: QuoteRequest[]; onConvert: (id: string) => Promise<void> }) {
         if (items.length === 0) return null;
         return (
-            <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)] mb-12 shadow-2xl shadow-[#2563EB]/5">
+            <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200 mb-12 shadow-2xl shadow-[#2563EB]/5">
                 <div className="flex items-center gap-3 mb-8">
                     <div className="h-2 w-2 rounded-full bg-[#2563EB] animate-pulse"></div>
                     <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900 leading-none">CẦN HÀNH ĐỘNG NGAY ({items.length})</h3>
@@ -435,7 +435,7 @@ export default function Dashboard() {
         };
 
         return (
-            <div className="bg-[#FFFFFF] p-6 rounded-xl border border-[rgba(148,163,184,0.1)] flex items-center justify-between shadow-xl shadow-[#2563EB]/5 hover:-translate-y-1 transition-all duration-300 group">
+            <div className="bg-[#FFFFFF] p-6 rounded-xl border border-slate-200 flex items-center justify-between shadow-xl shadow-[#2563EB]/5 hover:-translate-y-1 transition-all duration-300 group">
                 <div className="flex items-center gap-4">
                     <div className="p-4 bg-[#2563EB]/10 text-[#2563EB] rounded-xl group-hover:rotate-12 transition-transform"><Zap size={24} /></div>
                     <div>
@@ -500,9 +500,9 @@ export default function Dashboard() {
         return (
             <div className="animate-in fade-in duration-700 px-6">
                 {/* HEADER - With PR Creation for CFO/Director */}
-                <header className="flex items-center justify-between mb-6 pb-4 border-b border-[rgba(148,163,184,0.1)]">
+                <header className="flex items-center justify-between mb-6 pb-4 border-b border-slate-200">
                     <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-xl bg-[#F1F5F9] border border-slate-200 flex items-center justify-center">
                             <span className="text-lg font-black text-[#2563EB]">{currentUser?.name?.charAt(0) || currentUser?.fullName?.charAt(0) || 'U'}</span>
                         </div>
                         <div>
@@ -511,7 +511,7 @@ export default function Dashboard() {
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                         <Link href="/quote-requests/create" className="px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 rounded-xl font-bold text-xs hover:bg-slate-100 hover:text-slate-900 transition-all">
+                         <Link href="/quote-requests/create" className="px-4 py-2.5 bg-[#F1F5F9] border border-slate-200 text-slate-900 rounded-xl font-bold text-xs hover:bg-slate-100 hover:text-slate-900 transition-all">
                              + Báo giá
                          </Link>
                          <div className="relative">
@@ -524,23 +524,23 @@ export default function Dashboard() {
                             </button>
                             
                             {isSimDropdownOpen && (
-                                <div className="absolute top-full right-0 mt-3 w-72 bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
-                                    <Link href="/pr/create" className="flex items-center gap-4 p-5 hover:bg-slate-100 transition-colors border-b border-[rgba(148,163,184,0.1)] text-left w-full translate-z-0">
+                                <div className="absolute top-full right-0 mt-3 w-72 bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                                    <Link href="/pr/create" className="flex items-center gap-4 p-5 hover:bg-slate-100 transition-colors border-b border-slate-200 text-left w-full translate-z-0">
                                         <div className="p-3 bg-[#2563EB]/10 text-[#2563EB] rounded-xl"><Plus size={18} /></div>
                                         <div>
                                             <div className="text-[10px] font-black uppercase text-slate-900 mb-1 tracking-widest">Tạo quy trình thủ công</div>
-                                            <div className="text-[9px] text-slate-900 font-bold uppercase leading-tight">Vào PR trực tiếp</div>
+                                            <div className="text-[0.6875rem] text-slate-900 font-bold uppercase leading-tight">Vào PR trực tiếp</div>
                                         </div>
                                     </Link>
                                     <button 
                                         // eslint-disable-next-line react-hooks/rules-of-hooks
                                         onClick={() => { useProcurement().startSimulation("CATALOG"); setIsSimDropdownOpen(false); }}
-                                        className="flex items-center gap-4 p-5 hover:bg-slate-100 transition-colors border-b border-[rgba(148,163,184,0.1)] w-full text-left"
+                                        className="flex items-center gap-4 p-5 hover:bg-slate-100 transition-colors border-b border-slate-200 w-full text-left"
                                     >
-                                        <div className="p-3 bg-emerald-500/10 text-black rounded-xl"><Zap size={18} /></div>
+                                        <div className="p-3 bg-emerald-500/10 text-emerald-600 rounded-xl"><Zap size={18} /></div>
                                         <div>
                                              <div className="text-[10px] font-black uppercase text-slate-900 mb-1 tracking-widest">Giả lập Catalog</div>
-                                             <div className="text-[9px] text-slate-900 font-bold uppercase leading-tight">Demo full-flow từ Catalog</div>
+                                             <div className="text-[0.6875rem] text-slate-900 font-bold uppercase leading-tight">Demo full-flow từ Catalog</div>
                                         </div>
                                     </button>
                                     <button 
@@ -548,10 +548,10 @@ export default function Dashboard() {
                                         onClick={() => { useProcurement().startSimulation("NON_CATALOG"); setIsSimDropdownOpen(false); }}
                                         className="flex items-center gap-4 p-5 hover:bg-slate-100 transition-colors w-full text-left"
                                     >
-                                        <div className="p-3 bg-purple-500/10 text-black rounded-xl"><RotateCcw size={18} /></div>
+                                        <div className="p-3 bg-purple-500/10 text-purple-600 rounded-xl"><RotateCcw size={18} /></div>
                                         <div>
                                             <div className="text-[10px] font-black uppercase text-slate-900 mb-1 tracking-widest">Giả lập Non-Catalog</div>
-                                            <div className="text-[9px] text-slate-900 font-bold uppercase leading-tight">Demo full-flow từ PR</div>
+                                            <div className="text-[0.6875rem] text-slate-900 font-bold uppercase leading-tight">Demo full-flow từ PR</div>
                                         </div>
                                     </button>
                                 </div>
@@ -563,7 +563,7 @@ export default function Dashboard() {
                 {/* CFO Stat Cards - Clean Consistent Style */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                     {/* Total Budget Card */}
-                    <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-emerald-500/30 transition-all">
+                    <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200 hover:border-emerald-500/30 transition-all">
                         <div className="flex items-center justify-between mb-4">
                             <span className="text-[10px] font-black uppercase text-slate-900 tracking-wider">Tổng Ngân Sách</span>
                             <div className="h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
@@ -574,14 +574,14 @@ export default function Dashboard() {
                         <div className="w-full h-1.5 bg-[#FFFFFF] rounded-full overflow-hidden mb-2">
                             <div className="h-full bg-emerald-500 transition-all duration-1000" style={{ width: `${usagePercent}%` }}></div>
                         </div>
-                        <div className="flex justify-between text-[9px] font-black uppercase">
+                        <div className="flex justify-between text-[0.6875rem] font-black uppercase">
                             <span className="text-slate-900">{usagePercent}% đã dùng</span>
                             <span className="text-black">{formatVND(totalAllocated - totalUsed)} còn</span>
                         </div>
                     </div>
 
                     {/* Weekly Payment Forecast Card */}
-                    <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/30 transition-all">
+                    <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200 hover:border-[#2563EB]/30 transition-all">
                         <div className="flex items-center justify-between mb-4">
                             <span className="text-[10px] font-black uppercase text-slate-900 tracking-wider">Dự Kiến Chi Tuần Này</span>
                             <div className="h-10 w-10 rounded-xl bg-[#2563EB]/10 flex items-center justify-center">
@@ -590,11 +590,11 @@ export default function Dashboard() {
                         </div>
                         <div className="text-2xl font-black text-slate-900 mb-1">{formatVND(weeklyForecast)}</div>
                         <div className="text-sm font-bold text-[#2563EB]">{pendingPayments.length} PO đang chờ thanh toán</div>
-                        <div className="text-[10px] text-slate-900 mt-3 pt-3 border-t border-[rgba(148,163,184,0.1)]">Dự kiến thanh toán trong 7 ngày tới</div>
+                        <div className="text-[10px] text-slate-900 mt-3 pt-3 border-t border-slate-200">Dự kiến thanh toán trong 7 ngày tới</div>
                     </div>
 
                     {/* Pending Approvals Card */}
-                    <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-amber-500/30 transition-all">
+                    <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200 hover:border-amber-500/30 transition-all">
                         <div className="flex items-center justify-between mb-4">
                             <span className="text-[10px] font-black uppercase text-slate-900 tracking-wider">Chờ CFO Duyệt</span>
                             <div className="h-10 w-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
@@ -603,11 +603,11 @@ export default function Dashboard() {
                         </div>
                         <div className="text-2xl font-black text-black mb-1">{pendingPRCount + pendingBudgetCount}</div>
                         <div className="text-sm font-bold text-slate-900">{formatVND(pendingPRValue + pendingBudgetValue)} cần phê duyệt</div>
-                        <div className="text-[10px] text-slate-900 mt-3 pt-3 border-t border-[rgba(148,163,184,0.1)]">{pendingPRCount} PR • {pendingBudgetCount} Ngân sách</div>
+                        <div className="text-[10px] text-slate-900 mt-3 pt-3 border-t border-slate-200">{pendingPRCount} PR • {pendingBudgetCount} Ngân sách</div>
                     </div>
 
                     {/* Department Spending Breakdown */}
-                    <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-purple-500/30 transition-all">
+                    <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200 hover:border-purple-500/30 transition-all">
                         <div className="flex items-center justify-between mb-4">
                             <span className="text-[10px] font-black uppercase text-slate-900 tracking-wider">Top Chi Tiêu</span>
                             <div className="h-10 w-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
@@ -627,7 +627,7 @@ export default function Dashboard() {
                                 <div className="text-xs text-slate-900 italic">Chưa có dữ liệu chi tiêu</div>
                             )}
                         </div>
-                        <div className="text-[10px] text-slate-900 mt-3 pt-3 border-t border-[rgba(148,163,184,0.1)]">Chi tiêu theo phòng ban</div>
+                        <div className="text-[10px] text-slate-900 mt-3 pt-3 border-t border-slate-200">Chi tiêu theo phòng ban</div>
                     </div>
                 </div>
 
@@ -654,7 +654,7 @@ export default function Dashboard() {
                                         <th className="text-right px-8">Thao tác</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
+                                <tbody className="divide-y divide-slate-100">
                                     {pendingBudgets.map((b) => {
                                         const cc = costCenters.find(c => c.id === b.costCenterId);
                                         const dept = departments.find(d => d.id === b.deptId || d.id === cc?.deptId);
@@ -662,7 +662,7 @@ export default function Dashboard() {
                                             <tr key={b.id} className="hover:bg-[#FFFFFF]/50 group transition-all">
                                                 <td className="px-8 flex flex-col py-4">
                                                     <span className="font-black text-slate-900 uppercase text-[10px]">{cc?.name || "N/A"}</span>
-                                                    <span className="text-[9px] font-bold text-slate-900">{dept?.name || "Global"} ({cc?.code || "CC"})</span>
+                                                    <span className="text-[0.6875rem] font-bold text-slate-900">{dept?.name || "Global"} ({cc?.code || "CC"})</span>
                                                 </td>
                                                 <td className="font-bold text-slate-900">
                                                     Q{b.budgetPeriod?.periodNumber} / {b.budgetPeriod?.fiscalYear}
@@ -671,7 +671,7 @@ export default function Dashboard() {
                                                 <td className="text-slate-900 italic text-[11px] font-medium">{b.notes || "Ngân sách định kỳ"}</td>
                                                 <td className="text-right px-8">
                                                     <div className="flex justify-end gap-1">
-                                                        <button onClick={() => handleQuickApprove(b.workflowId)} className="py-1.5 px-3 bg-[#059669] text-white rounded-lg font-black text-[9px] uppercase tracking-wider hover:bg-[#047857] transition-all">Duyệt</button>
+                                                        <button onClick={() => handleQuickApprove(b.workflowId)} className="py-1.5 px-3 bg-[#059669] text-white rounded-lg font-black text-[0.6875rem] uppercase tracking-wider hover:bg-[#047857] transition-all">Duyệt</button>
                                                         <button onClick={() => actionApproval(b.workflowId, 'REJECT', 'Không hợp lệ')} className="p-1.5 bg-[#DC2626] text-white rounded-lg hover:bg-[#B91C1C] transition-all"><XCircle size={12}/></button>
                                                     </div>
                                                 </td>
@@ -689,13 +689,13 @@ export default function Dashboard() {
                     <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900">Queue Duyệt Phiếu Mua Sắm (PR)</h3>
                     <div className="flex items-center gap-3">
                         <div className="relative">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-900" size={14} />
-                            <input type="text" placeholder="Tìm kiếm chứng từ..." className="pl-10 pr-6 py-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs font-medium w-64 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/10 transition-all text-slate-900 placeholder:text-slate-900"/>
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#94A3B8]" size={14} />
+                            <input type="text" placeholder="Tìm kiếm chứng từ..." className="pl-10 pr-6 py-2 bg-[#F1F5F9] border border-slate-200 rounded-xl text-xs font-medium w-64 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/10 transition-all text-slate-900 placeholder:text-slate-400"/>
                         </div>
-                        <button className="flex items-center gap-2 px-3 py-1.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-lg text-[9px] font-black uppercase tracking-widest text-slate-900 hover:bg-slate-100 transition-all shadow-sm">
+                        <button className="flex items-center gap-2 px-3 py-1.5 bg-[#F1F5F9] border border-slate-200 rounded-lg text-[0.6875rem] font-black uppercase tracking-widest text-slate-900 hover:bg-slate-100 transition-all shadow-sm">
                             Lọc <ChevronDown size={14} />
                         </button>
-                        <button className="flex items-center gap-2 px-3 py-1.5 bg-[#2563EB] text-white rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-[#1D4ED8] transition-all shadow-md shadow-[#2563EB]/20">
+                        <button className="flex items-center gap-2 px-3 py-1.5 bg-[#2563EB] text-white rounded-lg text-[0.6875rem] font-black uppercase tracking-widest hover:bg-[#1D4ED8] transition-all shadow-md shadow-[#2563EB]/20">
                             <Zap size={14} /> Xuất
                         </button>
                     </div>
@@ -706,7 +706,7 @@ export default function Dashboard() {
                         <table className="erp-table text-xs whitespace-nowrap">
                             <thead>
                                 <tr>
-                                    <th className="w-10 px-8 text-center"><input type="checkbox" className="rounded-md border-[rgba(148,163,184,0.1)] text-[#2563EB] bg-[#F1F5F9]"/></th>
+                                    <th className="w-10 px-8 text-center"><input type="checkbox" className="rounded-md border-slate-200 text-[#2563EB] bg-[#F1F5F9]"/></th>
                                     <th>Mã Chứng Từ</th>
                                     <th>Phân loại</th>
                                     <th>Lý do / Hạng mục</th>
@@ -718,9 +718,9 @@ export default function Dashboard() {
                             <tbody className="divide-y divide-border">
                                 {cfoPendingPRs.length > 0 ? cfoPendingPRs.map((pr) => (
                                     <tr key={pr.id} className="hover:bg-[#FFFFFF]/50 transition-colors group">
-                                        <td className="px-8 text-center"><input type="checkbox" className="rounded-md border-[rgba(148,163,184,0.1)] text-[#2563EB] bg-[#F1F5F9]"/></td>
+                                        <td className="px-8 text-center"><input type="checkbox" className="rounded-md border-slate-200 text-[#2563EB] bg-[#F1F5F9]"/></td>
                                         <td className="font-bold text-slate-900 tracking-tight">{pr.prNumber || "PR-***"}</td>
-                                        <td><span className={`px-2.5 py-1 rounded-lg font-black text-[9px] uppercase ${convertPrismaDecimal(pr.totalEstimate) > 50000000 ? 'bg-[#2563EB]/10 text-black' : 'bg-[#0F172A] text-[#F8FAFC]'}`}>{convertPrismaDecimal(pr.totalEstimate) > 50000000 ? 'Capex' : 'Opex'}</span></td>
+                                        <td><span className={`px-2.5 py-1 rounded-lg font-black text-[0.6875rem] uppercase ${convertPrismaDecimal(pr.totalEstimate) > 50000000 ? 'bg-[#2563EB]/10 text-[#2563EB]' : 'bg-[#0F172A] text-[#F8FAFC]'}`}>{convertPrismaDecimal(pr.totalEstimate) > 50000000 ? 'Capex' : 'Opex'}</span></td>
                                         <td className="font-medium text-slate-900">{pr.title}</td>
                                         <td className="text-center">
                                             {convertPrismaDecimal(pr.totalEstimate) > 50000000 ? (
@@ -732,7 +732,7 @@ export default function Dashboard() {
                                         <td className="text-right font-black text-slate-900 text-sm">{formatVND(pr.totalEstimate)} ₫</td>
                                         <td className="text-right px-8">
                                             <div className="flex justify-end gap-1">
-                                                <button onClick={() => setSelectedPRDetails(pr)} className="p-1.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-slate-900 hover:text-[#2563EB] hover:border-[#2563EB]/20 rounded-lg transition-all"><Eye size={12}/></button>
+                                                <button onClick={() => setSelectedPRDetails(pr)} className="p-1.5 bg-[#FFFFFF] border border-slate-200 text-slate-900 hover:text-[#2563EB] hover:border-[#2563EB]/20 rounded-lg transition-all"><Eye size={12}/></button>
                                                 <button onClick={() => handleQuickApprove(pr.workflowId)} className="p-1.5 bg-[#059669] text-white hover:bg-[#047857] rounded-lg transition-all"><CheckCircle size={12}/></button>
                                                 <button className="p-1.5 bg-[#DC2626] text-white hover:bg-[#B91C1C] rounded-lg transition-all"><XCircle size={12}/></button>
                                             </div>
@@ -778,7 +778,7 @@ export default function Dashboard() {
                             <div className="h-2 w-2 rounded-full bg-[#2563EB] animate-pulse"></div>
                             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900">Hệ thống Quản trị Chuỗi cung ứng</span>
                         </div>
-                        <h1 className="text-4xl font-black text-slate-900 tracking-tight">Trung tâm Quản lý Thu mua</h1>
+                        <h1 className="page-title">Trung tâm Quản lý Thu mua</h1>
                     </div>
                 </div>
 
@@ -845,18 +845,18 @@ export default function Dashboard() {
                                             <th className="text-right px-8">THAO TÁC</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
+                                    <tbody className="divide-y divide-slate-100">
                                         {paginatedPrs.length > 0 ? paginatedPrs.map((pr) => {
                                             const isSimulation = pr.id?.includes("SIM");
                                             return (
-                                                <tr key={pr.id} className={`group hover:bg-[#FFFFFF]/50 transition-colors border-b border-[rgba(148,163,184,0.1)] ${isSimulation ? 'bg-[#2563EB]/5 border-[#2563EB]/20' : ''}`}>
+                                                <tr key={pr.id} className={`group hover:bg-[#FFFFFF]/50 transition-colors border-b border-slate-200 ${isSimulation ? 'bg-[#2563EB]/5 border-[#2563EB]/20' : ''}`}>
                                                     <td className="py-5 px-4 first:pl-6">
                                                         <div className="flex flex-col">
                                                             <div className="flex items-center gap-2">
                                                                 <span className="text-[11px] font-black text-slate-900 tracking-tight">{pr.prNumber}</span>
                                                                 {isSimulation && <span className="bg-[#2563EB] text-white text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest animate-pulse shadow-sm ring-2 ring-[#2563EB]/20">GIẢ LẬP</span>}
                                                             </div>
-                                                            <span className="text-[9px] font-bold text-slate-900 uppercase mt-1">{formatDate(pr.createdAt)}</span>
+                                                            <span className="text-[0.6875rem] font-bold text-slate-900 uppercase mt-1">{formatDate(pr.createdAt)}</span>
                                                         </div>
                                                     </td>
                                                     <td className="py-5 px-4">
@@ -866,7 +866,7 @@ export default function Dashboard() {
                                                             </div>
                                                             <div className="flex flex-col">
                                                                 <span className="text-[11px] font-black text-slate-900 leading-tight group-hover:text-white transition-colors">{pr.title}</span>
-                                                                <span className="text-[9px] text-slate-900 font-bold mt-1 uppercase tracking-tight">{typeof pr.department === 'object' ? pr.department?.name : (pr.department || "Phòng ban")}</span>
+                                                                <span className="text-[0.6875rem] text-slate-900 font-bold mt-1 uppercase tracking-tight">{typeof pr.department === 'object' ? pr.department?.name : (pr.department || "Phòng ban")}</span>
                                                             </div>
                                                         </div>
                                                     </td>
@@ -878,7 +878,7 @@ export default function Dashboard() {
                                                         )}
                                                     </td>
                                                     <td className="text-center">
-                                                        <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase ${pr.priority === 1 ? 'bg-rose-500/10 text-black' : 'bg-amber-500/10 text-black'}`}>
+                                                        <span className={`px-2 py-0.5 rounded text-[0.6875rem] font-black uppercase ${pr.priority === 1 ? 'bg-rose-500/10 text-rose-600' : 'bg-amber-500/10 text-amber-600'}`}>
                                                             {pr.priority === 1 ? 'CAO' : 'VỪA'}
                                                         </span>
                                                     </td>
@@ -887,14 +887,14 @@ export default function Dashboard() {
                                                         {pr.type === "CATALOG" ? (
                                                             <button 
                                                                 onClick={() => setConfirmModal(pr)}
-                                                                className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 bg-[#1D4ED8] text-white text-[9px] font-black uppercase tracking-wide rounded-lg hover:bg-[#8F442B] transition-all shadow-sm"
+                                                                className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 bg-[#1D4ED8] text-white text-[0.6875rem] font-black uppercase tracking-wide rounded-lg hover:bg-[#8F442B] transition-all shadow-sm"
                                                             >
                                                                 Xác nhận giá
                                                             </button>
                                                         ) : (
                                                             <Link 
                                                                 href={`/procurement/rfq/create?prId=${pr.id}`} 
-                                                                className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 bg-[#2563EB] text-white text-[9px] font-black uppercase tracking-wide rounded-lg hover:bg-[#1D4ED8] transition-all shadow-sm"
+                                                                className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 bg-[#2563EB] text-white text-[0.6875rem] font-black uppercase tracking-wide rounded-lg hover:bg-[#1D4ED8] transition-all shadow-sm"
                                                             >
                                                                 Lấy Báo Giá
                                                             </Link>
@@ -909,7 +909,7 @@ export default function Dashboard() {
                                 </table>
                                 {/* Pagination Navigation */}
                                 {totalPrPages > 1 && (
-                                    <div className="flex items-center justify-between px-6 py-4 bg-[#FFFFFF] border-t border-[rgba(148,163,184,0.1)]">
+                                    <div className="flex items-center justify-between px-6 py-4 bg-[#FFFFFF] border-t border-slate-200">
                                         <div className="text-[10px] text-slate-900">
                                             Hiển thị <span className="font-bold text-slate-900">{paginatedPrs.length}</span> / <span className="font-bold text-slate-900">{prSourcingQueue.length}</span> PR
                                         </div>
@@ -917,7 +917,7 @@ export default function Dashboard() {
                                             <button
                                                 onClick={() => setCurrentPrPage(p => Math.max(1, p - 1))}
                                                 disabled={currentPrPage === 1}
-                                                className="px-3 py-1.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-lg text-[10px] font-bold text-slate-900 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1"
+                                                className="px-3 py-1.5 bg-[#F1F5F9] border border-slate-200 rounded-lg text-[10px] font-bold text-slate-900 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1"
                                             >
                                                 <ChevronDown size={12} className="rotate-90" /> Trước
                                             </button>
@@ -939,7 +939,7 @@ export default function Dashboard() {
                                             <button
                                                 onClick={() => setCurrentPrPage(p => Math.min(totalPrPages, p + 1))}
                                                 disabled={currentPrPage === totalPrPages}
-                                                className="px-3 py-1.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-lg text-[10px] font-bold text-slate-900 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1"
+                                                className="px-3 py-1.5 bg-[#F1F5F9] border border-slate-200 rounded-lg text-[10px] font-bold text-slate-900 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1"
                                             >
                                                 Sau <ChevronDown size={12} className="-rotate-90" />
                                             </button>
@@ -969,7 +969,7 @@ export default function Dashboard() {
                                             <th className="text-right px-6">THAO TÁC</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
+                                    <tbody className="divide-y divide-slate-100">
                                         {shippingPos.length > 0 ? shippingPos.slice(0, 5).map((po) => {
                                             // Calculate progress based on status
                                             const getProgress = (status: string) => {
@@ -983,11 +983,11 @@ export default function Dashboard() {
                                             };
                                             const getStatusDisplay = (status: string) => {
                                                 switch(status) {
-                                                    case 'SHIPPED': return { label: 'Đã giao hàng', color: 'text-black', bg: 'bg-emerald-500/20' };
-                                                    case 'SHIPPING': return { label: 'Đang vận chuyển', color: 'text-black', bg: 'bg-[#2563EB]/20' };
-                                                    case 'PARTIALLY_RECEIVED': return { label: 'Nhận một phần', color: 'text-black', bg: 'bg-amber-500/20' };
-                                                    case 'ISSUED': return { label: 'Đã gửi NCC', color: 'text-black', bg: 'bg-[#000000]/20' };
-                                                    default: return { label: status, color: 'text-black', bg: 'bg-[#000000]/20' };
+                                                    case 'SHIPPED': return { label: 'Đã giao hàng', color: 'text-emerald-700', bg: 'bg-emerald-500/10' };
+                                                    case 'SHIPPING': return { label: 'Đang vận chuyển', color: 'text-blue-700', bg: 'bg-[#2563EB]/10' };
+                                                    case 'PARTIALLY_RECEIVED': return { label: 'Nhận một phần', color: 'text-amber-700', bg: 'bg-amber-500/10' };
+                                                    case 'ISSUED': return { label: 'Đã gửi NCC', color: 'text-slate-700', bg: 'bg-slate-200' };
+                                                    default: return { label: status, color: 'text-slate-600', bg: 'bg-slate-100' };
                                                 }
                                             };
                                             const progress = getProgress(po.status);
@@ -999,7 +999,7 @@ export default function Dashboard() {
                                                     <td className="font-bold text-slate-900">{po.poNumber || "PO-***"}</td>
                                                     <td className="font-semibold text-slate-900 truncate max-w-[120px]">{po.supplier?.name || po.vendor || "Vendor"}</td>
                                                     <td>
-                                                        <span className={`text-[9px] font-black uppercase px-2 py-1 rounded-full ${statusDisplay.bg} ${statusDisplay.color}`}>
+                                                        <span className={`text-[0.6875rem] font-black uppercase px-2 py-1 rounded-full ${statusDisplay.bg} ${statusDisplay.color}`}>
                                                             {statusDisplay.label}
                                                         </span>
                                                     </td>
@@ -1015,14 +1015,14 @@ export default function Dashboard() {
                                                                     style={{ width: `${progress}%` }}
                                                                 ></div>
                                                             </div>
-                                                            <span className="text-[9px] font-black text-[#2563EB] whitespace-nowrap">{progress}%</span>
+                                                            <span className="text-[0.6875rem] font-black text-[#2563EB] whitespace-nowrap">{progress}%</span>
                                                         </div>
                                                     </td>
                                                     <td className="text-right font-black text-slate-900 text-sm">{formatVND(poTotal)} ₫</td>
                                                     <td className="text-right pl-2 pr-6">
                                                         <Link 
                                                             href={`/po/${po.id}`}
-                                                            className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 bg-[#2563EB] text-white text-[9px] font-black uppercase tracking-wide rounded-lg hover:bg-[#1D4ED8] transition-all"
+                                                            className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 bg-[#2563EB] text-white text-[0.6875rem] font-black uppercase tracking-wide rounded-lg hover:bg-[#1D4ED8] transition-all"
                                                         >
                                                             Chi tiết
                                                         </Link>
@@ -1055,9 +1055,9 @@ export default function Dashboard() {
         return (
             <div className="animate-in fade-in duration-500 px-6">
                 {/* HEADER - With PR Creation for Director/CEO */}
-                <header className="flex items-center justify-between mb-6 pb-4 border-b border-[rgba(148,163,184,0.1)]">
+                <header className="flex items-center justify-between mb-6 pb-4 border-b border-slate-200">
                     <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-xl bg-[#F1F5F9] border border-slate-200 flex items-center justify-center">
                             <span className="text-lg font-black text-[#2563EB]">{currentUser?.name?.charAt(0) || currentUser?.fullName?.charAt(0) || 'U'}</span>
                         </div>
                         <div>
@@ -1066,7 +1066,7 @@ export default function Dashboard() {
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                         <Link href="/quote-requests/create" className="px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 rounded-xl font-bold text-xs hover:bg-slate-100 hover:text-slate-900 transition-all">
+                         <Link href="/quote-requests/create" className="px-4 py-2.5 bg-[#F1F5F9] border border-slate-200 text-slate-900 rounded-xl font-bold text-xs hover:bg-slate-100 hover:text-slate-900 transition-all">
                              + Báo giá
                          </Link>
                          <div className="relative">
@@ -1079,23 +1079,23 @@ export default function Dashboard() {
                             </button>
                             
                             {isSimDropdownOpen && (
-                                <div className="absolute top-full right-0 mt-3 w-72 bg-[#F1F5F9] rounded-3xl border border-[rgba(148,163,184,0.1)] shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
-                                    <Link href="/pr/create" className="flex items-center gap-4 p-5 hover:bg-slate-100 transition-colors border-b border-[rgba(148,163,184,0.1)] text-left w-full translate-z-0">
+                                <div className="absolute top-full right-0 mt-3 w-72 bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                                    <Link href="/pr/create" className="flex items-center gap-4 p-5 hover:bg-slate-100 transition-colors border-b border-slate-200 text-left w-full translate-z-0">
                                         <div className="p-3 bg-[#2563EB]/10 text-[#2563EB] rounded-xl"><Plus size={18} /></div>
                                         <div>
                                             <div className="text-[10px] font-black uppercase text-slate-900 mb-1 tracking-widest">Tạo quy trình thủ công</div>
-                                            <div className="text-[9px] text-slate-900 font-bold uppercase leading-tight">Vào PR trực tiếp</div>
+                                            <div className="text-[0.6875rem] text-slate-900 font-bold uppercase leading-tight">Vào PR trực tiếp</div>
                                         </div>
                                     </Link>
                                     <button 
                                         // eslint-disable-next-line react-hooks/rules-of-hooks
                                         onClick={() => { useProcurement().startSimulation("CATALOG"); setIsSimDropdownOpen(false); }}
-                                        className="flex items-center gap-4 p-5 hover:bg-slate-100 transition-colors border-b border-[rgba(148,163,184,0.1)] w-full text-left"
+                                        className="flex items-center gap-4 p-5 hover:bg-slate-100 transition-colors border-b border-slate-200 w-full text-left"
                                     >
-                                        <div className="p-3 bg-emerald-500/10 text-black rounded-xl"><Zap size={18} /></div>
+                                        <div className="p-3 bg-emerald-500/10 text-emerald-600 rounded-xl"><Zap size={18} /></div>
                                         <div>
                                              <div className="text-[10px] font-black uppercase text-slate-900 mb-1 tracking-widest">Giả lập Catalog</div>
-                                             <div className="text-[9px] text-slate-900 font-bold uppercase leading-tight">Demo full-flow từ Catalog</div>
+                                             <div className="text-[0.6875rem] text-slate-900 font-bold uppercase leading-tight">Demo full-flow từ Catalog</div>
                                         </div>
                                     </button>
                                     <button 
@@ -1103,10 +1103,10 @@ export default function Dashboard() {
                                         onClick={() => { useProcurement().startSimulation("NON_CATALOG"); setIsSimDropdownOpen(false); }}
                                         className="flex items-center gap-4 p-5 hover:bg-slate-100 transition-colors w-full text-left"
                                     >
-                                        <div className="p-3 bg-purple-500/10 text-black rounded-xl"><RotateCcw size={18} /></div>
+                                        <div className="p-3 bg-purple-500/10 text-purple-600 rounded-xl"><RotateCcw size={18} /></div>
                                         <div>
                                             <div className="text-[10px] font-black uppercase text-slate-900 mb-1 tracking-widest">Giả lập Non-Catalog</div>
-                                            <div className="text-[9px] text-slate-900 font-bold uppercase leading-tight">Demo full-flow từ PR</div>
+                                            <div className="text-[0.6875rem] text-slate-900 font-bold uppercase leading-tight">Demo full-flow từ PR</div>
                                         </div>
                                     </button>
                                 </div>
@@ -1118,7 +1118,7 @@ export default function Dashboard() {
                 {/* Summary Cards - Clean Style */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     {/* Pending PRs Card */}
-                    <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/30 transition-all">
+                    <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200 hover:border-[#2563EB]/30 transition-all">
                         <div className="flex items-center justify-between mb-4">
                             <span className="text-[10px] font-black uppercase text-slate-900 tracking-wider">PR Chờ Duyệt</span>
                             <div className="h-10 w-10 rounded-xl bg-[#2563EB]/10 flex items-center justify-center">
@@ -1127,11 +1127,11 @@ export default function Dashboard() {
                         </div>
                         <div className="text-3xl font-black text-slate-900 mb-1">{pendingPRCount}</div>
                         <div className="text-sm font-bold text-[#2563EB]">{formatVND(pendingPRValue)}</div>
-                        <div className="text-[10px] text-slate-900 mt-3 pt-3 border-t border-[rgba(148,163,184,0.1)]">Tổng giá trị chờ phê duyệt</div>
+                        <div className="text-[10px] text-slate-900 mt-3 pt-3 border-t border-slate-200">Tổng giá trị chờ phê duyệt</div>
                     </div>
 
                     {/* Pending POs Card */}
-                    <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-amber-500/30 transition-all">
+                    <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200 hover:border-amber-500/30 transition-all">
                         <div className="flex items-center justify-between mb-4">
                             <span className="text-[10px] font-black uppercase text-slate-900 tracking-wider">Cảnh Báo Tồn Đọng</span>
                             <div className="h-10 w-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
@@ -1140,11 +1140,11 @@ export default function Dashboard() {
                         </div>
                         <div className="text-3xl font-black text-black mb-1">{pendingPRCount}</div>
                         <div className="text-sm font-bold text-slate-900">{pendingPRCount > 0 ? 'Cần xử lý ngay' : 'Không có tồn đọng'}</div>
-                        <div className="text-[10px] text-slate-900 mt-3 pt-3 border-t border-[rgba(148,163,184,0.1)]">Phiếu đang chờ bạn duyệt</div>
+                        <div className="text-[10px] text-slate-900 mt-3 pt-3 border-t border-slate-200">Phiếu đang chờ bạn duyệt</div>
                     </div>
 
                     {/* Quick Action Card */}
-                    <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)] hover:border-emerald-500/30 transition-all">
+                    <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200 hover:border-emerald-500/30 transition-all">
                         <div className="flex items-center justify-between mb-4">
                             <span className="text-[10px] font-black uppercase text-slate-900 tracking-wider">Tạo PR Mới</span>
                             <div className="h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
@@ -1158,7 +1158,7 @@ export default function Dashboard() {
                         >
                             + Tạo PR Ngay
                         </button>
-                        <div className="text-[10px] text-slate-900 mt-3 pt-3 border-t border-[rgba(148,163,184,0.1)]">Bắt đầu quy trình mua hàng mới</div>
+                        <div className="text-[10px] text-slate-900 mt-3 pt-3 border-t border-slate-200">Bắt đầu quy trình mua hàng mới</div>
                     </div>
                 </div>
 
@@ -1184,7 +1184,7 @@ export default function Dashboard() {
                         {/* Budget Stats Grid */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             {/* Total Allocated */}
-                            <div className="bg-[#F1F5F9] rounded-xl p-5 border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/30 transition-all">
+                            <div className="bg-[#F1F5F9] rounded-xl p-5 border border-slate-200 hover:border-[#2563EB]/30 transition-all">
                                 <div className="flex items-center justify-between mb-3">
                                     <span className="text-[10px] font-black uppercase text-slate-900 tracking-wider">Tổng ngân sách</span>
                                     <div className="h-8 w-8 rounded-lg bg-[#2563EB]/10 flex items-center justify-center">
@@ -1198,7 +1198,7 @@ export default function Dashboard() {
                             </div>
 
                             {/* Committed Amount */}
-                            <div className="bg-bg-secondary rounded-2xl p-5 border border-[rgba(148,163,184,0.1)] hover:border-amber-500/30 transition-all">
+                            <div className="bg-bg-secondary rounded-2xl p-5 border border-slate-200 hover:border-amber-500/30 transition-all">
                                 <div className="flex items-center justify-between mb-3">
                                     <span className="text-[10px] font-black uppercase text-slate-900 tracking-wider">Cam kết chi</span>
                                     <div className="h-8 w-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
@@ -1212,7 +1212,7 @@ export default function Dashboard() {
                             </div>
 
                             {/* Spent Amount */}
-                            <div className="bg-bg-secondary rounded-2xl p-5 border border-[rgba(148,163,184,0.1)] hover:border-purple-500/30 transition-all">
+                            <div className="bg-bg-secondary rounded-2xl p-5 border border-slate-200 hover:border-purple-500/30 transition-all">
                                 <div className="flex items-center justify-between mb-3">
                                     <span className="text-[10px] font-black uppercase text-slate-900 tracking-wider">Đã chi thực tế</span>
                                     <div className="h-8 w-8 rounded-lg bg-purple-500/10 flex items-center justify-center">
@@ -1226,7 +1226,7 @@ export default function Dashboard() {
                             </div>
 
                             {/* Remaining Budget */}
-                            <div className="bg-[#F1F5F9] rounded-xl p-5 border border-[rgba(148,163,184,0.1)] hover:border-emerald-500/30 transition-all">
+                            <div className="bg-[#F1F5F9] rounded-xl p-5 border border-slate-200 hover:border-emerald-500/30 transition-all">
                                 <div className="flex items-center justify-between mb-3">
                                     <span className="text-[10px] font-black uppercase text-slate-900 tracking-wider">Còn lại</span>
                                     <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
@@ -1244,7 +1244,7 @@ export default function Dashboard() {
                         {deptAllocation && (
                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                                 {/* Main Progress Bar */}
-                                <div className="lg:col-span-2 bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
+                                <div className="lg:col-span-2 bg-[#F1F5F9] rounded-xl p-6 border border-slate-200">
                                     <div className="flex items-center justify-between mb-4">
                                         <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">Tỷ lệ sử dụng ngân sách</h4>
                                         <span className={`text-sm font-black ${
@@ -1283,14 +1283,14 @@ export default function Dashboard() {
                                             <span className="text-slate-900">Cam kết ({Math.round((deptAllocation.committedAmount / deptAllocation.allocatedAmount) * 100)}%)</span>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <div className="w-3 h-3 rounded bg-[#FFFFFF] border border-[rgba(148,163,184,0.3)]" />
+                                            <div className="w-3 h-3 rounded bg-[#FFFFFF] border border-slate-200" />
                                             <span className="text-slate-900">Còn lại ({Math.round(((deptAllocation.allocatedAmount - deptAllocation.committedAmount - deptAllocation.spentAmount) / deptAllocation.allocatedAmount) * 100)}%)</span>
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Budget Alerts */}
-                                <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
+                                <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200">
                                     <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider mb-4 flex items-center gap-2">
                                         <AlertTriangle size={14} className="text-black" />
                                         Cảnh báo ngân sách
@@ -1349,7 +1349,7 @@ export default function Dashboard() {
 
                         {/* Cost Center Budget Breakdown */}
                         {deptAllocation && costCenters && costCenters.length > 0 && (
-                            <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
+                            <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200">
                                 <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider mb-4">Phân bổ theo Cost Center</h4>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {costCenters
@@ -1360,7 +1360,7 @@ export default function Dashboard() {
                                             const ccUsed = ccAllocations.reduce((sum, a) => sum + a.committedAmount + a.spentAmount, 0);
                                             
                                             return (
-                                                <div key={cc.id} className="p-4 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)]">
+                                                <div key={cc.id} className="p-4 bg-[#FFFFFF] rounded-xl border border-slate-200">
                                                     <div className="flex items-center justify-between mb-2">
                                                         <span className="text-xs font-bold text-slate-900">{cc.code}</span>
                                                         <span className="text-[10px] text-slate-900">{cc.name}</span>
@@ -1386,9 +1386,9 @@ export default function Dashboard() {
                 )}
 
                 {/* Search & Filter Toolbar */}
-                <div className="flex flex-wrap items-center justify-between gap-4 mb-6 bg-[#F1F5F9] p-4 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-sm">
+                <div className="flex flex-wrap items-center justify-between gap-4 mb-6 bg-[#F1F5F9] p-4 rounded-xl border border-slate-200 shadow-sm">
                     <div className="flex items-center gap-4">
-                        <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-900 flex items-center gap-2 px-4 border-r border-[rgba(148,163,184,0.1)]">
+                        <h3 className="text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B] flex items-center gap-2 px-4 border-r border-slate-200">
                             <FileText size={16} className="text-[#2563EB]" /> Queue Cần Duyệt Mới Nhất
                         </h3>
                         <button 
@@ -1401,23 +1401,23 @@ export default function Dashboard() {
 
                     <div className="flex items-center gap-3">
                         <div className="relative group">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-900 group-focus-within:text-[#2563EB] transition-colors" size={16} />
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#94A3B8] group-focus-within:text-[#2563EB] transition-colors" size={16} />
                             <input
                                 type="text"
                                 placeholder="Tìm kiếm mã PR, người tạo..."
-                                className="pl-11 pr-6 py-2.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs font-bold w-64 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:bg-[#FFFFFF] transition-all text-slate-900 placeholder:text-slate-900"
+                                className="pl-11 pr-6 py-2.5 bg-[#FFFFFF] border border-slate-200 rounded-xl text-xs font-bold w-64 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:bg-[#FFFFFF] transition-all text-slate-900 placeholder:text-slate-400"
                             />
                         </div>
-                        <button className="flex items-center gap-2 px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[9px] font-black uppercase tracking-widest text-slate-900 hover:bg-slate-100 transition-all shadow-sm">
+                        <button className="flex items-center gap-2 px-4 py-2.5 bg-[#F1F5F9] border border-slate-200 rounded-2xl text-[0.6875rem] font-black uppercase tracking-widest text-slate-900 hover:bg-slate-100 transition-all shadow-sm">
                             Lọc theo Cấp độ <ChevronDown size={14} />
                         </button>
-                        <button className="flex items-center gap-2 px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[9px] font-black uppercase tracking-widest text-slate-900 hover:bg-slate-100 transition-all shadow-sm">
+                        <button className="flex items-center gap-2 px-4 py-2.5 bg-[#F1F5F9] border border-slate-200 rounded-2xl text-[0.6875rem] font-black uppercase tracking-widest text-slate-900 hover:bg-slate-100 transition-all shadow-sm">
                             Lọc theo Phân loại <ChevronDown size={14} />
                         </button>
-                        <button className="flex items-center gap-2 px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[9px] font-black uppercase tracking-widest text-slate-900 hover:bg-slate-100 transition-all shadow-sm">
+                        <button className="flex items-center gap-2 px-4 py-2.5 bg-[#F1F5F9] border border-slate-200 rounded-2xl text-[0.6875rem] font-black uppercase tracking-widest text-slate-900 hover:bg-slate-100 transition-all shadow-sm">
                             Khoảng giá <ChevronDown size={14} />
                         </button>
-                        <Link href="/approvals" className="ml-2 text-[9px] font-black uppercase text-[#2563EB] hover:underline bg-[#2563EB]/10 px-4 py-2.5 rounded-xl border border-[#2563EB]/20 transition-all">
+                        <Link href="/approvals" className="ml-2 text-[0.6875rem] font-black uppercase text-[#2563EB] hover:underline bg-[#2563EB]/10 px-4 py-2.5 rounded-xl border border-[#2563EB]/20 transition-all">
                             Tới màn hình duyệt &gt;
                         </Link>
                     </div>
@@ -1429,7 +1429,7 @@ export default function Dashboard() {
                             <thead>
                                 <tr>
                                     <th className="w-10 px-8 text-center">
-                                        <input type="checkbox" className="rounded-md border-[rgba(148,163,184,0.1)] text-[#2563EB] bg-[#F1F5F9]" />
+                                        <input type="checkbox" className="rounded-md border-slate-200 text-[#2563EB] bg-[#F1F5F9]" />
                                     </th>
                                     <th className="">Số phiếu</th>
                                     <th className="">Ngày tạo</th>
@@ -1452,25 +1452,25 @@ export default function Dashboard() {
                                     return (
                                         <tr key={pr.id} className="hover:bg-[#FFFFFF]/50 transition-colors group">
                                             <td className="px-8 text-center">
-                                                <input type="checkbox" className="rounded-md border-[rgba(148,163,184,0.1)] text-[#2563EB] bg-[#F1F5F9]" />
+                                                <input type="checkbox" className="rounded-md border-slate-200 text-[#2563EB] bg-[#F1F5F9]" />
                                             </td>
                                             <td className="font-bold text-slate-900">{pr.prNumber || "PR-***"}</td>
                                             <td className="text-slate-900 font-medium">{formatDate(pr.createdAt)}</td>
                                             <td className="text-center">
-                                                <span className={`px-2.5 py-1 ${priorityInfo.color} text-slate-900 rounded-lg font-black text-[9px] uppercase shadow-sm`}>
+                                                <span className={`px-2.5 py-1 ${priorityInfo.color} text-slate-900 rounded-lg font-black text-[0.6875rem] uppercase shadow-sm`}>
                                                     {priorityInfo.label}
                                                 </span>
                                             </td>
                                             <td>
                                                 <div className="flex items-center gap-2">
-                                                    <div className="w-7 h-7 rounded-full bg-[#0F172A] flex items-center justify-center overflow-hidden border border-[rgba(148,163,184,0.1)]">
+                                                    <div className="w-7 h-7 rounded-full bg-[#0F172A] flex items-center justify-center overflow-hidden border border-slate-200">
                                                         <Image src={`https://ui-avatars.com/api/?name=${encodeURIComponent(requesterName)}&background=random`} alt="avatar" width={28} height={28} unoptimized />
                                                     </div>
                                                     <span className="font-bold text-slate-900 truncate max-w-[120px]">{requesterName}</span>
                                                 </div>
                                             </td>
                                             <td className="text-center">
-                                                <span className="px-2.5 py-1 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-slate-900 rounded-lg font-bold text-[9px] uppercase">
+                                                <span className="px-2.5 py-1 bg-[#FFFFFF] border border-slate-200 text-slate-900 rounded-lg font-bold text-[0.6875rem] uppercase">
                                                     {pr.type || "Opex"}
                                                 </span>
                                             </td>
@@ -1478,16 +1478,16 @@ export default function Dashboard() {
                                             <td className="text-right font-black text-black text-sm">{formatVND(pr.totalEstimate || 0)} ₫</td>
                                             <td className="text-right px-8">
                                                 <div className="flex justify-end gap-1.5">
-                                                    <button onClick={() => setSelectedPRDetails(pr)} className="p-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-slate-900 hover:text-[#2563EB] hover:border-[#2563EB]/20 rounded-xl transition-all shadow-sm" title="Xem chi tiết">
+                                                    <button onClick={() => setSelectedPRDetails(pr)} className="p-2 bg-[#FFFFFF] border border-slate-200 text-slate-900 hover:text-[#2563EB] hover:border-[#2563EB]/20 rounded-xl transition-all shadow-sm" title="Xem chi tiết">
                                                         <Eye size={14} />
                                                     </button>
-                                                    <button onClick={() => handleQuickApprove(pr.workflowId)} disabled={isSubmitting} className="p-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-black hover:bg-emerald-500 hover:text-white rounded-xl transition-all shadow-sm disabled:opacity-50" title="Duyệt nhanh">
+                                                    <button onClick={() => handleQuickApprove(pr.workflowId)} disabled={isSubmitting} className="p-2 bg-[#FFFFFF] border border-slate-200 text-black hover:bg-emerald-500 hover:text-white rounded-xl transition-all shadow-sm disabled:opacity-50" title="Duyệt nhanh">
                                                         <CheckCircle size={14} />
                                                     </button>
-                                                    <button className="p-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-black hover:bg-rose-500 hover:text-white rounded-xl transition-all shadow-sm" title="Từ chối nhanh">
+                                                    <button className="p-2 bg-[#FFFFFF] border border-slate-200 text-black hover:bg-rose-500 hover:text-white rounded-xl transition-all shadow-sm" title="Từ chối nhanh">
                                                         <XCircle size={14} />
                                                     </button>
-                                                    <button className="p-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-black hover:bg-amber-500 hover:text-white rounded-xl transition-all shadow-sm" title="Yêu cầu chỉnh sửa">
+                                                    <button className="p-2 bg-[#FFFFFF] border border-slate-200 text-black hover:bg-amber-500 hover:text-white rounded-xl transition-all shadow-sm" title="Yêu cầu chỉnh sửa">
                                                         <RotateCcw size={14} />
                                                     </button>
                                                 </div>
@@ -1532,7 +1532,7 @@ export default function Dashboard() {
                             <p className="text-[10px] font-black text-slate-900 mb-0.5">{myOrg?.name || "Đối tác ProcurePro"}</p>
                             <p className="text-[8px] font-bold text-black uppercase tracking-tighter">Xác thực: Gold Partner</p>
                         </div>
-                        <div className="w-10 h-10 rounded-xl bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] flex items-center justify-center shadow-sm">
+                        <div className="w-10 h-10 rounded-xl bg-[#F1F5F9] border border-slate-200 flex items-center justify-center shadow-sm">
                             <Building2 size={20} className="text-[#2563EB]" />
                         </div>
                     </div>
@@ -1563,14 +1563,14 @@ export default function Dashboard() {
                                         <th className="text-right px-8">Thao tác</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
+                                <tbody className="divide-y divide-slate-100">
                                     {myPendingRFQs.length > 0 ? myPendingRFQs.slice(0, 5).map(rfq => (
                                         <tr key={rfq.id} className="hover:bg-[#FFFFFF]/50 transition-all">
                                             <td className="px-8 font-black text-slate-900">{rfq.rfqNumber}</td>
                                             <td className="font-semibold text-slate-900">ProcurePro Corp</td>
                                             <td className="text-right text-slate-900 font-bold">{formatDate(rfq.createdAt)}</td>
                                             <td className="text-right px-8 whitespace-nowrap">
-                                                <Link href="/supplier/rfq" className="px-4 py-2 bg-[#2563EB] text-white text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-[#1D4ED8] transition-all">Báo giá</Link>
+                                                <Link href="/supplier/rfq" className="px-4 py-2 bg-[#2563EB] text-white text-[0.6875rem] font-black uppercase tracking-widest rounded-xl hover:bg-[#1D4ED8] transition-all">Báo giá</Link>
                                             </td>
                                         </tr>
                                     )) : (
@@ -1586,17 +1586,17 @@ export default function Dashboard() {
                         <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900 flex items-center gap-2">
                              <Bell size={14} className="text-[#2563EB]" /> THÔNG BÁO TỪ HỆ THỐNG
                         </h3>
-                        <div className="bg-[#F1F5F9] rounded-xl p-6 text-slate-900 relative overflow-hidden group shadow-2xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)]">
+                        <div className="bg-[#F1F5F9] rounded-xl p-6 text-slate-900 relative overflow-hidden group shadow-2xl shadow-[#2563EB]/5 border border-slate-200">
                              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-125 transition-transform duration-700">
                                  <Zap size={100} />
                              </div>
                              <div className="relative z-10 space-y-6">
-                                 <div className="p-6 bg-[#FFFFFF] rounded-3xl border border-[rgba(148,163,184,0.1)] hover:bg-slate-100 transition-colors cursor-pointer">
-                                     <h4 className="text-xs font-black uppercase tracking-widest text-black mb-2">Cập nhật Chính sách Thanh toán</h4>
+                                 <div className="p-6 bg-[#FFFFFF] rounded-xl border border-slate-200 hover:bg-slate-100 transition-colors cursor-pointer">
+                                     <h4 className="text-xs font-bold uppercase tracking-widest text-[#64748B] mb-2">Cập nhật Chính sách Thanh toán</h4>
                                      <p className="text-[11px] text-slate-900 leading-relaxed font-medium">Hệ thống ProcurePro sẽ rút ngắn thời hạn thanh toán từ 45 ngày xuống còn 30 ngày cho các đối tác Gold.</p>
                                  </div>
-                                 <div className="p-6 bg-[#FFFFFF] rounded-3xl border border-[rgba(148,163,184,0.1)] hover:bg-slate-100 transition-colors cursor-pointer">
-                                     <h4 className="text-xs font-black uppercase tracking-widest text-black mb-2">Bảo trì Hệ thống B2B</h4>
+                                 <div className="p-6 bg-[#FFFFFF] rounded-xl border border-slate-200 hover:bg-slate-100 transition-colors cursor-pointer">
+                                     <h4 className="text-xs font-bold uppercase tracking-widest text-[#64748B] mb-2">Bảo trì Hệ thống B2B</h4>
                                      <p className="text-[11px] text-slate-900 leading-relaxed font-medium">Hệ thống sẽ bảo trì từ 2h00 đến 4h00 sáng Chủ Nhật tới. Vui lòng hoàn tất báo giá trước thời gian này.</p>
                                  </div>
                              </div>
@@ -1611,17 +1611,17 @@ export default function Dashboard() {
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
             <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-8">Hệ thống Quản trị Tổng thể</h1>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-                <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 border-l-4 border-[rgba(148,163,184,0.1)] bg-[#F1F5F9]">
+                <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 border-l-4 border-slate-200 bg-[#F1F5F9]">
                     <div className="text-2xl font-black text-slate-900">{formatVND(budgets?.allocated || 0)} ₫</div>
                     <div className="mt-2 text-[10px] text-slate-900 font-bold">Ngân sách đã phân bổ</div>
                 </div>
             </div>
-            <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden shadow-xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)] bg-[#F1F5F9]">
+            <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden shadow-xl shadow-[#2563EB]/5 border border-slate-200 bg-[#F1F5F9]">
                 <table className="erp-table text-xs">
                     <thead>
                         <tr><th>Mã PR</th><th>Phòng ban</th><th className="text-right">Giá trị</th><th className="text-right">Thao tác</th></tr>
                     </thead>
-                    <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
+                    <tbody className="divide-y divide-slate-100">
                         {(prs || []).slice(0, 5).map(pr => (
                             <tr key={pr.id} className="hover:bg-[#FFFFFF]/50 transition-colors">
                                 <td className="font-bold text-slate-900">{pr.prNumber || "PR-***"}</td>
@@ -1647,8 +1647,8 @@ export default function Dashboard() {
 
             {selectedPRDetails && (
                 <div className="fixed inset-0 z-[100] bg-[#FFFFFF]/80 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in duration-300">
-                    <div className="bg-[#F1F5F9] rounded-xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-300 border border-[rgba(148,163,184,0.1)]">
-                        <div className="flex justify-between items-center p-8 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF]">
+                    <div className="bg-[#F1F5F9] rounded-xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-300 border border-slate-200">
+                        <div className="flex justify-between items-center p-8 border-b border-slate-200 bg-[#FFFFFF]">
                             <div>
                                 <h2 className="text-2xl font-black text-slate-900 flex items-center gap-3 tracking-tighter">
                                     <FileText size={24} className="text-[#2563EB]" />
@@ -1656,40 +1656,40 @@ export default function Dashboard() {
                                 </h2>
                                 <p className="text-[10px] font-black text-slate-900 uppercase tracking-widest mt-1">Cập nhật: {new Date(selectedPRDetails.createdAt || "").toLocaleString('vi-VN')}</p>
                             </div>
-                            <button onClick={() => setSelectedPRDetails(null)} className="h-12 w-12 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] text-slate-900 hover:text-black rounded-xl flex items-center justify-center transition-all">
+                            <button onClick={() => setSelectedPRDetails(null)} className="h-12 w-12 bg-[#FFFFFF] border border-slate-200 text-slate-900 hover:text-black rounded-xl flex items-center justify-center transition-all">
                                 <Plus className="rotate-45" size={24} />
                             </button>
                         </div>
 
                         <div className="p-0 overflow-y-auto custom-scrollbar flex flex-col md:flex-row flex-1">
-                            <div className="p-8 md:w-2/3 border-r border-[rgba(148,163,184,0.1)] space-y-8">
+                            <div className="p-8 md:w-2/3 border-r border-slate-200 space-y-8">
                                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                                    <div className="p-4 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)] text-center">
-                                        <div className="text-[9px] font-black uppercase text-slate-900 mb-1">Trạng thái</div>
+                                    <div className="p-4 bg-[#FFFFFF] rounded-xl border border-slate-200 text-center">
+                                        <div className="text-[0.6875rem] font-black uppercase text-slate-900 mb-1">Trạng thái</div>
                                         <span className={`status-pill status-${(selectedPRDetails.status || 'draft').toLowerCase()}`}>{getStatusLabel(selectedPRDetails.status)}</span>
                                     </div>
                                     <div className="p-4 bg-amber-500/10 rounded-2xl border border-amber-500/20 text-center">
-                                        <div className="text-[9px] font-black uppercase text-black mb-1">Ngày cần hàng</div>
+                                        <div className="text-[0.6875rem] font-black uppercase text-black mb-1">Ngày cần hàng</div>
                                         <div className="text-sm font-black text-slate-900">
                                             {formatDate(selectedPRDetails.requiredDate)}
                                         </div>
                                     </div>
-                                    <div className="p-4 bg-[#FFFFFF] rounded-xl text-center border border-[rgba(148,163,184,0.1)]">
-                                        <div className="text-[9px] font-black uppercase text-slate-900 mb-1">Tổng dự toán</div>
+                                    <div className="p-4 bg-[#FFFFFF] rounded-xl text-center border border-slate-200">
+                                        <div className="text-[0.6875rem] font-black uppercase text-slate-900 mb-1">Tổng dự toán</div>
                                         <div className="text-sm font-black text-black">{formatVND(selectedPRDetails.totalEstimate || 0)} ₫</div>
                                     </div>
                                 </div>
 
                                 <div className="space-y-4">
                                     <h3 className="text-[10px] font-black text-slate-900 uppercase">Danh sách hàng hóa</h3>
-                                    <div className="border border-[rgba(148,163,184,0.1)] rounded-xl overflow-hidden">
+                                    <div className="border border-slate-200 rounded-xl overflow-hidden">
                                         <table className="erp-table text-xs text-left">
-                                            <thead className="border-b border-[rgba(148,163,184,0.1)]">
+                                            <thead className="border-b border-slate-200">
                                                 <tr><th className="p-4">Sản phẩm</th><th className="p-4 text-center">SL</th><th className="p-4 text-right">Giá</th></tr>
                                             </thead>
                                             <tbody>
                                                 {selectedPRDetails.items?.map((item) => (
-                                                    <tr key={item.id} className="border-b border-[rgba(148,163,184,0.1)]">
+                                                    <tr key={item.id} className="border-b border-slate-200">
                                                         <td className="p-4 font-black text-slate-900">{item.productName || item.description}</td>
                                                         <td className="p-4 text-center text-slate-900">{item.qty} {item.unit}</td>
                                                         <td className="p-4 text-right font-black text-slate-900">{formatVND((item.qty || 0) * (item.estimatedPrice || 0))} ₫</td>
@@ -1709,7 +1709,7 @@ export default function Dashboard() {
                                             <div className="w-2 h-2 rounded-full bg-emerald-500 mt-1"></div>
                                             <div>
                                                 <div className="text-[10px] font-black uppercase text-slate-900">Khởi tạo</div>
-                                                <div className="text-[9px] text-slate-900">{new Date(selectedPRDetails.createdAt || "").toLocaleString('vi-VN')}</div>
+                                                <div className="text-[0.6875rem] text-slate-900">{new Date(selectedPRDetails.createdAt || "").toLocaleString('vi-VN')}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -1725,7 +1725,7 @@ export default function Dashboard() {
                                             {isSubmitting ? <Loader2 className="animate-spin" /> : <><span>Phê duyệt nhanh</span><span className="text-[8px] opacity-60">Duyệt ngay trên Dashboard</span></>}
                                         </button>
                                     )}
-                                    <button onClick={() => setSelectedPRDetails(null)} className="w-full h-12 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-2xl text-[10px] font-black uppercase text-slate-900 hover:bg-slate-100 transition-all">Đóng</button>
+                                    <button onClick={() => setSelectedPRDetails(null)} className="w-full h-12 bg-[#F1F5F9] border border-slate-200 rounded-2xl text-[10px] font-black uppercase text-slate-900 hover:bg-slate-100 transition-all">Đóng</button>
                                 </div>
                             </div>
                         </div>

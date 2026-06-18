@@ -7,6 +7,7 @@ import {
     Calendar, Building2, PenTool, Trash2, Pencil, Send, X,
     ShieldCheck, TrendingUp, RotateCcw, ChevronRight, Ban,
 } from "lucide-react";
+import PageHeader from "../../components/shared/PageHeader";
 import Link from "next/link";
 import { ContractStatus, CurrencyCode, Contract } from "../../types/api-types";
 import { Organization } from "../../context/ProcurementContext";
@@ -15,17 +16,17 @@ import DateInput from "../../components/shared/DateInput";
 
 // ── Status config ─────────────────────────────────────────────────────────────
 const STATUS_CFG: Record<string, { label: string; bg: string; text: string; border: string; dot: string }> = {
-    ACTIVE: { label: "Đang hiệu lực", bg: "bg-emerald-500/10", text: "text-black", border: "border-emerald-500/25", dot: "bg-emerald-400" },
-    PENDING_APPROVAL: { label: "Chờ duyệt", bg: "bg-amber-500/10", text: "text-black", border: "border-amber-500/25", dot: "bg-amber-400" },
+    ACTIVE: { label: "Đang hiệu lực", bg: "bg-emerald-500/10", text: "text-emerald-700", border: "border-emerald-500/25", dot: "bg-emerald-400" },
+    PENDING_APPROVAL: { label: "Chờ duyệt", bg: "bg-amber-500/10", text: "text-amber-700", border: "border-amber-500/25", dot: "bg-amber-400" },
     DRAFT: { label: "Bản nháp", bg: "bg-slate-500/10", text: "text-black", border: "border-slate-500/25", dot: "bg-slate-400" },
     EXPIRED: { label: "Hết hạn", bg: "bg-orange-500/10", text: "text-black", border: "border-orange-500/25", dot: "bg-orange-400" },
-    TERMINATED: { label: "Đã chấm dứt", bg: "bg-rose-500/10", text: "text-black", border: "border-rose-500/25", dot: "bg-rose-400" },
+    TERMINATED: { label: "Đã chấm dứt", bg: "bg-rose-500/10", text: "text-rose-700", border: "border-rose-500/25", dot: "bg-rose-400" },
 };
 
 function StatusBadge({ status }: { status: string }) {
     const c = STATUS_CFG[status] || STATUS_CFG.DRAFT;
     return (
-        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border ${c.bg} ${c.text} ${c.border}`}>
+        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[0.6875rem] font-bold uppercase tracking-wider border ${c.bg} ${c.text} ${c.border}`}>
             <span className={`w-1.5 h-1.5 rounded-full ${c.dot}`} />
             {c.label}
         </span>
@@ -140,41 +141,36 @@ export default function ContractsPage() {
         <main className="p-6 space-y-6">
 
             {/* ── Header ── */}
-            <div className="page-header">
-                <div>
-                    <div className="flex items-center gap-3 mb-1">
-                        <div className="w-8 h-8 rounded-lg bg-blue-600/10 border border-blue-600/20 flex items-center justify-center">
-                            <FileText size={16} className="text-blue-600" />
-                        </div>
-                        <h1 className="page-title">Quản lý Hợp đồng</h1>
-                    </div>
-                    <p className="text-sm text-slate-900 font-medium ml-11">
-                        Quản lý và theo dõi các thỏa thuận thu mua với nhà cung cấp
-                    </p>
-                </div>
-                <button
-                    onClick={openCreate}
-                    className="btn-primary text-xs uppercase tracking-wider"
-                >
-                    <Plus size={16} /> Tạo hợp đồng mới
-                </button>
-            </div>
+            <PageHeader
+                icon={FileText}
+                iconColor="purple"
+                title="Quản lý Hợp đồng"
+                subtitle="Quản lý và theo dõi các thỏa thuận thu mua với nhà cung cấp"
+                actions={
+                    <button
+                        onClick={openCreate}
+                        className="btn-primary text-xs uppercase tracking-wider"
+                    >
+                        <Plus size={16} /> Tạo hợp đồng mới
+                    </button>
+                }
+            />
 
             {/* ── Stats ── */}
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
                 {[
                     { label: "Tổng hợp đồng", value: stats.total, icon: FileText, color: "bg-blue-600/10 text-blue-600" },
-                    { label: "Đang hiệu lực", value: stats.active, icon: CheckCircle2, color: "bg-emerald-500/10 text-black" },
-                    { label: "Chờ duyệt", value: stats.pending, icon: Clock, color: "bg-amber-500/10 text-black" },
-                    { label: "Hết hạn", value: stats.expired, icon: AlertCircle, color: "bg-orange-500/10 text-black" },
-                    { label: "Tổng giá trị HĐ", value: `${(stats.totalValue / 1e6).toFixed(1)}M ₫`, icon: TrendingUp, color: "bg-purple-500/10 text-black" },
+                    { label: "Đang hiệu lực", value: stats.active, icon: CheckCircle2, color: "bg-emerald-500/10 text-emerald-700" },
+                    { label: "Chờ duyệt", value: stats.pending, icon: Clock, color: "bg-amber-500/10 text-amber-700" },
+                    { label: "Hết hạn", value: stats.expired, icon: AlertCircle, color: "bg-orange-500/10 text-orange-700" },
+                    { label: "Tổng giá trị HĐ", value: `${(stats.totalValue / 1e6).toFixed(1)}M ₫`, icon: TrendingUp, color: "bg-purple-500/10 text-purple-700" },
                 ].map(({ label, value, icon: Icon, color }) => (
                     <div key={label} className="bg-slate-100 rounded-xl p-4 border border-slate-200 flex items-center gap-3">
                         <div className={`h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0 ${color}`}>
                             <Icon size={18} />
                         </div>
                         <div className="min-w-0">
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-900 truncate">{label}</p>
+                            <p className="text-[0.6875rem] font-bold uppercase tracking-widest text-slate-900 truncate">{label}</p>
                             <p className="text-lg font-bold text-slate-900 truncate">{value}</p>
                         </div>
                     </div>
@@ -184,11 +180,11 @@ export default function ContractsPage() {
             {/* ── Toolbar ── */}
             <div className="bg-slate-100 rounded-xl border border-slate-200 p-4 flex flex-col md:flex-row gap-3">
                 <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-900" size={16} />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]" size={16} />
                     <input
                         type="text"
                         placeholder="Tìm số hợp đồng, tiêu đề, nhà cung cấp..."
-                        className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-900 placeholder:text-slate-900 focus:outline-none focus:border-blue-600/50 transition-all"
+                        className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600/50 transition-all"
                         value={search}
                         onChange={e => setSearch(e.target.value)}
                     />
@@ -280,7 +276,7 @@ export default function ContractsPage() {
                                                 <p className="font-bold text-slate-900 tabular-nums">
                                                     {Number(c.totalValue || 0).toLocaleString("vi-VN")}
                                                 </p>
-                                                <p className="text-[10px] text-slate-900">{c.currency}</p>
+                                                <p className="text-[0.6875rem] text-slate-900">{c.currency}</p>
                                             </td>
 
                                             {/* Thời hạn */}
@@ -307,7 +303,7 @@ export default function ContractsPage() {
                                                 {isActive && c.endDate && (() => {
                                                     const days = Math.ceil((new Date(c.endDate).getTime() - Date.now()) / 86400000);
                                                     return days <= 30 && days > 0 ? (
-                                                        <p className="text-[10px] text-black font-bold mt-1">⚠ Còn {days} ngày</p>
+                                                        <p className="text-[0.6875rem] text-black font-bold mt-1">⚠ Còn {days} ngày</p>
                                                     ) : null;
                                                 })()}
                                             </td>
@@ -328,7 +324,7 @@ export default function ContractsPage() {
                                                     {canSign && (
                                                         <button
                                                             onClick={() => setSignTarget(c)}
-                                                            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition-all"
+                                                            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[0.6875rem] font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition-all"
                                                             title="Ký hợp đồng"
                                                         >
                                                             <PenTool size={12} /> Ký
@@ -383,7 +379,7 @@ export default function ContractsPage() {
                                                     {c.status === "EXPIRED" && (
                                                         <button
                                                             onClick={() => openEdit(c)}
-                                                            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-bold text-black bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/20 transition-all"
+                                                            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[0.6875rem] font-bold text-black bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/20 transition-all"
                                                             title="Gia hạn hợp đồng"
                                                         >
                                                             <RotateCcw size={12} /> Gia hạn
@@ -417,7 +413,7 @@ export default function ContractsPage() {
                         {/* Header */}
                         <div className="px-8 py-6 border-b border-slate-200 bg-white rounded-t-[2rem] flex items-center justify-between">
                             <div className="flex items-center gap-4">
-                                <div className="w-11 h-11 rounded-2xl bg-blue-600/10 border border-blue-600/20 flex items-center justify-center text-blue-600">
+                                <div className="w-11 h-11 rounded-xl bg-blue-600/10 border border-blue-600/20 flex items-center justify-center text-blue-600">
                                     <FileText size={20} />
                                 </div>
                                 <div>
@@ -544,7 +540,7 @@ export default function ContractsPage() {
                     <div className="absolute inset-0 bg-white/60 backdrop-blur-md pointer-events-auto" onClick={closeModal} />
                     <div className="relative w-full max-w-md bg-slate-100 rounded-[2rem] border border-rose-500/20 shadow-xl p-8 pointer-events-auto animate-in zoom-in-95 duration-200">
                         <div className="flex items-start gap-4 mb-6">
-                            <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-black flex-shrink-0">
+                            <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-600 flex-shrink-0">
                                 <Trash2 size={18} />
                             </div>
                             <div>
@@ -576,7 +572,7 @@ export default function ContractsPage() {
                     <div className="absolute inset-0 bg-white/60 backdrop-blur-md pointer-events-auto" onClick={closeModal} />
                     <div className="relative w-full max-w-md bg-slate-100 rounded-[2rem] border border-amber-500/20 shadow-xl p-8 pointer-events-auto animate-in zoom-in-95 duration-200">
                         <div className="flex items-start gap-4 mb-5">
-                            <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-black flex-shrink-0">
+                            <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 flex-shrink-0">
                                 <ShieldCheck size={18} />
                             </div>
                             <div>
@@ -586,7 +582,7 @@ export default function ContractsPage() {
                         </div>
 
                         <div className="bg-white rounded-xl p-4 border border-slate-200 mb-5 space-y-2">
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-900">Thông tin hợp đồng</p>
+                            <p className="text-[0.6875rem] font-bold uppercase tracking-widest text-slate-900">Thông tin hợp đồng</p>
                             <p className="text-sm font-bold text-slate-900">{approveTarget.title}</p>
                             <p className="text-xs text-slate-900">
                                 Giá trị: <span className="text-slate-900 font-bold">{Number(approveTarget.totalValue || 0).toLocaleString("vi-VN")} {approveTarget.currency}</span>
@@ -620,7 +616,7 @@ export default function ContractsPage() {
                     <div className="absolute inset-0 bg-white/60 backdrop-blur-md pointer-events-auto" onClick={closeModal} />
                     <div className="relative w-full max-w-md bg-slate-100 rounded-[2rem] border border-rose-500/20 shadow-xl p-8 pointer-events-auto animate-in zoom-in-95 duration-200">
                         <div className="flex items-start gap-4 mb-5">
-                            <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-black flex-shrink-0">
+                            <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-600 flex-shrink-0">
                                 <Ban size={18} />
                             </div>
                             <div>
@@ -630,7 +626,7 @@ export default function ContractsPage() {
                         </div>
 
                         <div className="mb-5">
-                            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-900 mb-2">
+                            <label className="block text-[0.6875rem] font-bold uppercase tracking-widest text-slate-900 mb-2">
                                 Lý do chấm dứt *
                             </label>
                             <textarea
@@ -686,7 +682,7 @@ export default function ContractsPage() {
                     transition: border-color 0.15s;
                 }
                 .modal-input:focus { border-color: rgba(59,130,246,0.5); }
-                .modal-input::placeholder { color: #000000; }
+                .modal-input::placeholder { color: #94A3B8; }
             `}</style>
         </main>
     );
@@ -696,8 +692,9 @@ export default function ContractsPage() {
 function FormField({ label, children, colSpan = 1 }: { label: string; children: React.ReactNode; colSpan?: number }) {
     return (
         <div className={colSpan === 2 ? "sm:col-span-2" : ""}>
-            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-900 mb-2">{label}</label>
+            <label className="block text-[0.6875rem] font-bold uppercase tracking-widest text-slate-900 mb-2">{label}</label>
             {children}
         </div>
     );
 }
+

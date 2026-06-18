@@ -1,7 +1,8 @@
 ﻿"use client";
 
 import React, { useState } from "react";
-import { Package, DownloadCloud, FileText, CheckCircle, AlertTriangle, Truck, Clock, RefreshCcw, Send, XCircle, Search, Eye, X } from "lucide-react";
+import { Package, DownloadCloud, FileText, CheckCircle, AlertTriangle, Truck, Clock, RefreshCcw, Send, XCircle, Search, Eye, X, ShoppingBag } from "lucide-react";
+import PageHeader from "../../components/shared/PageHeader";
 
 import { useProcurement, PO, POItem } from "../../context/ProcurementContext";
 import ConfirmDialog from "../../components/shared/ConfirmDialog";
@@ -148,21 +149,21 @@ export default function SupplierPO() {
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-bg-primary text-slate-900">
                 <div className="mt-8 mb-6 flex justify-between items-end">
                     <div>
-                        <div className="flex items-center gap-2 mb-2 text-[10px] font-black uppercase tracking-widest text-slate-900">
+                        <div className="flex items-center gap-2 mb-2 text-[0.6875rem] font-black uppercase tracking-widest text-slate-900">
                             PO Mới <span className="text-black font-bold ml-1">{po.createdAt}</span>
                         </div>
                         <h1 className="text-3xl font-black text-slate-900 tracking-tight">Đơn hàng mới</h1>
                         <p className="text-sm font-bold text-slate-900 mt-1">Hợp đồng mua bán từ ProcurePro</p>
                     </div>
                     {/* Action Banner (6.3 Spec) */}
-                    <div className="flex gap-4 p-4 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl shadow-sm items-center">
+                    <div className="flex gap-4 p-4 bg-[#F1F5F9] border border-slate-200 rounded-xl shadow-sm items-center">
                         {isRejected ? (
                             <div className="flex items-center gap-2 text-xs font-black uppercase text-black tracking-widest bg-rose-500/10 px-6 py-3 rounded-xl border border-rose-500/20">
                                 <XCircle size={16} /> Đã Từ chối PO
                             </div>
                         ) : !isConfirmed ? (
                             <>
-                                <button onClick={handleReject} className="btn-danger text-[10px] uppercase tracking-widest">
+                                <button onClick={handleReject} className="btn-danger text-[0.6875rem] uppercase tracking-widest">
                                     <XCircle size={14}/> Từ chối PO
                                 </button>
                                 <button onClick={handleConfirm} className="btn-success text-xs uppercase tracking-widest">
@@ -180,21 +181,21 @@ export default function SupplierPO() {
                 <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
                     {/* Cột trái: PO Document Info */}
                     <div className="xl:col-span-2 space-y-6">
-                        <div className="bg-[#F1F5F9] rounded-xl shadow-xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)] min-h-[500px] flex flex-col p-0 overflow-hidden">
-                            <div className="p-6 border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center bg-[#FFFFFF]">
+                        <div className="bg-[#F1F5F9] rounded-xl shadow-xl shadow-[#2563EB]/5 border border-slate-200 min-h-[500px] flex flex-col p-0 overflow-hidden">
+                            <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-[#FFFFFF]">
                                 <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 flex items-center gap-2">
                                     <FileText size={16}/> Purchase Order PDF
                                 </h3>
-                                <button className="text-[10px] font-black uppercase tracking-widest text-[#2563EB] flex items-center gap-1 p-2 hover:bg-[#2563EB]/10 rounded-lg transition-colors">
+                                <button className="text-[0.6875rem] font-black uppercase tracking-widest text-[#2563EB] flex items-center gap-1 p-2 hover:bg-[#2563EB]/10 rounded-lg transition-colors">
                                     <DownloadCloud size={14} /> Tải bản mốc
                                 </button>
                             </div>
                             
                             <div className="p-8 font-serif bg-[#FFFFFF] flex-1 flex flex-col">
                                 {/* Mock PDF View */}
-                                <div className="bg-[#F1F5F9] mx-auto w-full max-w-2xl border border-[rgba(148,163,184,0.1)] shadow-sm p-10 mt-4 flex-1 relative">
+                                <div className="bg-[#F1F5F9] mx-auto w-full max-w-2xl border border-slate-200 shadow-sm p-10 mt-4 flex-1 relative">
                                     <div className="absolute top-10 right-10 p-2 border-2 border-rose-500 text-rose-500 font-bold uppercase tracking-widest -rotate-12 opacity-50">Confidential</div>
-                                    <h1 className="text-3xl font-black text-slate-900 mb-6 border-b-2 border-[rgba(148,163,184,0.1)] pb-4">PURCHASE ORDER</h1>
+                                    <h1 className="text-3xl font-black text-slate-900 mb-6 border-b-2 border-slate-200 pb-4">PURCHASE ORDER</h1>
                                     <div className="flex justify-between text-sm mb-8 text-slate-900 font-sans">
                                         <div><strong className="text-slate-900">TO:</strong> {po.vendor}<br/><strong className="text-slate-900">ATTN:</strong> Account Manager</div>
                                         <div><strong className="text-slate-900">DATE:</strong> {po.createdAt}</div>
@@ -203,12 +204,12 @@ export default function SupplierPO() {
                                         <thead><tr><th className="p-2 text-left">Item</th><th className="p-2 text-center">Qty</th><th className="p-2 text-right">Price</th></tr></thead>
                                         <tbody>
                                             {po.items?.map((i) => (
-                                                <tr key={i.id} className="border-b border-[rgba(148,163,184,0.1)]"><td className="p-2 text-slate-900">{i.description || 'N/A'}</td><td className="p-2 text-center text-slate-900">{i.qty}</td><td className="p-2 text-right text-slate-900">{(i.unitPrice || i.estimatedPrice || 0).toLocaleString()} ₫</td></tr>
+                                                <tr key={i.id} className="border-b border-slate-200"><td className="p-2 text-slate-900">{i.description || 'N/A'}</td><td className="p-2 text-center text-slate-900">{i.qty}</td><td className="p-2 text-right text-slate-900">{(i.unitPrice || i.estimatedPrice || 0).toLocaleString()} ₫</td></tr>
                                             ))}
                                             <tr><td colSpan={2} className="p-2 text-right font-bold uppercase text-slate-900">Total</td><td className="p-2 text-right font-bold text-lg text-slate-900">{Number(po.total || 0).toLocaleString()} ₫</td></tr>
                                         </tbody>
                                     </table>
-                                    <div className="text-[9px] text-slate-900 uppercase font-sans mt-20">Terms: DDP, Net 30. Penalty SLA 1%/day.</div>
+                                    <div className="text-[0.6875rem] text-slate-900 uppercase font-sans mt-20">Terms: DDP, Net 30. Penalty SLA 1%/day.</div>
                                 </div>
                             </div>
                         </div>
@@ -216,59 +217,59 @@ export default function SupplierPO() {
 
                     {/* Cột phải: Timeline Cập nhật giao hàng (6.3) */}
                     <div className="space-y-6 flex flex-col">
-                        <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5">
-                            <h3 className="text-xs font-black uppercase tracking-widest text-slate-900 mb-4 border-b border-[rgba(148,163,184,0.1)] pb-2 flex items-center gap-2">
+                        <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200 shadow-xl shadow-[#2563EB]/5">
+                            <h3 className="text-xs font-bold uppercase tracking-widest text-[#64748B] mb-4 border-b border-slate-200 pb-2 flex items-center gap-2">
                                 <Clock size={16}/> Timeline Tiến độ Sản xuất/Nhập hàng
                             </h3>
 
                             <div className="space-y-6 relative ml-2 before:absolute before:inset-0 before:ml-2 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-[#2563EB]/20 before:to-transparent mb-6">
                                 <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
                                     <div className="flex items-center justify-center w-6 h-6 rounded-full border border-white bg-emerald-500 text-white shadow relative z-10 font-bold"><CheckCircle size={10} /></div>
-                                    <div className="w-[calc(100%-2rem)] md:w-[calc(50%-1.5rem)] bg-[#FFFFFF] p-3 rounded-xl shadow-sm border border-[rgba(148,163,184,0.1)] ml-4 font-medium text-xs text-slate-900">
-                                        <div className="font-bold text-slate-900 text-[10px] uppercase tracking-widest mb-1">Hôm nay 10:00</div>
+                                    <div className="w-[calc(100%-2rem)] md:w-[calc(50%-1.5rem)] bg-[#FFFFFF] p-3 rounded-xl shadow-sm border border-slate-200 ml-4 font-medium text-xs text-slate-900">
+                                        <div className="font-bold text-slate-900 text-[0.6875rem] uppercase tracking-widest mb-1">Hôm nay 10:00</div>
                                         Đã xác nhận PO. Nguyên vật liệu đang được chuẩn bị.
                                     </div>
                                 </div>
                                 <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
                                     <div className="flex items-center justify-center w-6 h-6 rounded-full border-2 border-[#2563EB] bg-[#F1F5F9] text-[#2563EB] shadow relative z-10"><RefreshCcw size={10} /></div>
-                                    <div className="w-[calc(100%-2rem)] md:w-[calc(50%-1.5rem)] bg-[#FFFFFF] p-3 rounded-xl shadow-sm border border-[rgba(148,163,184,0.1)] ml-4 font-medium text-xs text-slate-900">
-                                        <div className="font-bold text-[#2563EB] text-[10px] uppercase tracking-widest mb-1">Cập nhật tiếp theo</div>
+                                    <div className="w-[calc(100%-2rem)] md:w-[calc(50%-1.5rem)] bg-[#FFFFFF] p-3 rounded-xl shadow-sm border border-slate-200 ml-4 font-medium text-xs text-slate-900">
+                                        <div className="font-bold text-[#2563EB] text-[0.6875rem] uppercase tracking-widest mb-1">Cập nhật tiếp theo</div>
                                         Chờ Cập nhật tiến độ thêm...
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="mt-4 pt-4 border-t border-[rgba(148,163,184,0.1)] bg-[#FFFFFF] p-4 rounded-xl relative">
-                                <label className="block text-[10px] font-black uppercase text-slate-900 tracking-widest mb-2">Thêm Log Progress:</label>
+                            <div className="mt-4 pt-4 border-t border-slate-200 bg-[#FFFFFF] p-4 rounded-xl relative">
+                                <label className="block text-[0.6875rem] font-black uppercase text-slate-900 tracking-widest mb-2">Thêm Log Progress:</label>
                                 <div className="flex gap-2">
-                                    <input type="text" className="w-full pl-4 pr-4 py-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs text-slate-900 placeholder:text-slate-900 focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#FFFFFF] transition-all" placeholder="Ví dụ: Lên chuyền sản xuất..." value={progressStatus} onChange={e => setProgressStatus(e.target.value)}/>
+                                    <input type="text" className="w-full pl-4 pr-4 py-2 bg-[#F1F5F9] border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#FFFFFF] transition-all" placeholder="Ví dụ: Lên chuyền sản xuất..." value={progressStatus} onChange={e => setProgressStatus(e.target.value)}/>
                                     <button className="bg-[#2563EB] text-white p-2 rounded-xl hover:bg-[#1D4ED8] transition-colors"><Send size={16}/></button>
                                 </div>
-                                <p className="text-[9px] text-slate-900 mt-2 font-medium">Buyer sẽ nhận Notification khi bạn cập nhật Status này.</p>
+                                <p className="text-[0.6875rem] text-slate-900 mt-2 font-medium">Buyer sẽ nhận Notification khi bạn cập nhật Status này.</p>
                             </div>
                         </div>
 
                         {/* Chuẩn bị Giao - Tạo Vận Đơn (6.3) */}
-                        <div className={`bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 flex-1 ${!isConfirmed ? 'opacity-50 pointer-events-none filter grayscale' : 'border-[#2563EB]/30'}`}>
-                            <h3 className="text-xs font-black uppercase tracking-widest text-slate-900 mb-4 border-b border-[rgba(148,163,184,0.1)] pb-2 flex items-center gap-2">
+                        <div className={`bg-[#F1F5F9] rounded-xl p-6 border border-slate-200 shadow-xl shadow-[#2563EB]/5 flex-1 ${!isConfirmed ? 'opacity-50 pointer-events-none filter grayscale' : 'border-[#2563EB]/30'}`}>
+                            <h3 className="text-xs font-bold uppercase tracking-widest text-[#64748B] mb-4 border-b border-slate-200 pb-2 flex items-center gap-2">
                                 <Truck size={16}/> Lệnh Giao Hàng (ASN / DO)
                             </h3>
                             <div className="space-y-4 text-xs font-medium text-slate-900">
                                 <div>
-                                    <label className="block text-[10px] font-black uppercase text-slate-900 tracking-widest mb-1">Số Vận Đơn (Mã DO NCC)</label>
-                                    <input type="text" className="w-full pl-4 pr-4 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-[#2563EB] font-bold placeholder:text-slate-900 focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all" placeholder="DO-2026-###"/>
+                                    <label className="block text-[0.6875rem] font-black uppercase text-slate-900 tracking-widest mb-1">Số Vận Đơn (Mã DO NCC)</label>
+                                    <input type="text" className="w-full pl-4 pr-4 py-3 bg-[#FFFFFF] border border-slate-200 rounded-xl text-[#2563EB] font-bold placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all" placeholder="DO-2026-###"/>
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black uppercase text-slate-900 tracking-widest mb-1">Bên Vận Chuyển / Biển số Xe</label>
-                                    <input type="text" className="w-full pl-4 pr-4 py-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-slate-900 placeholder:text-slate-900 focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all" placeholder="Biển số 51C-12345"/>
+                                    <label className="block text-[0.6875rem] font-black uppercase text-slate-900 tracking-widest mb-1">Bên Vận Chuyển / Biển số Xe</label>
+                                    <input type="text" className="w-full pl-4 pr-4 py-3 bg-[#FFFFFF] border border-slate-200 rounded-xl text-slate-900 placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB]/30 focus:bg-[#F1F5F9] transition-all" placeholder="Biển số 51C-12345"/>
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black uppercase text-slate-900 tracking-widest mb-1">Upload Packing List + Giấy kiểm xưởng (COA)</label>
-                                    <div className="p-3 border border-dashed border-[rgba(148,163,184,0.1)] rounded-xl cursor-pointer text-center text-[10px] font-black uppercase text-slate-900 hover:text-[#2563EB] hover:border-[#2563EB]/30 transition-all">
+                                    <label className="block text-[0.6875rem] font-black uppercase text-slate-900 tracking-widest mb-1">Upload Packing List + Giấy kiểm xưởng (COA)</label>
+                                    <div className="p-3 border border-dashed border-slate-200 rounded-xl cursor-pointer text-center text-[0.6875rem] font-black uppercase text-slate-900 hover:text-[#2563EB] hover:border-[#2563EB]/30 transition-all">
                                         Tải file lên
                                     </div>
                                 </div>
-                                <button onClick={handleShip} className="w-full mt-4 py-3 bg-[#2563EB] hover:bg-[#1D4ED8] text-white shadow-xl shadow-[#2563EB]/20 uppercase tracking-widest text-[10px] font-black rounded-xl transition-colors flex items-center gap-2 justify-center">
+                                <button onClick={handleShip} className="w-full mt-4 py-3 bg-[#2563EB] hover:bg-[#1D4ED8] text-white shadow-xl shadow-[#2563EB]/20 uppercase tracking-widest text-[0.6875rem] font-black rounded-xl transition-colors flex items-center gap-2 justify-center">
                                     <Truck size={14}/> Notify Shipped (Báo Giao)
                                 </button>
                             </div>
@@ -280,7 +281,7 @@ export default function SupplierPO() {
     }
 
     return (
-        <main className="pt-16 px-8 pb-12 bg-[#FFFFFF] min-h-screen text-slate-900">
+        <main className="pt-16 px-8 pb-12 bg-[#F8FAFC] min-h-screen text-slate-900">
             <ConfirmDialog
                 open={confirmState.open}
                 title={confirmState.title}
@@ -288,13 +289,18 @@ export default function SupplierPO() {
                 onConfirm={confirmState.onConfirm}
                 onCancel={() => setConfirmState(s => ({ ...s, open: false }))}
             />
-            <div className="mt-8 mb-4 flex justify-between items-center">
-                <h1 className="text-3xl font-black text-slate-900 tracking-tight">Hợp đồng mua bán từ Buyer</h1>
+            <PageHeader
+                title="Đơn hàng nhận được (PO)"
+                icon={ShoppingBag}
+                iconColor="blue"
+            />
+            <div className="mb-4 flex justify-between items-center">
+                <div></div>
                 <div className="flex gap-2 items-center">
                     <span className="text-xs text-slate-900">Tổng PO: {pos.length} | PO của bạn: {supplierPOs.length}</span>
                     <button 
                         onClick={() => setShowAll(!showAll)} 
-                        className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-xl ${showAll ? 'bg-[#2563EB] text-white' : 'bg-[#F1F5F9] text-white border border-[rgba(148,163,184,0.1)]'}`}
+                        className={`text-[0.6875rem] font-black uppercase tracking-widest px-3 py-1 rounded-xl ${showAll ? 'bg-[#2563EB] text-white' : 'bg-[#F1F5F9] text-white border border-slate-200'}`}
                     >
                         {showAll ? 'Chỉ hiện PO của tôi' : 'Hiện tất cả PO'}
                     </button>
@@ -302,7 +308,7 @@ export default function SupplierPO() {
             </div>
 
             {/* Debug: Kiểm tra PO theo ID */}
-            <div className="mb-4 p-4 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl">
+            <div className="mb-4 p-4 bg-[#F1F5F9] border border-slate-200 rounded-xl">
                 <div className="flex gap-2 items-center mb-2">
                     <Search size={16} className="text-slate-900" />
                     <span className="text-xs font-bold text-slate-900">Kiểm tra PO theo ID:</span>
@@ -313,7 +319,7 @@ export default function SupplierPO() {
                         value={poIdInput}
                         onChange={(e) => setPoIdInput(e.target.value)}
                         placeholder="Nhập PO ID..."
-                        className="flex-1 px-3 py-2 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg text-sm text-slate-900 placeholder:text-slate-900 focus:outline-none focus:border-[#2563EB]/30"
+                        className="flex-1 px-3 py-2 bg-[#FFFFFF] border border-slate-200 rounded-lg text-sm text-slate-900 placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB]/30"
                     />
                     <button 
                         onClick={handleCheckPO}
@@ -323,7 +329,7 @@ export default function SupplierPO() {
                     </button>
                 </div>
                 {searchedPO && (
-                    <div className="mt-3 p-3 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg text-xs text-slate-900">
+                    <div className="mt-3 p-3 bg-[#FFFFFF] border border-slate-200 rounded-lg text-xs text-slate-900">
                         <p><strong className="text-[#2563EB]">PO ID:</strong> {searchedPO.id}</p>
                         <p><strong className="text-[#2563EB]">Mã đơn:</strong> ***</p>
                         <p><strong className="text-[#2563EB]">Status:</strong> {searchedPO.status}</p>
@@ -334,9 +340,9 @@ export default function SupplierPO() {
                 )}
             </div>
 
-            <div className="bg-[#F1F5F9] rounded-xl overflow-hidden shadow-xl shadow-[#2563EB]/5 border border-[rgba(148,163,184,0.1)]">
+            <div className="bg-[#F1F5F9] rounded-xl overflow-hidden shadow-xl shadow-[#2563EB]/5 border border-slate-200">
                 <table className="erp-table text-xs w-full" style={{ tableLayout: 'fixed' }}>
-                    <thead className="border-b border-[rgba(148,163,184,0.1)]">
+                    <thead className="border-b border-slate-200">
                         <tr>
                             <th className="py-4 px-4 text-left w-[18%]">Số PO</th>
                             <th className="py-4 px-4 text-left w-[35%]">Sản phẩm / Mô tả</th>
@@ -346,7 +352,7 @@ export default function SupplierPO() {
                             <th className="py-4 px-4 text-right w-[11%]">Thao tác</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
+                    <tbody className="divide-y divide-slate-100">
                         {displayPOs.map((p) => {
                             const items = p.items || [];
                             const totalQty = items.reduce((sum: number, item: { qty?: number }) => sum + (item.qty || 0), 0);
@@ -357,13 +363,13 @@ export default function SupplierPO() {
                             const moreItems = items.length > 1 ? `+${items.length - 1} sản phẩm khác` : '';
 
                             return (
-                                <tr key={p.id} className={`group hover:bg-slate-100 transition-colors border-b border-[rgba(148,163,184,0.05)] ${p.supplierId === supplierId ? 'bg-[#2563EB]/5' : ''}`}>
+                                <tr key={p.id} className={`group hover:bg-slate-100 transition-colors border-b border-slate-200 ${p.supplierId === supplierId ? 'bg-[#2563EB]/5' : ''}`}>
                                     {/* PO Number */}
                                     <td className="py-4 px-4">
                                         <div className="font-bold text-slate-900 text-xs mb-1 truncate group-hover:text-[#F8FAFC] transition-colors">
                                             {p.poNumber || `PO-${p.id?.slice(0, 8).toUpperCase()}`}
                                         </div>
-                                        <div className="text-[9px] font-bold text-slate-900 uppercase tracking-wider truncate group-hover:text-[#2563EB] transition-colors">
+                                        <div className="text-[0.6875rem] font-bold text-slate-900 uppercase tracking-wider truncate group-hover:text-[#2563EB] transition-colors">
                                             {p.vendor || "ProcurePro"}
                                         </div>
                                     </td>
@@ -374,12 +380,12 @@ export default function SupplierPO() {
                                             {itemName}
                                         </div>
                                         {itemCode && (
-                                            <div className="text-[9px] font-bold text-slate-900 uppercase tracking-widest group-hover:text-[#F8FAFC]/40 transition-colors">
+                                            <div className="text-[0.6875rem] font-bold text-slate-900 uppercase tracking-widest group-hover:text-[#F8FAFC]/40 transition-colors">
                                                 SKU: <span className="text-slate-900 group-hover:text-[#F8FAFC]/60 transition-colors">{itemCode}</span>
                                             </div>
                                         )}
                                         {moreItems && (
-                                            <div className="text-[9px] text-[#2563EB] mt-1 font-bold group-hover:text-[#2563EB] transition-colors">
+                                            <div className="text-[0.6875rem] text-[#2563EB] mt-1 font-bold group-hover:text-[#2563EB] transition-colors">
                                                 {moreItems}
                                             </div>
                                         )}
@@ -390,7 +396,7 @@ export default function SupplierPO() {
                                         <div className="text-xs font-bold text-slate-900 group-hover:text-[#F8FAFC] transition-colors">
                                             {totalQty} <span className="text-slate-900 font-normal group-hover:text-[#F8FAFC]/60">SP</span>
                                         </div>
-                                        <div className="text-[10px] font-black text-black mt-1 group-hover:text-[#2563EB] transition-colors">
+                                        <div className="text-[0.6875rem] font-black text-black mt-1 group-hover:text-[#2563EB] transition-colors">
                                             {new Intl.NumberFormat('vi-VN').format(totalAmount)} ₫
                                         </div>
                                     </td>
@@ -404,7 +410,7 @@ export default function SupplierPO() {
 
                                     {/* Status */}
                                     <td className="py-4 px-4 text-center">
-                                        <span className={`${p.status === "ISSUED" || p.status === "PENDING" ? "bg-rose-500/10 text-black border border-rose-500/20 group-hover:bg-rose-500 group-hover:text-black" : p.status === "REJECTED" ? "bg-rose-500/20 text-black border border-rose-500/30 group-hover:bg-rose-700 group-hover:text-white" : p.status === "ACKNOWLEDGED" || p.status === "CONFIRMED" ? "bg-[#2563EB]/10 text-[#3B82F6] border border-[#2563EB]/20 group-hover:bg-[#2563EB] group-hover:text-black" : "bg-emerald-500/10 text-black border border-emerald-500/20 group-hover:bg-emerald-500 group-hover:text-black"} font-black uppercase px-2 py-1 rounded text-[9px] tracking-widest whitespace-nowrap transition-all`}>
+                                        <span className={`${p.status === "ISSUED" || p.status === "PENDING" ? "bg-rose-500/10 text-rose-700 border border-rose-500/20 group-hover:bg-rose-500 group-hover:text-white" : p.status === "REJECTED" ? "bg-rose-500/20 text-rose-700 border border-rose-500/30 group-hover:bg-rose-700 group-hover:text-white" : p.status === "ACKNOWLEDGED" || p.status === "CONFIRMED" ? "bg-[#2563EB]/10 text-[#3B82F6] border border-[#2563EB]/20 group-hover:bg-[#2563EB] group-hover:text-white" : "bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 group-hover:bg-emerald-500 group-hover:text-white"} font-black uppercase px-2 py-1 rounded text-[0.6875rem] tracking-widest whitespace-nowrap transition-all`}>
                                             {getStatusLabel(p.status)}
                                         </span>
                                     </td>
@@ -419,7 +425,7 @@ export default function SupplierPO() {
                                                         await ackPO(p.id);
                                                         notify("Đã xác nhận đơn hàng (ACK)", "success");
                                                     }}
-                                                    className="p-2 rounded-lg hover:bg-emerald-500/10 text-black transition-colors group-hover:text-emerald-500"
+                                                    className="p-2 rounded-lg hover:bg-emerald-500/10 text-emerald-700 transition-colors group-hover:text-emerald-500"
                                                     title="Xác nhận PO"
                                                 >
                                                     <CheckCircle size={16}/>
@@ -464,9 +470,9 @@ export default function SupplierPO() {
             {/* Modal Chi tiết PO */}
             {isModalOpen && selectedPO && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#FFFFFF]/80 backdrop-blur-sm p-4">
-                    <div className="bg-[#F1F5F9] rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-[rgba(148,163,184,0.1)]">
+                    <div className="bg-[#F1F5F9] rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-slate-200">
                         {/* Header */}
-                        <div className="flex justify-between items-center p-6 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF] rounded-t-2xl">
+                        <div className="flex justify-between items-center p-6 border-b border-slate-200 bg-[#FFFFFF] rounded-t-xl">
                             <div>
                                 <h2 className="text-xl font-black text-slate-900 tracking-tight">Chi tiết Purchase Order</h2>
                                 <p className="text-sm text-slate-900">Chi tiết đơn hàng</p>
@@ -486,7 +492,7 @@ export default function SupplierPO() {
                                 <div className="space-y-2">
                                     <div className="flex items-center gap-2">
                                         <span className="text-sm font-bold text-slate-900">Trạng thái:</span>
-                                        <span className={`${selectedPO.status === "ISSUED" || selectedPO.status === "PENDING" ? "bg-rose-500/10 text-black border border-rose-500/20" : selectedPO.status === "REJECTED" ? "bg-rose-500/20 text-black border border-rose-500/30" : "bg-emerald-500/10 text-black border border-emerald-500/20"} font-black uppercase px-3 py-1 rounded text-xs tracking-widest`}>
+                                        <span className={`${selectedPO.status === "ISSUED" || selectedPO.status === "PENDING" ? "bg-rose-500/10 text-rose-700 border border-rose-500/20" : selectedPO.status === "REJECTED" ? "bg-rose-500/20 text-rose-700 border border-rose-500/30" : "bg-emerald-500/10 text-emerald-700 border border-emerald-500/20"} font-black uppercase px-3 py-1 rounded text-xs tracking-widest`}>
                                             {getStatusLabel(selectedPO.status)}
                                         </span>
                                     </div>
@@ -500,10 +506,10 @@ export default function SupplierPO() {
                             </div>
 
                             {/* PO Items */}
-                            <div className="border border-[rgba(148,163,184,0.1)] rounded-xl overflow-hidden">
-                                <div className="bg-[#FFFFFF] p-4 border-b border-[rgba(148,163,184,0.1)] flex justify-between items-center">
+                            <div className="border border-slate-200 rounded-xl overflow-hidden">
+                                <div className="bg-[#FFFFFF] p-4 border-b border-slate-200 flex justify-between items-center">
                                     <h3 className="text-sm font-black uppercase tracking-widest text-slate-900">Danh sách sản phẩm</h3>
-                                    <span className="text-[10px] text-slate-900">
+                                    <span className="text-[0.6875rem] text-slate-900">
                                         items: {selectedPO.items?.length || 0} | products: {selectedPO.products?.length || 0} | poLines: {selectedPO.poLines?.length || 0}
                                     </span>
                                 </div>
@@ -517,7 +523,7 @@ export default function SupplierPO() {
                                             <th className="p-3 text-right font-bold">Thành tiền</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-[rgba(148,163,184,0.1)]">
+                                    <tbody className="divide-y divide-slate-100">
                                         {(() => {
                                             const items = selectedPO.items || selectedPO.products || selectedPO.poLines || selectedPO.lines || [];
                                             if (items.length === 0) {
@@ -525,7 +531,7 @@ export default function SupplierPO() {
                                                     <tr>
                                                         <td colSpan={5} className="p-4 text-center text-slate-900">
                                                             Không có dữ liệu sản phẩm
-                                                            <div className="text-[10px] text-slate-900/50 mt-1">
+                                                            <div className="text-[0.6875rem] text-slate-900/50 mt-1">
                                                                 Debug: items={selectedPO.items?.length}, products={selectedPO.products?.length}, poLines={selectedPO.poLines?.length}
                                                             </div>
                                                         </td>
@@ -557,7 +563,7 @@ export default function SupplierPO() {
                         </div>
 
                         {/* Footer - Action Buttons */}
-                        <div className="flex justify-between items-center p-6 border-t border-[rgba(148,163,184,0.1)] bg-[#FFFFFF] rounded-b-2xl">
+                        <div className="flex justify-between items-center p-6 border-t border-slate-200 bg-[#FFFFFF] rounded-b-xl">
                             <button 
                                 onClick={closeModal}
                                 className="px-4 py-2 text-slate-900 font-bold text-sm hover:bg-slate-100 rounded-lg transition-colors"
@@ -606,4 +612,5 @@ export default function SupplierPO() {
         </main>
     );
 }
+
 

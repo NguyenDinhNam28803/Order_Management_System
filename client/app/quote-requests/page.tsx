@@ -1,10 +1,11 @@
 ﻿"use client";
 
 import React, { useState, useMemo } from "react";
-import { 
-    Plus, Search, Filter, ArrowRight, ClipboardList, 
-    Clock, BadgeCheck, FileText, ChevronRight, MoreVertical, Calendar 
+import {
+    Plus, Search, Filter, ArrowRight, ClipboardList,
+    Clock, BadgeCheck, FileText, ChevronRight, MoreVertical, Calendar, MessageSquare
 } from "lucide-react";
+import PageHeader from "../components/shared/PageHeader";
 import { useProcurement, QuoteRequestStatus, QuoteRequest } from "../context/ProcurementContext";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -43,44 +44,46 @@ export default function QuoteRequestPage() {
     const getStatusInfo = (status: QuoteRequestStatus) => {
         switch (status) {
             case QuoteRequestStatus.DRAFT:
-                return { label: "Nháp", color: "bg-[#0F172A] text-white border border-[rgba(148,163,184,0.1)]", icon: FileText };
+                return { label: "Nháp", color: "bg-[#0F172A] text-white border border-slate-200", icon: FileText };
             case QuoteRequestStatus.SUBMITTED:
                 return { label: "Đã gửi Thu mua", color: "bg-[#2563EB]/10 text-[#2563EB] border border-[#2563EB]/20", icon: ClipboardList };
             case QuoteRequestStatus.PROCESSING:
-                return { label: "Đang hỏi giá NCC", color: "bg-amber-500/10 text-black border border-amber-500/20", icon: Clock };
+                return { label: "Đang hỏi giá NCC", color: "bg-amber-500/10 text-amber-700 border border-amber-500/20", icon: Clock };
             case QuoteRequestStatus.COMPLETED:
-                return { label: "Đã có báo giá", color: "bg-emerald-500/10 text-black border border-emerald-500/20", icon: BadgeCheck };
+                return { label: "Đã có báo giá", color: "bg-emerald-500/10 text-emerald-700 border border-emerald-500/20", icon: BadgeCheck };
             default:
-                return { label: status, color: "bg-[#0F172A] text-white border border-[rgba(148,163,184,0.1)]", icon: FileText };
+                return { label: status, color: "bg-[#0F172A] text-white border border-slate-200", icon: FileText };
         }
     };
 
     return (
-        <main className="animate-in fade-in duration-500 min-h-screen bg-[#FFFFFF] text-slate-900">
+        <main className="animate-in fade-in duration-500 min-h-screen bg-[#F8FAFC] text-slate-900">
             <div className="px-6 py-6 space-y-6">
-            <header className="flex justify-between items-center bg-[#F1F5F9] p-6 rounded-xl shadow-sm border border-[rgba(148,163,184,0.1)]">
-                <div>
-                    <h1 className="text-2xl font-black text-[#2563EB] tracking-tight">Yêu cầu báo giá</h1>
-                    <p className="text-sm text-slate-900 font-medium">Quản lý và theo dõi các báo giá từ bộ phận Thu mua</p>
-                </div>
-                <Link 
-                    href="/quote-requests/create"
-                    className="flex items-center gap-2 bg-[#2563EB] text-white px-5 py-2.5 rounded-xl font-bold hover:bg-[#1D4ED8] transition-all shadow-lg active:scale-95"
-                >
-                    <Plus size={20} />
-                    Tạo yêu cầu báo giá mới
-                </Link>
-            </header>
+            <PageHeader
+                icon={MessageSquare}
+                iconColor="amber"
+                title="Yêu cầu báo giá"
+                subtitle="Quản lý và theo dõi các báo giá từ bộ phận Thu mua"
+                actions={
+                    <Link
+                        href="/quote-requests/create"
+                        className="btn-primary"
+                    >
+                        <Plus size={20} />
+                        Tạo yêu cầu báo giá mới
+                    </Link>
+                }
+            />
 
             {/* Filter Bar */}
-            <div className="flex flex-wrap items-center gap-4 bg-[#F1F5F9] p-4 rounded-xl shadow-sm border border-[rgba(148,163,184,0.1)] justify-between">
+            <div className="flex flex-wrap items-center gap-4 bg-[#F1F5F9] p-4 rounded-xl shadow-sm border border-slate-200 justify-between">
                 <div className="flex items-center gap-3">
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-900" size={18} />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]" size={18} />
                         <input 
                             type="text"
                             placeholder="Tìm kiếm báo giá..."
-                            className="bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-lg pl-10 pr-4 py-2 text-sm w-64 focus:ring-4 focus:ring-[#2563EB]/10 transition-all outline-none placeholder:text-slate-900 text-slate-900"
+                            className="bg-[#FFFFFF] border border-slate-200 rounded-lg pl-10 pr-4 py-2 text-sm w-64 focus:ring-4 focus:ring-[#2563EB]/10 transition-all outline-none placeholder:text-[#94A3B8] text-slate-900"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -90,7 +93,7 @@ export default function QuoteRequestPage() {
                 <div className="flex items-center gap-2">
                     <button 
                         onClick={() => setStatusFilter("ALL")}
-                        className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all ${statusFilter === 'ALL' ? 'bg-[#2563EB] text-white' : 'bg-[#FFFFFF] text-white hover:bg-slate-100'}`}
+                        className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all ${statusFilter === 'ALL' ? 'bg-[#2563EB] text-white' : 'bg-[#FFFFFF] text-slate-900 hover:bg-slate-100'}`}
                     >
                         Tất cả
                     </button>
@@ -100,7 +103,7 @@ export default function QuoteRequestPage() {
                             <button 
                                 key={status}
                                 onClick={() => setStatusFilter(status)}
-                                className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all ${statusFilter === status ? 'bg-[#2563EB] text-white' : 'bg-[#FFFFFF] text-white hover:bg-slate-100'}`}
+                                className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all ${statusFilter === status ? 'bg-[#2563EB] text-white' : 'bg-[#FFFFFF] text-slate-900 hover:bg-slate-100'}`}
                             >
                                 {label}
                             </button>
@@ -113,7 +116,7 @@ export default function QuoteRequestPage() {
                 {/* Main List */}
                 <div className="lg:col-span-2 space-y-4">
                     {filteredQRs.length === 0 ? (
-                        <div className="bg-[#F1F5F9] p-12 rounded-xl border border-dashed border-[rgba(148,163,184,0.2)] text-center space-y-3">
+                        <div className="bg-[#F1F5F9] p-12 rounded-xl border border-dashed border-slate-200 text-center space-y-3">
                             <div className="bg-[#FFFFFF] w-16 h-16 rounded-full flex items-center justify-center mx-auto text-slate-900">
                                 <Search size={32} />
                             </div>
@@ -126,7 +129,7 @@ export default function QuoteRequestPage() {
                                 <div 
                                     key={qr.id}
                                     onClick={() => setSelectedQR(qr)}
-                                    className={`group bg-[#F1F5F9] p-5 rounded-xl border transition-all cursor-pointer hover:shadow-md ${selectedQR?.id === qr.id ? 'border-[#2563EB] ring-2 ring-[#2563EB]/10' : 'border-[rgba(148,163,184,0.1)]'}`}
+                                    className={`group bg-[#F1F5F9] p-5 rounded-xl border transition-all cursor-pointer hover:shadow-md ${selectedQR?.id === qr.id ? 'border-[#2563EB] ring-2 ring-[#2563EB]/10' : 'border-slate-200'}`}
                                 >
                                     <div className="flex justify-between items-start mb-4">
                                         <div className="flex items-center gap-4">
@@ -155,7 +158,7 @@ export default function QuoteRequestPage() {
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center justify-between text-xs font-medium pt-3 border-t border-[rgba(148,163,184,0.1)]">
+                                    <div className="flex items-center justify-between text-xs font-medium pt-3 border-t border-slate-200">
                                         <div className="text-slate-900">
                                             Mặt hàng: <span className="text-slate-900 font-bold">{qr.items.length}</span>
                                         </div>
@@ -172,13 +175,13 @@ export default function QuoteRequestPage() {
                 {/* Detail Panel */}
                 <div className="lg:col-span-1">
                     {selectedQR ? (
-                        <div className="bg-[#F1F5F9] p-6 rounded-xl shadow-xl border border-[rgba(148,163,184,0.1)] sticky top-6 space-y-6">
+                        <div className="bg-[#F1F5F9] p-6 rounded-xl shadow-xl border border-slate-200 sticky top-6 space-y-6">
                             <div className="flex justify-between items-start">
                                 <div>
                                     <h2 className="text-lg font-black text-slate-900 leading-tight">{selectedQR.title}</h2>
                                     <p className="text-xs text-slate-900 mt-1 uppercase tracking-widest">{selectedQR.qrNumber}</p>
                                     {selectedQR.requiredDate && (
-                                        <div className="flex items-center gap-2 mt-2 py-1.5 px-3 bg-rose-500/10 text-black rounded-lg w-fit border border-rose-500/20 animate-in fade-in slide-in-from-top-1">
+                                        <div className="flex items-center gap-2 mt-2 py-1.5 px-3 bg-rose-500/10 text-rose-700 rounded-lg w-fit border border-rose-500/20 animate-in fade-in slide-in-from-top-1">
                                             <Calendar size={12} className="shrink-0" />
                                             <span className="text-[10px] font-black uppercase tracking-widest leading-none">Cần hàng trước: {formatDate(selectedQR.requiredDate)}</span>
                                         </div>
@@ -193,22 +196,22 @@ export default function QuoteRequestPage() {
                                 <h3 className="text-xs font-black text-slate-900 uppercase tracking-widest">Danh sách mặt hàng</h3>
                                 <div className="space-y-3">
                                     {selectedQR.items.map((item, idx) => (
-                                        <div key={idx} className="p-4 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)]">
+                                        <div key={idx} className="p-4 bg-[#FFFFFF] rounded-xl border border-slate-200">
                                             <div className="flex justify-between items-start mb-2">
                                                 <span className="font-bold text-sm text-slate-900">{item.productName}</span>
                                                 <span className="text-xs font-black text-slate-900 underline underline-offset-4 decoration-[#2563EB]/30">{item.qty} {item.unit}</span>
                                             </div>
                                             
-                                            <div className="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-[rgba(148,163,184,0.1)]">
+                                            <div className="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-slate-200">
                                                 <div className="flex flex-col">
-                                                    <span className="text-[9px] uppercase font-black text-slate-900">Nhà cung cấp</span>
-                                                    <span className={`text-xs font-bold ${item.supplierName ? 'text-slate-900' : 'italic text-slate-900'}`}>
+                                                    <span className="text-[0.6875rem] uppercase font-black text-slate-900">Nhà cung cấp</span>
+                                                    <span className={`text-xs font-bold ${item.supplierName ? 'text-slate-900' : 'italic text-[#64748B]'}`}>
                                                         {item.supplierName || "Đang lấy giá..."}
                                                     </span>
                                                 </div>
                                                 <div className="flex flex-col">
-                                                    <span className="text-[9px] uppercase font-black text-slate-900">Đơn giá báo</span>
-                                                    <span className={`text-xs font-bold ${item.unitPrice ? 'text-[#2563EB]' : 'italic text-slate-900'}`}>
+                                                    <span className="text-[0.6875rem] uppercase font-black text-slate-900">Đơn giá báo</span>
+                                                    <span className={`text-xs font-bold ${item.unitPrice ? 'text-[#2563EB]' : 'italic text-[#64748B]'}`}>
                                                         {item.unitPrice ? `${item.unitPrice.toLocaleString('vi-VN')} VNĐ` : "Chờ cập nhật"}
                                                     </span>
                                                 </div>
@@ -218,12 +221,12 @@ export default function QuoteRequestPage() {
                                 </div>
                             </div>
 
-                            <div className="pt-6 border-t border-[rgba(148,163,184,0.1)] space-y-3">
+                            <div className="pt-6 border-t border-slate-200 space-y-3">
                                 {selectedQR.status === QuoteRequestStatus.COMPLETED ? (
                                     <>
                                         <div className="bg-emerald-500/10 p-4 rounded-xl border border-emerald-500/20 flex items-center gap-3 mb-4">
-                                            <BadgeCheck className="text-black" size={20} />
-                                            <span className="text-xs font-bold text-black">Giá đã được cập nhật khuyên tạo PR ngay!</span>
+                                            <BadgeCheck className="text-emerald-600" size={20} />
+                                            <span className="text-xs font-bold text-emerald-700">Giá đã được cập nhật khuyên tạo PR ngay!</span>
                                         </div>
                                         <button 
                                             onClick={() => handleConvertToPR(selectedQR)}
@@ -246,7 +249,7 @@ export default function QuoteRequestPage() {
                             </div>
                         </div>
                     ) : (
-                        <div className="h-full flex flex-col items-center justify-center p-12 bg-[#F1F5F9]/50 rounded-xl border border-dashed border-[rgba(148,163,184,0.2)]">
+                        <div className="h-full flex flex-col items-center justify-center p-12 bg-[#F1F5F9]/50 rounded-xl border border-dashed border-slate-200">
                             <ClipboardList className="text-slate-900 mb-4" size={48} />
                             <p className="text-slate-900 text-sm font-bold italic text-center max-w-[240px] leading-relaxed">Chọn một yêu cầu để xem chi tiết báo giá và thực hiện hành động</p>
                         </div>

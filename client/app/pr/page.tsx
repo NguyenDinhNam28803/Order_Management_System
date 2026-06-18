@@ -5,19 +5,13 @@ import { useProcurement, PR } from "../context/ProcurementContext";
 import ERPTable, { ERPTableColumn } from "../components/shared/ERPTable";
 import { Plus, FileText, Send, Check, X } from "lucide-react";
 import Link from "next/link";
+import PageHeader from "../components/shared/PageHeader";
 import { ApprovalWorkflow } from "../context/ProcurementContext";
-import { getStatusLabel, convertPrismaDecimal, formatVND } from "../utils/formatUtils";
+import { getStatusLabel, convertPrismaDecimal, formatVND, formatDate } from "../utils/formatUtils";
 
 export default function PRPage() {
     const { prs, myPrs, currentUser, actionApproval, costCenters, approvals, submitPR } = useProcurement();
     const [activeTab, setActiveTab] = React.useState("Tất cả");
-
-    const formatDate = (ds?: string) => {
-        if (!ds) return "N/A";
-        const d = new Date(ds);
-        if (isNaN(d.getTime())) return ds;
-        return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
-    };
 
     const isManager = currentUser?.role === "DEPT_APPROVER";
     const isDirector = currentUser?.role === "DIRECTOR";
@@ -104,17 +98,17 @@ export default function PRPage() {
             render: (row: PR) => {
                 const status = row.status || 'DRAFT';
                 const statusConfig: Record<string, { bg: string; text: string; border: string }> = {
-                    'DRAFT': { bg: 'bg-slate-500/10', text: 'text-black', border: 'border-slate-500/20' },
-                    'PENDING': { bg: 'bg-amber-500/10', text: 'text-black', border: 'border-amber-500/20' },
-                    'PENDING_APPROVAL': { bg: 'bg-amber-500/10', text: 'text-black', border: 'border-amber-500/20' },
-                    'SUBMITTED': { bg: 'bg-[#2563EB]/10', text: 'text-[#3B82F6]', border: 'border-[#2563EB]/20' },
-                    'UNDER_REVIEW': { bg: 'bg-purple-500/10', text: 'text-black', border: 'border-purple-500/20' },
-                    'APPROVED': { bg: 'bg-emerald-500/10', text: 'text-black', border: 'border-emerald-500/20' },
-                    'REJECTED': { bg: 'bg-rose-500/10', text: 'text-black', border: 'border-rose-500/20' },
-                    'CANCELLED': { bg: 'bg-gray-500/10', text: 'text-black', border: 'border-gray-500/20' },
-                    'COMPLETED': { bg: 'bg-cyan-500/10', text: 'text-black', border: 'border-cyan-500/20' },
-                    'PO_CREATED': { bg: 'bg-indigo-500/10', text: 'text-black', border: 'border-indigo-500/20' },
-                    'IN_SOURCING': { bg: 'bg-orange-500/10', text: 'text-black', border: 'border-orange-500/20' },
+                    'DRAFT': { bg: 'bg-slate-500/10', text: 'text-slate-600', border: 'border-slate-500/20' },
+                    'PENDING': { bg: 'bg-amber-500/10', text: 'text-amber-700', border: 'border-amber-500/20' },
+                    'PENDING_APPROVAL': { bg: 'bg-amber-500/10', text: 'text-amber-700', border: 'border-amber-500/20' },
+                    'SUBMITTED': { bg: 'bg-[#2563EB]/10', text: 'text-indigo-700', border: 'border-[#2563EB]/20' },
+                    'UNDER_REVIEW': { bg: 'bg-purple-500/10', text: 'text-purple-700', border: 'border-purple-500/20' },
+                    'APPROVED': { bg: 'bg-emerald-500/10', text: 'text-emerald-700', border: 'border-emerald-500/20' },
+                    'REJECTED': { bg: 'bg-rose-500/10', text: 'text-rose-700', border: 'border-rose-500/20' },
+                    'CANCELLED': { bg: 'bg-gray-500/10', text: 'text-rose-700', border: 'border-gray-500/20' },
+                    'COMPLETED': { bg: 'bg-cyan-500/10', text: 'text-purple-700', border: 'border-cyan-500/20' },
+                    'PO_CREATED': { bg: 'bg-indigo-500/10', text: 'text-indigo-700', border: 'border-indigo-500/20' },
+                    'IN_SOURCING': { bg: 'bg-orange-500/10', text: 'text-amber-700', border: 'border-orange-500/20' },
                 };
                 const style = statusConfig[status] || statusConfig['DRAFT'];
 
@@ -150,7 +144,7 @@ export default function PRPage() {
                     <div className="flex gap-1 justify-end items-center">
                         <Link
                             href={`/pr/${row.id}`}
-                            className="p-1 rounded bg-[#FFFFFF] text-slate-900 hover:text-[#2563EB] hover:bg-[#2563EB]/10 border border-[rgba(148,163,184,0.1)] transition-all"
+                            className="p-1 rounded bg-[#FFFFFF] text-slate-900 hover:text-[#2563EB] hover:bg-[#2563EB]/10 border border-slate-200 transition-all"
                             title="Xem chi tiết PR"
                         >
                             <FileText size={14} />
@@ -159,13 +153,13 @@ export default function PRPage() {
                             <div className="flex gap-1">
                                 <button
                                     onClick={() => handleAction(row.id, 'APPROVE')}
-                                    className="p-1 rounded bg-emerald-500/10 text-black hover:bg-emerald-500 hover:text-white border border-emerald-500/20 transition-all"
+                                    className="p-1 rounded bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500 hover:text-white border border-emerald-500/20 transition-all"
                                 >
                                     <Check size={14} />
                                 </button>
                                 <button
                                     onClick={() => handleAction(row.id, 'REJECT')}
-                                    className="p-1 rounded bg-rose-500/10 text-black hover:bg-rose-500 hover:text-white border border-rose-500/20 transition-all"
+                                    className="p-1 rounded bg-rose-500/10 text-rose-700 hover:bg-rose-500 hover:text-white border border-rose-500/20 transition-all"
                                 >
                                     <X size={14} />
                                 </button>
@@ -175,13 +169,13 @@ export default function PRPage() {
                                 {row.status === 'DRAFT' && (
                                     <div className="flex gap-1">
                                         <button
-                                            className="p-1 rounded bg-[#FFFFFF] text-slate-900 hover:text-amber-500 hover:bg-amber-500/10 border border-[rgba(148,163,184,0.1)] transition-all"
+                                            className="p-1 rounded bg-[#FFFFFF] text-slate-900 hover:text-amber-500 hover:bg-amber-500/10 border border-slate-200 transition-all"
                                             title="Sửa PR"
                                         >
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" /></svg>
                                         </button>
                                         <button
-                                            className="p-1 rounded bg-[#FFFFFF] text-slate-900 hover:text-rose-500 hover:bg-rose-500/10 border border-[rgba(148,163,184,0.1)] transition-all"
+                                            className="p-1 rounded bg-[#FFFFFF] text-slate-900 hover:text-rose-500 hover:bg-rose-500/10 border border-slate-200 transition-all"
                                             title="Xóa PR"
                                         >
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6" /></svg>
@@ -195,7 +189,7 @@ export default function PRPage() {
                                     </div>
                                 )}
                                 {row.status?.includes('PENDING') && (
-                                    <span className="text-[9px] font-bold text-slate-900 bg-[#FFFFFF] px-2 py-1 rounded border border-[rgba(148,163,184,0.1)]">
+                                    <span className="text-[0.6875rem] font-bold text-slate-900 bg-[#FFFFFF] px-2 py-1 rounded border border-slate-200">
                                         Đang xử lý
                                     </span>
                                 )}
@@ -208,53 +202,41 @@ export default function PRPage() {
     ];
 
     return (
-        <main className="animate-in fade-in duration-500 min-h-screen bg-[#FFFFFF] text-slate-900">
-            <header className="mt-8 flex items-center justify-between border-b border-[rgba(148,163,184,0.1)] pb-8 mb-8 px-6">
-                <div>
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tight">
-                        {currentUser?.role === "PROCUREMENT" ? "Toàn bộ Yêu cầu PR" : "Yêu cầu mua sắm của tôi"}
-                    </h1>
-                    <p className="text-sm font-medium text-slate-900 mt-1">Quản lý và theo dõi tiến độ phê duyệt định mức mua sắm tập trung.</p>
-                </div>
-                {currentUser?.role !== "PROCUREMENT" && currentUser?.role !== "PLATFORM_ADMIN" && (
-                    <Link href="/pr/create" className="py-3 px-6 bg-[#2563EB] text-white rounded-xl font-black uppercase tracking-wider text-xs shadow-lg shadow-[#2563EB]/20 hover:bg-[#1D4ED8] transition-all flex flex-col items-center">
-                        <div className="flex items-center gap-2">
-                            <Plus size={18} />
-                            <span className="text-sm font-semibold">Tạo yêu cầu mới</span>
-                        </div>
-                    </Link>
-                )}
-            </header>
+        <main className="animate-in fade-in duration-500 min-h-screen bg-[#F8FAFC] text-slate-900 p-6">
+            <PageHeader
+                icon={FileText}
+                iconColor="blue"
+                title={currentUser?.role === "PROCUREMENT" ? "Toàn bộ Yêu cầu PR" : "Yêu cầu mua sắm của tôi"}
+                subtitle="Quản lý và theo dõi tiến độ phê duyệt định mức mua sắm tập trung."
+                actions={
+                    currentUser?.role !== "PROCUREMENT" && currentUser?.role !== "PLATFORM_ADMIN" ? (
+                        <Link href="/pr/create" className="btn-primary">
+                            <Plus size={15} /> Tạo yêu cầu mới
+                        </Link>
+                    ) : undefined
+                }
+            />
 
-            <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 overflow-hidden mx-6">
-                <div className="p-5 bg-[#FFFFFF] border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between">
-                    <div className="flex items-center gap-6">
-                        <div className="text-xs font-black text-slate-900 uppercase tracking-widest px-2">Bộ lọc nhanh</div>
-                        <div className="flex gap-2">
-                            {tabs.map(filter => (
-                                <button
-                                    key={filter}
-                                    onClick={() => setActiveTab(filter)}
-                                    className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${activeTab === filter
-                                            ? "bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20"
-                                            : "text-white hover:text-white hover:bg-[#FFFFFF]"
-                                        }`}
-                                >
-                                    {filter}
-                                </button>
-                            ))}
-                        </div>
+            <div className="erp-card table-card overflow-hidden">
+                <div className="p-4 border-b border-slate-200 flex items-center gap-4">
+                    <span className="text-xs font-semibold text-[#64748B] uppercase tracking-widest">Bộ lọc nhanh</span>
+                    <div className="filter-tabs">
+                        {tabs.map(filter => (
+                            <button
+                                key={filter}
+                                onClick={() => setActiveTab(filter)}
+                                className={`filter-tab ${activeTab === filter ? "active" : ""}`}
+                            >
+                                {filter}
+                            </button>
+                        ))}
                     </div>
                 </div>
                 {displayData.length === 0 ? (
-                    <div className="p-20 text-center flex flex-col items-center justify-center space-y-4">
-                        <div className="h-16 w-16 rounded-xl bg-[#FFFFFF] flex items-center justify-center text-slate-900 border border-[rgba(148,163,184,0.1)]">
-                            <FileText size={28} />
-                        </div>
-                        <div>
-                            <h3 className="font-bold text-slate-900">Thông tin trống</h3>
-                            <p className="text-slate-900 text-sm">Chưa có yêu cầu nào được thiết lập cho mục này.</p>
-                        </div>
+                    <div className="empty-state py-20">
+                        <div className="empty-state-icon"><FileText size={28} /></div>
+                        <div className="empty-state-title">Thông tin trống</div>
+                        <div className="empty-state-desc">Chưa có yêu cầu nào được thiết lập cho mục này.</div>
                     </div>
                 ) : (
                     <ERPTable columns={columns} data={displayData} />

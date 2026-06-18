@@ -97,15 +97,13 @@ export default function ERPTable<T extends object>({
                 <tbody>
                     {sortedData.length === 0 ? (
                         <tr>
-                            <td colSpan={columns.length} className="text-center py-16 bg-white">
-                                <div className="flex flex-col items-center gap-3 text-slate-400">
-                                    <div className="h-14 w-14 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center">
+                            <td colSpan={columns.length} className="bg-white">
+                                <div className="empty-state">
+                                    <div className="h-14 w-14 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center mb-3 empty-state-icon">
                                         <Inbox size={22} className="text-slate-300" />
                                     </div>
-                                    <div>
-                                        <p className="text-sm font-semibold text-slate-500">{emptyMessage}</p>
-                                        <p className="text-xs text-slate-400 mt-0.5">{emptyDescription}</p>
-                                    </div>
+                                    <p className="empty-state-title">{emptyMessage}</p>
+                                    <p className="empty-state-desc">{emptyDescription}</p>
                                 </div>
                             </td>
                         </tr>

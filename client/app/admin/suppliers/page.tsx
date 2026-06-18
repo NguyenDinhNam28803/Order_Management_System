@@ -4,11 +4,12 @@ import React, { useState } from "react";
 import { useProcurement, Organization } from "../../context/ProcurementContext";
 import { CreateOrganizationPayload } from "@/app/types/api-types";
 import ConfirmDialog from "../../components/shared/ConfirmDialog";
-import { 
-    Truck, Plus, Search, 
-    Trash2, CheckCircle2, XCircle, Star, 
+import {
+    Truck, Plus, Search,
+    Trash2, CheckCircle2, XCircle, Star,
     Mail, Phone, Globe
 } from "lucide-react";
+import PageHeader from "../../components/shared/PageHeader";
 
 export interface Supplier {
     id: string;
@@ -42,7 +43,7 @@ export default function SupplierManagementPage() {
     });
 
     if (currentUser?.role !== "PLATFORM_ADMIN") {
-        return <div className="p-20 text-center font-black text-black">Bạn không có quyền truy cập trang quản trị này.</div>;
+        return <div className="p-20 text-center font-bold text-slate-900">Bạn không có quyền truy cập trang quản trị này.</div>;
     }
 
     const handleAddSupplier = async () => {
@@ -83,26 +84,25 @@ export default function SupplierManagementPage() {
                 onConfirm={confirmState.onConfirm}
                 onCancel={() => setConfirmState(s => ({ ...s, open: false }))}
             />
-            <div className="mt-8 flex justify-between items-end mb-10 border-b border-[rgba(148,163,184,0.1)] pb-8">
-                <div>
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-2">Quản lý Nhà cung cấp</h1>
-                    <p className="text-slate-900 font-bold text-sm tracking-tight flex items-center gap-2">
-                        <Truck size={14} className="text-[#2563EB]" /> 
-                        Danh mục đối tác và nhà cung ứng chiến lược của hệ thống
-                    </p>
-                </div>
-                <button 
-                    onClick={() => setIsAddModalOpen(true)}
-                    className="flex items-center gap-2 bg-[#2563EB] text-white px-8 py-3.5 rounded-[20px] font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#2563EB]/20 hover:scale-[1.02] transition-transform active:scale-95"
-                >
-                    <Plus size={18} /> Thêm nhà cung cấp
-                </button>
-            </div>
+            <PageHeader
+                icon={Truck}
+                iconColor="blue"
+                title="Quản lý Nhà cung cấp"
+                subtitle="Danh mục đối tác và nhà cung ứng chiến lược của hệ thống."
+                actions={
+                    <button
+                        onClick={() => setIsAddModalOpen(true)}
+                        className="btn-primary flex items-center gap-2"
+                    >
+                        <Plus size={16} /> Thêm nhà cung cấp
+                    </button>
+                }
+            />
 
-            <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)]">
-                <div className="p-8 border-b border-[rgba(148,163,184,0.1)] flex items-center justify-between gap-6 bg-[#FFFFFF]">
+            <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden bg-[#F1F5F9] border border-slate-200">
+                <div className="p-8 border-b border-slate-200 flex items-center justify-between gap-6 bg-[#FFFFFF]">
                     <div className="relative flex-1 max-w-md group">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-900 group-focus-within:text-[#2563EB] transition-colors" size={18} />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#94A3B8] group-focus-within:text-[#2563EB] transition-colors" size={18} />
                         <input 
                             className="erp-input pl-12" 
                             placeholder="Tìm theo tên, mã hoặc lĩnh vực..." 
@@ -124,7 +124,7 @@ export default function SupplierManagementPage() {
                                 <th className="px-8 py-5 text-right w-20"></th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-[rgba(148,163,184,0.05)]">
+                        <tbody className="divide-y divide-slate-100">
                             {filteredSuppliers.length === 0 && (
                                 <tr>
                                     <td colSpan={6} className="py-16 text-center text-slate-400">
@@ -138,14 +138,14 @@ export default function SupplierManagementPage() {
                                 <tr key={s.id} className="hover:bg-[#FFFFFF]/50 transition-all group">
                                     <td className="px-8 py-6">
                                         <div className="flex items-center gap-4">
-                                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-white shadow-lg shadow-black/20 transition-transform group-hover:scale-110 ${s.isActive !== false ? 'bg-[#2563EB]' : 'bg-[#000000]'}`}>
+                                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-black text-white shadow-lg shadow-black/20 transition-transform group-hover:scale-110 ${s.isActive !== false ? 'bg-[#2563EB]' : 'bg-slate-500'}`}>
                                                 {s.name.substring(0,2).toUpperCase()}
                                             </div>
                                             <div className="flex flex-col">
                                                 <span className="font-black text-slate-900 leading-none mb-1 group-hover:text-[#2563EB] transition-colors">{s.name}</span>
                                                 <div className="flex items-center gap-2">
-                                                    <span className="text-[10px] font-black text-slate-900 uppercase tracking-tighter bg-[#FFFFFF] px-1.5 py-0.5 rounded border border-[rgba(148,163,184,0.1)]">{s.code}</span>
-                                                    {s.website && <Globe size={10} className="text-slate-900" />}
+                                                                        <span className="text-[10px] font-black text-slate-900 uppercase tracking-tighter bg-[#FFFFFF] px-1.5 py-0.5 rounded border border-slate-200">{s.code}</span>
+                                                    {s.website && <Globe size={10} className="text-[#94A3B8]" />}
                                                 </div>
                                             </div>
                                         </div>
@@ -155,18 +155,18 @@ export default function SupplierManagementPage() {
                                     </td>
                                     <td className="px-6 py-6 font-medium">
                                         <div className="flex flex-col gap-1">
-                                            <div className="flex items-center gap-2 text-xs text-slate-900">
-                                                <Mail size={12} className="text-slate-900" /> {s.email || "N/A"}
+                                                            <div className="flex items-center gap-2 text-xs text-slate-900">
+                                                <Mail size={12} className="text-[#94A3B8]" /> {s.email || "N/A"}
                                             </div>
                                             <div className="flex items-center gap-2 text-xs text-slate-900">
-                                                <Phone size={12} className="text-slate-900" /> {s.phone || "N/A"}
+                                                <Phone size={12} className="text-[#94A3B8]" /> {s.phone || "N/A"}
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-6 py-6">
                                         <div className="flex gap-0.5">
                                             {[1,2,3,4,5].map(i => (
-                                                <Star key={i} size={12} className={i <= (s.trustScore ? Math.ceil(s.trustScore / 20) : 4) ? "fill-amber-400 text-black" : "text-[#0F172A]"} />
+                                                <Star key={i} size={12} className={i <= (s.trustScore ? Math.ceil(s.trustScore / 20) : 4) ? "fill-amber-400 text-amber-400" : "text-slate-300"} />
                                             ))}
                                         </div>
                                     </td>
@@ -210,7 +210,7 @@ export default function SupplierManagementPage() {
                             <h2 className="text-2xl font-black text-slate-900 uppercase mb-2 tracking-tight">
                                 Thêm nhà cung cấp mới
                             </h2>
-                            <p className="text-xs text-slate-900 font-bold uppercase tracking-widest mb-6">QUẢN LÝ NHÀ CUNG CẤP</p>
+                            <p className="text-[0.8125rem] text-[#64748B] font-medium uppercase tracking-widest mb-6">QUẢN LÝ NHÀ CUNG CẤP</p>
                             
                             <div className="form-grid mb-8">
                                 <div className="form-group col-span-2">

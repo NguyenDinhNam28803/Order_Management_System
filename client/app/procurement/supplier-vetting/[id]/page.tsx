@@ -144,7 +144,7 @@ function CheckRow({
               value={fileUrl}
               onChange={(e) => setFileUrl(e.target.value)}
               placeholder="https://..."
-              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 placeholder:text-slate-900 focus:outline-none focus:border-blue-600/50"
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600/50"
             />
           </div>
           <div>
@@ -153,7 +153,7 @@ function CheckRow({
               rows={2}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 placeholder:text-slate-900 focus:outline-none focus:border-blue-600/50 resize-none"
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600/50 resize-none"
             />
           </div>
           <div className="flex gap-2">
@@ -163,7 +163,7 @@ function CheckRow({
             <button disabled={saving} onClick={() => save("FAILED")} className="flex items-center gap-1.5 rounded-lg bg-red-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-500 disabled:opacity-50">
               {saving ? <Loader2 size={12} className="animate-spin" /> : <XCircle size={12} />}Failed
             </button>
-            <button disabled={saving} onClick={() => save("SKIPPED")} className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-900 hover:text-slate-900">
+            <button disabled={saving} onClick={() => save("SKIPPED")} className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-[#64748B] hover:text-slate-900">
               <SkipForward size={12} />Skip
             </button>
           </div>
@@ -180,7 +180,7 @@ function ApproveModal({ onClose, onConfirm }: { onClose: () => void; onConfirm: 
   const [loading, setLoading] = useState(false);
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-slate-100 p-6 shadow-xl">
+      <div className="w-full max-w-md rounded-xl border border-slate-200 bg-slate-100 p-6 shadow-xl">
         <h2 className="mb-4 text-lg font-bold text-slate-900">Phê duyệt nhà cung cấp</h2>
         <div className="mb-4">
           <label className="mb-1 block text-xs text-slate-900">Xếp hạng (Tier)</label>
@@ -215,7 +215,7 @@ function RejectModal({ onClose, onConfirm }: { onClose: () => void; onConfirm: (
   const [loading, setLoading] = useState(false);
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-slate-100 p-6 shadow-xl">
+      <div className="w-full max-w-md rounded-xl border border-slate-200 bg-slate-100 p-6 shadow-xl">
         <h2 className="mb-4 text-lg font-bold text-slate-900">Từ chối nhà cung cấp</h2>
         <div className="mb-4">
           <label className="mb-1 block text-xs text-slate-900">Lý do từ chối *</label>
@@ -343,7 +343,7 @@ export default function SupplierVettingDetailPage() {
       {/* Header */}
       <div className="page-header">
         <div>
-          <Link href="/procurement/supplier-vetting" className="mb-3 flex items-center gap-1 text-xs text-slate-900 hover:text-slate-900">
+          <Link href="/procurement/supplier-vetting" className="mb-3 flex items-center gap-1 text-xs text-[#64748B] hover:text-slate-900">
             <ChevronLeft size={14} />Danh sách xét duyệt
           </Link>
           <div className="flex items-center gap-3">
@@ -351,7 +351,7 @@ export default function SupplierVettingDetailPage() {
             <h1 className="page-title">{vetting.supplier.name}</h1>
             <StatusBadge status={vetting.status} />
           </div>
-          <p className="mt-1 text-xs text-slate-900">
+          <p className="mt-1 text-xs text-[#64748B]">
             Tạo bởi {vetting.requestedBy.fullName ?? vetting.requestedBy.email} •{" "}
             {new Date(vetting.createdAt).toLocaleDateString("vi-VN")}
             {vetting.assignedTo && ` • Phụ trách: ${vetting.assignedTo.fullName ?? vetting.assignedTo.email}`}
@@ -421,15 +421,15 @@ export default function SupplierVettingDetailPage() {
             <div className="flex items-end gap-4">
               <div className="text-center">
                 <div className="text-2xl font-bold text-black">{passed}</div>
-                <div className="text-[10px] text-slate-900">Passed</div>
+                <div className="text-[0.6875rem] text-slate-900">Passed</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-red-400">{failed}</div>
-                <div className="text-[10px] text-slate-900">Failed</div>
+                <div className="text-[0.6875rem] text-slate-900">Failed</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-slate-900">{vetting.checks.length - passed - failed}</div>
-                <div className="text-[10px] text-slate-900">Pending/Skip</div>
+                <div className="text-[0.6875rem] text-slate-900">Pending/Skip</div>
               </div>
             </div>
             {vetting.overallScore != null && (
@@ -454,7 +454,7 @@ export default function SupplierVettingDetailPage() {
           {vetting.notes && (
             <div className="rounded-xl border border-slate-200 bg-slate-100 p-4">
               <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-900"><FileText size={14} />Ghi chú</h3>
-              <p className="text-xs text-slate-900 whitespace-pre-wrap">{vetting.notes}</p>
+              <p className="text-xs text-[#64748B] whitespace-pre-wrap">{vetting.notes}</p>
             </div>
           )}
         </div>
@@ -473,3 +473,4 @@ export default function SupplierVettingDetailPage() {
     </main>
   );
 }
+

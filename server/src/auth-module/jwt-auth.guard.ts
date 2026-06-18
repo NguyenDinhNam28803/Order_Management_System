@@ -23,10 +23,13 @@ export class JwtAuthGuard implements CanActivate {
       // Gán payload vào request để sử dụng sau này
       request['user'] = payload;
     } catch (error) {
-      if (error.name === 'TokenExpiredError') {
-        throw new UnauthorizedException(
-          'Token đã hết hạn, vui lòng đăng nhập lại',
-        );
+      if (error instanceof Error) {
+        // Bây giờ TypeScript biết error là Error object
+        if (error.name === 'TokenExpiredError') {
+          throw new UnauthorizedException(
+            'Token đã hết hạn, vui lòng đăng nhập lại',
+          );
+        }
       }
       throw new UnauthorizedException('Xác thực không thành công');
     }

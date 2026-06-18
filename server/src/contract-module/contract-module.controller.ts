@@ -50,16 +50,15 @@ export class ContractModuleController {
    * @returns Trạng thái hợp đồng sau khi gửi duyệt
    */
   @Post(':id/submit')
-  @ApiOperation({
-    summary: 'Gửi hợp đồng để phê duyệt (tự động theo ApprovalMatrix)',
-  })
+  @ApiOperation({ summary: 'Gửi hợp đồng để phê duyệt' })
   submitForApproval(
     @Param('id') id: string,
+    @Body('approverId') approverId: string,
     @Request() req: { user: JwtPayload },
   ) {
     return this.contractModuleService.submitForApproval(
       id,
-      req.user.sub,
+      approverId,
       req.user.orgId,
     );
   }

@@ -4,8 +4,9 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useProcurement, Invoice } from "@/app/context/ProcurementContext";
 import { FileText, Search, CheckCircle2, Clock, AlertCircle, ArrowRight, FileCheck, XCircle, CreditCard, Filter } from "lucide-react";
-import { formatVND, getStatusLabel } from "@/app/utils/formatUtils";
+import { formatVND, getStatusLabel, formatDate } from "@/app/utils/formatUtils";
 import { Organization } from "@/app/types/api-types";
+import PageHeader from "@/app/components/shared/PageHeader";
 
 // Extended Invoice with UI-specific fields from API
 type InvoiceWithDetails = Invoice & {
@@ -45,18 +46,18 @@ export default function FinanceInvoicesPage() {
         switch (status) {
             case "APPROVED":
             case "AUTO_APPROVED":
-                return <CheckCircle2 size={16} className="text-black" />;
+                return <CheckCircle2 size={16} className="text-emerald-600" />;
             case "MATCHED":
                 return <CheckCircle2 size={16} className="text-[#3B82F6]" />;
             case "SUBMITTED":
             case "PENDING":
             case "MATCHING":
-                return <Clock size={16} className="text-black" />;
+                return <Clock size={16} className="text-amber-600" />;
             case "EXCEPTION_REVIEW":
-                return <AlertCircle size={16} className="text-black" />;
+                return <AlertCircle size={16} className="text-orange-600" />;
             case "REJECTED":
             case "DISPUTED":
-                return <XCircle size={16} className="text-black" />;
+                return <XCircle size={16} className="text-rose-600" />;
             case "PAID":
                 return <CreditCard size={16} className="text-[#3B82F6]" />;
             default:
@@ -68,22 +69,22 @@ export default function FinanceInvoicesPage() {
         switch (status) {
             case "APPROVED":
             case "AUTO_APPROVED":
-                return "bg-emerald-500/10 text-black border-emerald-500/20";
+                return "bg-emerald-500/10 text-emerald-700 border-emerald-500/20";
             case "MATCHED":
                 return "bg-[#2563EB]/10 text-[#3B82F6] border-[#2563EB]/20";
             case "SUBMITTED":
             case "PENDING":
             case "MATCHING":
-                return "bg-amber-500/10 text-black border-amber-500/20";
+                return "bg-amber-500/10 text-amber-700 border-amber-500/20";
             case "EXCEPTION_REVIEW":
-                return "bg-orange-500/10 text-black border-orange-500/20";
+                return "bg-orange-500/10 text-orange-700 border-orange-500/20";
             case "REJECTED":
             case "DISPUTED":
-                return "bg-rose-500/10 text-black border-rose-500/20";
+                return "bg-rose-500/10 text-rose-700 border-rose-500/20";
             case "PAID":
                 return "bg-[#2563EB]/10 text-[#3B82F6] border-[#2563EB]/20";
             default:
-                return "bg-[#FFFFFF] text-slate-900 border-[rgba(148,163,184,0.1)]";
+                return "bg-[#FFFFFF] text-slate-900 border-slate-200";
         }
     };
 
@@ -94,28 +95,23 @@ export default function FinanceInvoicesPage() {
     return (
         <div className="animate-in fade-in duration-500">
 
-            <div className="mt-8 flex justify-between items-end mb-10 border-b border-[rgba(148,163,184,0.1)] pb-8">
-                <div>
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-2">
-                        Quản lý Hóa đơn
-                    </h1>
-                    <p className="text-slate-900 font-bold text-sm tracking-tight flex items-center gap-2">
-                        <FileText size={14} className="text-[#2563EB]" />
-                        Danh sách hóa đơn chờ đối soát và thanh toán
-                    </p>
-                </div>
-            </div>
+            <PageHeader
+                icon={FileText}
+                iconColor="blue"
+                title="Quản lý Hóa đơn"
+                subtitle="Danh sách hóa đơn chờ đối soát và thanh toán."
+            />
 
             {/* Filter Bar */}
-            <div className="bg-[#F1F5F9] p-4 rounded-xl border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 mb-8">
+            <div className="bg-[#F1F5F9] p-4 rounded-xl border border-slate-200 shadow-2xl shadow-[#2563EB]/5 mb-8">
                 <div className="flex flex-col md:flex-row gap-4">
                     <div className="flex-1 flex gap-3">
-                        <div className="h-14 w-14 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
+                        <div className="h-14 w-14 bg-[#FFFFFF] border border-slate-200 rounded-xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
                             <Search size={20} className="text-[#2563EB]" />
                         </div>
                         <div className="relative flex-1">
                             <input
-                                className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-sm font-bold text-slate-900 placeholder:text-slate-900/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all"
+                                className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-slate-200 rounded-xl text-sm font-bold text-slate-900 placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all"
                                 placeholder="Tìm theo số hóa đơn, nhà cung cấp, PO..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -126,7 +122,7 @@ export default function FinanceInvoicesPage() {
                         <div className="relative">
                             <Filter size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2563EB]" />
                             <select
-                                className="h-14 pl-12 pr-10 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-sm font-bold text-slate-900 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all appearance-none cursor-pointer min-w-[200px]"
+                                className="h-14 pl-12 pr-10 bg-[#FFFFFF] border border-slate-200 rounded-xl text-sm font-bold text-slate-900 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all appearance-none cursor-pointer min-w-[200px]"
                                 value={statusFilter}
                                 onChange={(e) => setStatusFilter(e.target.value)}
                             >
@@ -146,7 +142,7 @@ export default function FinanceInvoicesPage() {
             </div>
 
             {/* Invoices Table */}
-            <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)]">
+            <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden bg-[#F1F5F9] border border-slate-200">
                 <div className="overflow-x-auto">
                     <table className="erp-table">
                         <thead>
@@ -160,7 +156,7 @@ export default function FinanceInvoicesPage() {
                                 <th className="px-6 py-4 text-right">Thao tác</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-[rgba(148,163,184,0.05)]">
+                        <tbody className="divide-y divide-slate-100">
                             {filteredInvoices.length === 0 ? (
                                 <tr>
                                     <td colSpan={7} className="px-6 py-16 text-center text-slate-900">
@@ -189,7 +185,7 @@ export default function FinanceInvoicesPage() {
                                             )}
                                         </td>
                                         <td className="px-6 py-5">
-                                            <span className="text-xs font-black text-slate-900 uppercase tracking-tight bg-[#FFFFFF] px-2 py-1 rounded border border-[rgba(148,163,184,0.1)]">
+                                            <span className="text-xs font-black text-slate-900 uppercase tracking-tight bg-[#FFFFFF] px-2 py-1 rounded border border-slate-200">
                                                 {inv.po?.poNumber || "PO-***"}
                                             </span>
                                             {inv.grnId && (
@@ -214,7 +210,7 @@ export default function FinanceInvoicesPage() {
                                             )}
                                         </td>
                                         <td className="px-6 py-5 text-center text-sm text-slate-900">
-                                            {new Date(inv.invoiceDate || inv.createdAt).toLocaleDateString("vi-VN")}
+                                            {formatDate(inv.invoiceDate ?? inv.createdAt)}
                                         </td>
                                         <td className="px-6 py-5 text-right">
                                             <button
@@ -238,24 +234,24 @@ export default function FinanceInvoicesPage() {
 
             {/* Summary Stats */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
-                <div className="bg-[#F1F5F9] p-4 rounded-xl border border-[rgba(148,163,184,0.1)]">
-                    <p className="text-xs text-slate-900 uppercase tracking-widest mb-1">Tổng hóa đơn</p>
+                <div className="bg-[#F1F5F9] p-4 rounded-xl border border-slate-200">
+                    <p className="text-xs text-[#64748B] uppercase tracking-widest mb-1">Tổng hóa đơn</p>
                     <p className="text-2xl font-black text-slate-900">{invoices.length}</p>
                 </div>
-                <div className="bg-[#F1F5F9] p-4 rounded-xl border border-[rgba(148,163,184,0.1)]">
-                    <p className="text-xs text-slate-900 uppercase tracking-widest mb-1">Chờ đối soát</p>
+                <div className="bg-[#F1F5F9] p-4 rounded-xl border border-slate-200">
+                    <p className="text-xs text-[#64748B] uppercase tracking-widest mb-1">Chờ đối soát</p>
                     <p className="text-2xl font-black text-black">
                         {invoicesWithDetails.filter((i: InvoiceWithDetails) => i.status === "SUBMITTED" || i.status === "PENDING" || i.status === "MATCHING").length}
                     </p>
                 </div>
-                <div className="bg-[#F1F5F9] p-4 rounded-xl border border-[rgba(148,163,184,0.1)]">
-                    <p className="text-xs text-slate-900 uppercase tracking-widest mb-1">Lỗi đối soát</p>
+                <div className="bg-[#F1F5F9] p-4 rounded-xl border border-slate-200">
+                    <p className="text-xs text-[#64748B] uppercase tracking-widest mb-1">Lỗi đối soát</p>
                     <p className="text-2xl font-black text-black">
                         {invoicesWithDetails.filter((i: InvoiceWithDetails) => i.status === "EXCEPTION_REVIEW").length}
                     </p>
                 </div>
-                <div className="bg-[#F1F5F9] p-4 rounded-xl border border-[rgba(148,163,184,0.1)]">
-                    <p className="text-xs text-slate-900 uppercase tracking-widest mb-1">Tổng giá trị</p>
+                <div className="bg-[#F1F5F9] p-4 rounded-xl border border-slate-200">
+                    <p className="text-xs text-[#64748B] uppercase tracking-widest mb-1">Tổng giá trị</p>
                     <p className="text-xl font-black text-slate-900">
                         {formatVND(invoicesWithDetails.reduce((sum, i: InvoiceWithDetails) => sum + Number(i.totalAmount || i.amount || 0), 0))}
                     </p>

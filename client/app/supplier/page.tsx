@@ -9,6 +9,7 @@ import {
   Inbox,
   FileText,
   ShoppingCart,
+  Store,
   DollarSign,
   TrendingUp,
   AlertCircle,
@@ -32,6 +33,7 @@ import {
 } from "lucide-react";
 import { formatVND } from "../utils/formatUtils";
 import { ErrorBoundary } from "../components/shared/ErrorBoundary";
+import PageHeader from "../components/shared/PageHeader";
 
 // Tooltip Component
 const Tooltip = ({ children, content, position = 'top' }: { children: React.ReactNode; content: React.ReactNode; position?: 'top' | 'bottom' | 'left' | 'right' }) => {
@@ -48,7 +50,7 @@ const Tooltip = ({ children, content, position = 'top' }: { children: React.Reac
           position === 'left' ? 'right-full top-1/2 -translate-y-1/2 mr-2' :
           'left-full top-1/2 -translate-y-1/2 ml-2'
         }`}>
-          <div className="bg-[#0F172A] border border-[rgba(148,163,184,0.2)] rounded-xl p-3 shadow-2xl max-w-xs text-xs text-[#F8FAFC] whitespace-normal min-w-[220px]">
+          <div className="bg-[#0F172A] border border-slate-200 rounded-xl p-3 shadow-2xl max-w-xs text-xs text-[#F8FAFC] whitespace-normal min-w-[220px]">
             {content}
           </div>
         </div>
@@ -62,17 +64,17 @@ const getScorePercentage = (score?: number) => Math.min(Math.max(score || 0, 0),
 
 const getScoreColor = (score?: number) => {
   if (!score) return "text-slate-900";
-  if (score >= 90) return "text-black";
+  if (score >= 90) return "text-emerald-500";
   if (score >= 70) return "text-yellow-400";
-  return "text-black";
+  return "text-rose-400";
 };
 
 const getTierColor = (tier?: string) => {
   switch (tier) {
     case "GOLD": return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
-    case "SILVER": return "bg-slate-400/20 text-black border-slate-400/30";
-    case "BRONZE": return "bg-orange-500/20 text-black border-orange-500/30";
-    default: return "bg-[#0F172A] text-[#F8FAFC] border-[rgba(148,163,184,0.1)]";
+    case "SILVER": return "bg-slate-400/20 text-slate-700 border-slate-400/30";
+    case "BRONZE": return "bg-orange-500/20 text-orange-700 border-orange-500/30";
+    default: return "bg-[#0F172A] text-[#F8FAFC] border-slate-200";
   }
 };
 
@@ -101,7 +103,7 @@ interface ActivityItem {
 const StatCard = ({ title, value, subtitle, icon: Icon, color, trend, onClick }: StatCardProps) => (
   <div 
     onClick={onClick}
-    className={`bg-[#F1F5F9] rounded-xl p-5 border border-[rgba(148,163,184,0.1)] hover:border-[${color}]/30 transition-all group ${onClick ? 'cursor-pointer' : ''}`}
+    className={`bg-[#F1F5F9] rounded-xl p-5 border border-slate-200 hover:border-[${color}]/30 transition-all group ${onClick ? 'cursor-pointer' : ''}`}
   >
     <div className="flex items-start justify-between mb-3">
       <div className={`h-10 w-10 rounded-xl ${color.replace("text", "bg")}/10 flex items-center justify-center border border-${color.replace("[", "").replace("]", "")}/20`}>
@@ -116,14 +118,14 @@ const StatCard = ({ title, value, subtitle, icon: Icon, color, trend, onClick }:
     </div>
     <div className="text-2xl font-black text-slate-900 mb-1">{value}</div>
     <div className="text-xs font-bold text-slate-900 uppercase tracking-wider">{title}</div>
-    {subtitle && <div className="text-[10px] text-slate-900 mt-1">{subtitle}</div>}
+    {subtitle && <div className="text-[0.6875rem] text-[#64748B] mt-1">{subtitle}</div>}
   </div>
 );
 
 const QuickAction = ({ icon: Icon, label, href, color }: { icon: React.ElementType, label: string, href: string, color: string }) => (
   <Link 
     href={href}
-    className="flex flex-col items-center gap-2 p-4 rounded-xl bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/30 hover:bg-[#F1F5F9] transition-all group"
+    className="flex flex-col items-center gap-2 p-4 rounded-xl bg-[#FFFFFF] border border-slate-200 hover:border-[#2563EB]/30 hover:bg-[#F1F5F9] transition-all group"
   >
     <div className={`h-12 w-12 rounded-xl ${color} flex items-center justify-center group-hover:scale-110 transition-transform`}>
       <Icon size={24} className="text-slate-900" />
@@ -343,7 +345,7 @@ export default function SupplierPortalPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#FFFFFF] p-6">
+      <main className="min-h-screen bg-[#F8FAFC] p-6">
         <div className="flex flex-col items-center justify-center min-h-[400px]">
           <div className="w-12 h-12 border-4 border-[#2563EB] border-t-transparent rounded-full animate-spin mb-4"></div>
           <div className="text-slate-900 font-bold uppercase tracking-widest">Đang tải cổng thông tin...</div>
@@ -354,23 +356,13 @@ export default function SupplierPortalPage() {
 
   return (
     <ErrorBoundary>
-    <main className="min-h-screen bg-[#FFFFFF] p-6 animate-in fade-in duration-500">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-[#2563EB] to-[#8B5CF6] flex items-center justify-center">
-            <LayoutDashboard size={24} className="text-slate-900" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-black text-slate-900 tracking-tight">
-              Cổng thông tin Nhà cung cấp
-            </h1>
-            <p className="text-sm text-slate-900">
-              Xin chào, <span className="text-[#2563EB] font-bold">{supplierName}</span>
-            </p>
-          </div>
-        </div>
-      </div>
+    <main className="min-h-screen bg-[#F8FAFC] p-6 animate-in fade-in duration-500">
+      <PageHeader
+        title="Portal Nhà cung cấp"
+        subtitle={`Xin chào, ${supplierName}`}
+        icon={Store}
+        iconColor="blue"
+      />
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
@@ -432,7 +424,7 @@ export default function SupplierPortalPage() {
         {/* Left Column - Quick Actions & Recent RFQs */}
         <div className="lg:col-span-2 space-y-6">
           {/* Quick Actions */}
-          <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
+          <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200">
             <div className="flex items-center gap-2 mb-4">
               <Sparkles size={18} className="text-[#2563EB]" />
               <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Thao tác nhanh</h2>
@@ -472,7 +464,7 @@ export default function SupplierPortalPage() {
           </div>
 
           {/* Recent RFQs */}
-          <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
+          <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <Inbox size={18} className="text-[#2563EB]" />
@@ -494,7 +486,7 @@ export default function SupplierPortalPage() {
                   <div 
                     key={rfq.id}
                     onClick={() => router.push("/supplier/rfq")}
-                    className="flex items-center gap-4 p-4 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)] hover:border-[#2563EB]/30 transition-all cursor-pointer group"
+                    className="flex items-center gap-4 p-4 bg-[#FFFFFF] rounded-xl border border-slate-200 hover:border-[#2563EB]/30 transition-all cursor-pointer group"
                   >
                     <div className="h-10 w-10 rounded-lg bg-[#2563EB]/10 flex items-center justify-center shrink-0">
                       <FileText size={18} className="text-[#2563EB]" />
@@ -502,15 +494,15 @@ export default function SupplierPortalPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-slate-900 truncate">********</span>
-                        <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-black text-[10px] font-bold">
+                        <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-700 text-[0.6875rem] font-bold">
                           Chờ báo giá
                         </span>
                       </div>
-                      <p className="text-xs text-slate-900 mt-0.5 truncate">{rfq.title || "Yêu cầu báo giá"}</p>
+                      <p className="text-xs text-[#64748B] mt-0.5 truncate">{rfq.title || "Yêu cầu báo giá"}</p>
                     </div>
                     <div className="text-right shrink-0">
-                      <div className="text-xs text-slate-900">{rfq.items?.length || 0} sản phẩm</div>
-                      <div className="text-[10px] text-slate-900">{rfq.createdAt ? new Date(rfq.createdAt).toLocaleDateString() : "N/A"}</div>
+                      <div className="text-xs text-[#64748B]">{rfq.items?.length || 0} sản phẩm</div>
+                      <div className="text-[0.6875rem] text-[#64748B]">{rfq.createdAt ? new Date(rfq.createdAt).toLocaleDateString() : "N/A"}</div>
                     </div>
                     <ChevronRight size={16} className="text-slate-900 group-hover:text-[#2563EB] transition-colors" />
                   </div>
@@ -520,7 +512,7 @@ export default function SupplierPortalPage() {
           </div>
 
           {/* Recent Purchase Orders */}
-          <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
+          <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <ShoppingCart size={18} className="text-black" />
@@ -542,7 +534,7 @@ export default function SupplierPortalPage() {
                   <div 
                     key={po.id}
                     onClick={() => router.push("/supplier/po")}
-                    className="flex items-center gap-4 p-4 bg-[#FFFFFF] rounded-xl border border-[rgba(148,163,184,0.1)] hover:border-emerald-500/30 transition-all cursor-pointer group"
+                    className="flex items-center gap-4 p-4 bg-[#FFFFFF] rounded-xl border border-slate-200 hover:border-emerald-500/30 transition-all cursor-pointer group"
                   >
                     <div className="h-10 w-10 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
                       <Package size={18} className="text-black" />
@@ -550,20 +542,20 @@ export default function SupplierPortalPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-slate-900 truncate">Đơn hàng</span>
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                          po.status === "ACKNOWLEDGED" ? "bg-emerald-500/10 text-black" :
-                          po.status === "PENDING" ? "bg-amber-500/10 text-black" :
+                        <span className={`px-2 py-0.5 rounded-full text-[0.6875rem] font-bold ${
+                          po.status === "ACKNOWLEDGED" ? "bg-emerald-500/10 text-emerald-700" :
+                          po.status === "PENDING" ? "bg-amber-500/10 text-amber-700" :
                           po.status === "SHIPPED" ? "bg-[#2563EB]/10 text-[#2563EB]" :
-                          "bg-[#000000]/10 text-slate-900"
+                          "bg-[#000000]/10 text-slate-600"
                         }`}>
                           {po.status}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-900 mt-0.5">{po.vendor || "Khách hàng"}</p>
+                      <p className="text-xs text-[#64748B] mt-0.5">{po.vendor || "Khách hàng"}</p>
                     </div>
                     <div className="text-right shrink-0">
-                      <div className="font-bold text-black">{formatVND(po.total || 0)}</div>
-                      <div className="text-[10px] text-slate-900">{po.items?.length || 0} sản phẩm</div>
+                      <div className="font-bold text-slate-900">{formatVND(po.total || 0)}</div>
+                      <div className="text-[0.6875rem] text-[#64748B]">{po.items?.length || 0} sản phẩm</div>
                     </div>
                     <ChevronRight size={16} className="text-slate-900 group-hover:text-black transition-colors" />
                   </div>
@@ -576,7 +568,7 @@ export default function SupplierPortalPage() {
         {/* Right Column - Activity & Performance */}
         <div className="space-y-6">
           {/* Performance Card */}
-          <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
+          <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200">
             <div className="flex items-center gap-2 mb-4">
               <Award size={18} className="text-black" />
               <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Hiệu suất</h2>
@@ -595,7 +587,7 @@ export default function SupplierPortalPage() {
             {kpiData ? (
               <div className="grid grid-cols-1 gap-3 mb-4">
                 {/* OTD Score */}
-                <div className="bg-[#FFFFFF] rounded-xl p-4 border border-[rgba(148,163,184,0.1)]">
+                <div className="bg-[#FFFFFF] rounded-xl p-4 border border-slate-200">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <div className="p-1.5 bg-emerald-500/10 rounded-lg">
@@ -624,11 +616,11 @@ export default function SupplierPortalPage() {
                       style={{ width: `${getScorePercentage(kpiData.otdScore)}%` }}
                     />
                   </div>
-                  <p className="text-slate-900 text-[10px] mt-1">Giao hàng đúng hạn (30%)</p>
+                  <p className="text-slate-900 text-[0.6875rem] text-[#64748B] mt-1">Giao hàng đúng hạn (30%)</p>
                 </div>
 
                 {/* Quality Score */}
-                <div className="bg-[#FFFFFF] rounded-xl p-4 border border-[rgba(148,163,184,0.1)]">
+                <div className="bg-[#FFFFFF] rounded-xl p-4 border border-slate-200">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <div className="p-1.5 bg-[#2563EB]/10 rounded-lg">
@@ -657,11 +649,11 @@ export default function SupplierPortalPage() {
                       style={{ width: `${getScorePercentage(kpiData.qualityScore)}%` }}
                     />
                   </div>
-                  <p className="text-slate-900 text-[10px] mt-1">Chất lượng sản phẩm (30%)</p>
+                  <p className="text-slate-900 text-[0.6875rem] text-[#64748B] mt-1">Chất lượng sản phẩm (30%)</p>
                 </div>
 
                 {/* Price Score */}
-                <div className="bg-[#FFFFFF] rounded-xl p-4 border border-[rgba(148,163,184,0.1)]">
+                <div className="bg-[#FFFFFF] rounded-xl p-4 border border-slate-200">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <div className="p-1.5 bg-yellow-500/10 rounded-lg">
@@ -690,11 +682,11 @@ export default function SupplierPortalPage() {
                       style={{ width: `${getScorePercentage(kpiData.priceScore)}%` }}
                     />
                   </div>
-                  <p className="text-slate-900 text-[10px] mt-1">Cạnh tranh giá (20%)</p>
+                  <p className="text-slate-900 text-[0.6875rem] text-[#64748B] mt-1">Cạnh tranh giá (20%)</p>
                 </div>
 
                 {/* Manual Score */}
-                <div className="bg-[#FFFFFF] rounded-xl p-4 border border-[rgba(148,163,184,0.1)]">
+                <div className="bg-[#FFFFFF] rounded-xl p-4 border border-slate-200">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <div className="p-1.5 bg-purple-500/10 rounded-lg">
@@ -723,13 +715,13 @@ export default function SupplierPortalPage() {
                       style={{ width: `${getScorePercentage(kpiData.manualScore)}%` }}
                     />
                   </div>
-                  <p className="text-slate-900 text-[10px] mt-1">Đánh giá thủ công (20%)</p>
+                  <p className="text-slate-900 text-[0.6875rem] text-[#64748B] mt-1">Đánh giá thủ công (20%)</p>
                 </div>
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-3 mb-4">
                 {['OTD Score', 'Quality Score', 'Price Score', 'Manual Score'].map((label, idx) => (
-                  <div key={idx} className="bg-[#FFFFFF] rounded-xl p-4 border border-[rgba(148,163,184,0.1)]">
+                  <div key={idx} className="bg-[#FFFFFF] rounded-xl p-4 border border-slate-200">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-slate-900 text-xs font-bold uppercase">{label}</span>
                       <span className="text-lg font-black text-slate-900">--%</span>
@@ -764,7 +756,7 @@ export default function SupplierPortalPage() {
 
               <Link
                 href={`/supplier/${supplierId}/kpi-evaluation`}
-                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-slate-100 transition-all"
+                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#F1F5F9] border border-slate-200 text-slate-900 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-slate-100 transition-all"
               >
                 <Target size={16} />
                 Xem chi tiết đánh giá
@@ -773,7 +765,7 @@ export default function SupplierPortalPage() {
           </div>
 
           {/* Recent Activity */}
-          <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
+          <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200">
             <div className="flex items-center gap-2 mb-4">
               <Clock size={18} className="text-slate-900" />
               <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Hoạt động gần đây</h2>
@@ -795,8 +787,8 @@ export default function SupplierPortalPage() {
                           <span className="w-2 h-2 rounded-full bg-rose-400"></span>
                         )}
                       </div>
-                      <p className="text-xs text-slate-900 mt-0.5">{activity.description}</p>
-                      <p className="text-[10px] text-slate-900 mt-1">{activity.date}</p>
+                      <p className="text-xs text-[#64748B] mt-0.5">{activity.description}</p>
+                      <p className="text-[0.6875rem] text-[#64748B] mt-1">{activity.date}</p>
                     </div>
                   </div>
                 );
@@ -805,7 +797,7 @@ export default function SupplierPortalPage() {
           </div>
 
           {/* Quick Links */}
-          <div className="bg-[#F1F5F9] rounded-xl p-6 border border-[rgba(148,163,184,0.1)]">
+          <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200">
             <div className="flex items-center gap-2 mb-4">
               <Target size={18} className="text-slate-900" />
               <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Liên kết nhanh</h2>
@@ -827,4 +819,5 @@ export default function SupplierPortalPage() {
     </ErrorBoundary>
   );
 }
+
 

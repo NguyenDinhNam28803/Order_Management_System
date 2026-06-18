@@ -144,12 +144,12 @@ export default function AISyncPage() {
                         <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center shadow-lg shadow-violet-500/30">
                             <Brain size={16} className="text-slate-900" />
                         </div>
-                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-violet-400 bg-violet-400/10 border border-violet-400/20 px-2 py-0.5 rounded-md">
+                        <span className="text-[0.6875rem] font-black uppercase tracking-[0.2em] text-violet-400 bg-violet-400/10 border border-violet-400/20 px-2 py-0.5 rounded-md">
                             RAG · Vector DB
                         </span>
                     </div>
                     <h1 className="text-2xl font-black text-slate-900 tracking-tight">Huấn luyện & Đồng bộ AI</h1>
-                    <p className="text-[12px] text-slate-900 mt-1 font-medium">
+                    <p className="text-[0.8125rem] text-[#64748B] mt-1 font-medium">
                         Kết nối Vector Database cho Trợ lý Mua hàng Thông minh ProcureSmart
                     </p>
                 </div>
@@ -157,7 +157,7 @@ export default function AISyncPage() {
                 <button
                     onClick={handleGlobalSync}
                     disabled={isGlobalSyncing}
-                    className="relative flex items-center gap-2.5 bg-gradient-to-r from-[#2563EB] to-[#6366F1] text-slate-900 px-6 py-3 rounded-xl font-bold text-[12px] shadow-xl shadow-[#2563EB]/25 hover:shadow-[#2563EB]/45 hover:scale-[1.02] transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed overflow-hidden"
+                    className="relative flex items-center gap-2.5 bg-gradient-to-r from-[#2563EB] to-[#6366F1] text-white px-6 py-3 rounded-xl font-bold text-[12px] shadow-xl shadow-[#2563EB]/25 hover:shadow-[#2563EB]/45 hover:scale-[1.02] transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed overflow-hidden"
                 >
                     {isGlobalSyncing && (
                         <div className="absolute inset-0 bg-white/10 transition-all duration-300" style={{ width: `${globalProgress}%` }} />
@@ -182,9 +182,9 @@ export default function AISyncPage() {
                             <s.icon size={18} />
                         </div>
                         <div className="min-w-0">
-                            <p className="text-[9px] font-bold uppercase tracking-widest text-slate-900 truncate">{s.label}</p>
+                            <p className="text-[0.6875rem] font-bold uppercase tracking-widest text-slate-900 truncate">{s.label}</p>
                             <p className={`text-[17px] font-black leading-tight num-display ${s.color}`}>{s.value}</p>
-                            <p className="text-[9px] text-slate-900 mt-0.5 truncate">{s.sub}</p>
+                            <p className="text-[0.6875rem] text-slate-900 mt-0.5 truncate">{s.sub}</p>
                         </div>
                     </div>
                 ))}
@@ -198,7 +198,7 @@ export default function AISyncPage() {
                         <h2 className="text-[11px] font-black text-slate-900 uppercase tracking-widest">
                             Đồng bộ từng phần — Partial Ingestion
                         </h2>
-                        <span className="text-[9px] text-slate-900 bg-[#FFFFFF] border border-[#E2E8F0] px-2 py-0.5 rounded-md">
+                        <span className="text-[0.6875rem] text-slate-900 bg-[#FFFFFF] border border-[#E2E8F0] px-2 py-0.5 rounded-md">
                             4 nguồn dữ liệu
                         </span>
                     </div>
@@ -221,24 +221,24 @@ export default function AISyncPage() {
                                         </div>
                                         <div className="min-w-0">
                                             <p className="text-[12px] font-bold text-slate-900 truncate">{entity.name}</p>
-                                            <p className="text-[10px] text-slate-900 truncate max-w-[140px]">{entity.desc}</p>
-                                            <p className={`text-[9px] font-bold mt-0.5 num-display ${entity.color}`}>{entity.count} vectors</p>
+                                            <p className="text-[10px] text-[#64748B] truncate max-w-[140px]">{entity.desc}</p>
+                                            <p className={`text-[0.6875rem] font-bold mt-0.5 num-display ${entity.color}`}>{entity.count} vectors</p>
                                         </div>
                                     </div>
                                     <div className="shrink-0 ml-2">
                                         {status === "success" ? (
-                                            <div className="flex items-center gap-1.5 bg-emerald-500/10 text-black px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border border-emerald-500/20">
+                                            <div className="flex items-center gap-1.5 bg-emerald-500/10 text-emerald-700 px-3 py-1.5 rounded-lg text-[0.6875rem] font-black uppercase tracking-widest border border-emerald-500/20">
                                                 <CheckCircle2 size={12} /> Done
                                             </div>
                                         ) : status === "error" ? (
-                                            <div className="flex items-center gap-1.5 bg-rose-500/10 text-black px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border border-rose-500/20">
+                                            <div className="flex items-center gap-1.5 bg-rose-500/10 text-rose-700 px-3 py-1.5 rounded-lg text-[0.6875rem] font-black uppercase tracking-widest border border-rose-500/20">
                                                 <AlertCircle size={12} /> Failed
                                             </div>
                                         ) : (
                                             <button
                                                 onClick={() => handleSyncEntity(entity.id)}
                                                 disabled={status === "syncing"}
-                                                className="btn-primary px-4 py-1.5 rounded-lg font-black text-[9px] uppercase tracking-widest flex items-center gap-1.5 disabled:opacity-60"
+                                                className="btn-primary px-4 py-1.5 rounded-lg font-black text-[0.6875rem] uppercase tracking-widest flex items-center gap-1.5 disabled:opacity-60"
                                             >
                                                 {status === "syncing"
                                                     ? <><RefreshCw size={11} className="animate-spin" /> Syncing…</>
@@ -266,9 +266,9 @@ export default function AISyncPage() {
                                 </div>
                                 <div className="min-w-0 flex-1">
                                     <p className="text-[11px] font-semibold text-slate-900 leading-snug">{log.action}</p>
-                                    <p className="text-[9px] text-slate-900 mt-0.5">{log.detail}</p>
+                                    <p className="text-[0.6875rem] text-slate-900 mt-0.5">{log.detail}</p>
                                 </div>
-                                <span className="text-[9px] text-slate-900 shrink-0 mt-0.5">{log.time}</span>
+                                <span className="text-[0.6875rem] text-slate-900 shrink-0 mt-0.5">{log.time}</span>
                             </div>
                         ))}
                     </div>
@@ -281,7 +281,7 @@ export default function AISyncPage() {
                         ].map((s, i) => (
                             <div key={i} className="flex items-center justify-between">
                                 <span className="text-[11px] text-slate-900">{s.label}</span>
-                                <div className={`flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-wide ${s.ok ? "text-black" : "text-black"}`}>
+                                <div className={`flex items-center gap-1.5 text-[0.6875rem] font-bold uppercase tracking-wide ${s.ok ? "text-black" : "text-black"}`}>
                                     <span className={`status-dot ${s.ok ? "status-dot-active" : "status-dot-error"}`} />
                                     {s.ok ? "Online" : "Offline"}
                                 </div>
@@ -303,7 +303,7 @@ export default function AISyncPage() {
                             <p className="text-[10px] text-slate-900">Đọc email Gmail qua IMAP · Nhúng vào Vector DB</p>
                         </div>
                     </div>
-                    <span className="text-[9px] font-bold text-[#2563EB] bg-[#2563EB]/10 border border-[#2563EB]/20 px-2 py-0.5 rounded-md uppercase tracking-widest">
+                    <span className="text-[0.6875rem] font-bold text-[#2563EB] bg-[#2563EB]/10 border border-[#2563EB]/20 px-2 py-0.5 rounded-md uppercase tracking-widest">
                         Gmail IMAP
                     </span>
                 </div>
@@ -385,7 +385,7 @@ export default function AISyncPage() {
                                             <p className="text-[10px] text-slate-900 truncate">Từ: {email.from}</p>
                                             <p className="text-[10px] text-slate-900 mt-0.5 line-clamp-1">{email.body?.slice(0, 100)}…</p>
                                         </div>
-                                        <span className="text-[9px] text-slate-900 shrink-0 mt-0.5">
+                                        <span className="text-[0.6875rem] text-slate-900 shrink-0 mt-0.5">
                                             {email.date ? new Date(email.date).toLocaleDateString("vi-VN") : ""}
                                         </span>
                                     </div>

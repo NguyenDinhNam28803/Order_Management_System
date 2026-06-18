@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { 
     FileCheck, ShieldAlert, CalendarClock, TrendingDown, Search, 
     CheckCircle2, ArrowRight, BarChart3, PieChart, Activity,
@@ -9,17 +9,22 @@ import {
 import { useRouter } from "next/navigation";
 
 import { useProcurement } from "../../context/ProcurementContext";
-import { formatVND } from "../../utils/formatUtils";
+import { formatVND, formatDate } from "../../utils/formatUtils";
 import BudgetHeatmap from "../../components/BudgetHeatmap";
 import { SimpleBarChart, DonutChart, StatsCard } from "../../components/charts";
+import PageHeader from "../../components/shared/PageHeader";
 
 export default function FinanceDashboard() {
     const router = useRouter();
     const { invoices } = useProcurement();
     const [activeTab, setActiveTab] = useState<"ALL" | "EXCEPTION">("ALL");
+    const [page, setPage] = useState(1);
+    const PAGE_SIZE = 10;
 
     const activeInvoices = invoices.filter((i) => i.status === "PENDING" || i.status === "EXCEPTION" || i.status === "UNMATCHED");
-    const displayedInvoices = activeTab === "ALL" ? activeInvoices : activeInvoices.filter((i) => i.status === "EXCEPTION");
+    const filteredInvoices = activeTab === "ALL" ? activeInvoices : activeInvoices.filter((i) => i.status === "EXCEPTION");
+    const totalPages = Math.max(1, Math.ceil(filteredInvoices.length / PAGE_SIZE));
+    const displayedInvoices = useMemo(() => filteredInvoices.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE), [filteredInvoices, page]);
 
     const totalSpentThisMonth = invoices
         .filter(i => i.status === "PAID")
@@ -31,23 +36,24 @@ export default function FinanceDashboard() {
 
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#F8FAFC] text-slate-900">
 
-            {/* Header Section */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
-                <div>
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-2">AP COMMAND CENTER</h1>
-                    <p className="text-sm font-bold text-slate-900">Hệ thống quản trị khoản phải trả & Đối soát 3 bên tự động tích hợp AI.</p>
-                </div>
-                <div className="flex gap-3">
-                    <button className="flex items-center gap-2 px-4 py-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl text-xs font-bold text-slate-900 hover:bg-slate-100 transition-all shadow-sm">
-                        <Download size={14} /> Export Report
-                    </button>
-                    <button className="flex items-center gap-2 px-4 py-2 bg-[#2563EB] text-white rounded-xl text-xs font-bold hover:bg-[#1D4ED8] transition-all shadow-lg shadow-[#2563EB]/20">
-                        <Activity size={14} /> System Health
-                    </button>
-                </div>
-            </div>
+            <PageHeader
+                icon={FileCheck}
+                iconColor="blue"
+                title="Trung tâm Tài chính & Đối soát"
+                subtitle="Quản trị khoản phải trả & đối soát 3 bên tự động tích hợp AI."
+                actions={
+                    <>
+                        <button className="btn-secondary">
+                            <Download size={14} /> Xuất báo cáo
+                        </button>
+                        <button className="btn-primary">
+                            <Activity size={14} /> Kiểm tra hệ thống
+                        </button>
+                    </>
+                }
+            />
 
             {/* KPI Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -75,7 +81,7 @@ export default function FinanceDashboard() {
                     color="amber"
                 >
                     <div className="mt-2">
-                        <div className="flex justify-between text-[10px] text-slate-900 mb-1">
+                        <div className="flex justify-between text-[0.6875rem] text-[#64748B] mb-1">
                             <span>Trung bình/xử lý</span>
                             <span>{formatVND(pendingPaymentAmount / Math.max(invoices.filter(i => i.status === "APPROVED").length, 1))}</span>
                         </div>
@@ -121,39 +127,39 @@ export default function FinanceDashboard() {
 
             {/* Invoices Interface */}
             <div className="bg-white rounded-xl overflow-hidden border border-[#E2E8F0] shadow-sm">
-                <div className="p-6 border-b border-[rgba(148,163,184,0.1)] flex flex-col md:flex-row md:items-center justify-between gap-6 bg-[#F1F5F9]">
+                <div className="p-6 border-b border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-6 bg-[#F1F5F9]">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-[#FFFFFF] text-[#2563EB] rounded-xl border border-[rgba(148,163,184,0.1)]">
+                        <div className="p-2 bg-[#FFFFFF] text-[#2563EB] rounded-xl border border-slate-200">
                             <BarChart3 size={18} />
                         </div>
                         <h3 className="text-base font-bold text-slate-900 tracking-tight">Invoice Processing Queue</h3>
                     </div>
                     
                     <div className="flex items-center gap-4">
-                        <div className="bg-[#FFFFFF] p-1 rounded-xl flex gap-1 border border-[rgba(148,163,184,0.1)]">
-                            <button 
-                                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${activeTab === 'ALL' ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-white hover:text-white'}`}
-                                onClick={() => setActiveTab("ALL")}
+                        <div className="bg-[#FFFFFF] p-1 rounded-xl flex gap-1 border border-slate-200">
+                            <button
+                                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${activeTab === 'ALL' ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/20' : 'text-slate-600 hover:text-slate-900'}`}
+                                onClick={() => { setActiveTab("ALL"); setPage(1); }}
                             >
                                 Tất cả
                             </button>
-                            <button 
-                                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${activeTab === 'EXCEPTION' ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20' : 'text-white hover:text-white'}`}
-                                onClick={() => setActiveTab("EXCEPTION")}
+                            <button
+                                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${activeTab === 'EXCEPTION' ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20' : 'text-slate-600 hover:text-slate-900'}`}
+                                onClick={() => { setActiveTab("EXCEPTION"); setPage(1); }}
                             >
-                                Exception <span className="bg-rose-500/20 text-black px-1.5 py-0.5 rounded-md text-[9px] border border-rose-500/20">{activeInvoices.filter((i) => i.status === 'EXCEPTION').length}</span>
+                                Exception <span className="bg-rose-500/20 text-rose-700 px-1.5 py-0.5 rounded-md text-[0.6875rem] border border-rose-500/20">{activeInvoices.filter((i) => i.status === 'EXCEPTION').length}</span>
                             </button>
                         </div>
-                        <div className="h-8 w-px bg-[rgba(148,163,184,0.1)]"></div>
+                        <div className="h-8 w-px bg-slate-200"></div>
                         <div className="relative">
-                            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-900" />
-                            <input 
-                                type="text" 
-                                className="w-64 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl pl-9 pr-4 py-2 text-xs font-medium text-slate-900 placeholder:text-slate-900 focus:ring-4 focus:ring-[#2563EB]/10 transition-all outline-none" 
-                                placeholder="Search by INV / Supplier..." 
+                            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
+                            <input
+                                type="text"
+                                className="w-64 bg-[#FFFFFF] border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs font-medium text-slate-900 placeholder:text-[#94A3B8] focus:ring-4 focus:ring-[#2563EB]/10 transition-all outline-none"
+                                placeholder="Search by INV / Supplier..."
                             />
                         </div>
-                        <button className="p-2.5 bg-[#FFFFFF] border border-[rgba(148,163,184,0.1)] rounded-xl text-slate-900 hover:bg-[#F1F5F9] transition-all shadow-sm">
+                        <button className="p-2.5 bg-[#FFFFFF] border border-slate-200 rounded-xl text-slate-900 hover:bg-[#F1F5F9] transition-all shadow-sm">
                             <Filter size={16} />
                         </button>
                     </div>
@@ -162,7 +168,7 @@ export default function FinanceDashboard() {
                 <div className="overflow-x-auto">
                     <table className="erp-table text-xs">
                         <thead>
-                            <tr className="border-b border-[rgba(148,163,184,0.1)]">
+                            <tr className="border-b border-slate-200">
                                 <th className="px-6 py-4 text-left">Mã định danh INV</th>
                                 <th className="text-left">Đối tác cung ứng</th>
                                 <th className="text-left">Tham chiếu PO</th>
@@ -172,7 +178,7 @@ export default function FinanceDashboard() {
                                 <th className="text-right pr-6"></th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-[rgba(148,163,184,0.1)] font-medium">
+                        <tbody className="divide-y divide-slate-200 font-medium">
                             {displayedInvoices.map((inv) => (
                                 <tr key={inv.id} className="cursor-pointer group hover:bg-[#FFFFFF]/50 transition-colors" onClick={() => router.push(`/finance/matching?id=${inv.id}`)}>
                                     <td className="px-6 py-5">
@@ -180,26 +186,26 @@ export default function FinanceDashboard() {
                                             <div className="h-8 w-8 rounded-lg bg-[#2563EB]/10 text-[#2563EB] flex items-center justify-center font-bold text-[10px] group-hover:bg-[#2563EB] group-hover:text-white transition-colors duration-300 border border-[#2563EB]/20">
                                                 ID
                                             </div>
-                                            <span className="font-bold text-slate-900 tracking-tight">INV-***</span>
+                                            <span className="font-bold text-slate-900 tracking-tight">{inv.invoiceNumber ?? inv.id.slice(0, 8).toUpperCase()}</span>
                                         </div>
                                     </td>
                                     <td>
                                         <div className="text-sm font-bold text-slate-900">{inv.vendor}</div>
-                                        <div className="text-[10px] text-slate-900 font-medium uppercase tracking-tighter">Verified Partner</div>
+                                        <div className="text-[0.6875rem] text-[#64748B] font-medium uppercase tracking-tighter">Verified Partner</div>
                                     </td>
-                                    <td className=" text-[#2563EB] text-[11px] font-bold">PO-***</td>
-                                    <td className="text-right font-bold text-slate-900 text-sm">{formatVND(inv.amount ?? 0)} ₫</td>
-                                    <td className="text-slate-900 text-[11px] font-semibold">{inv.createdAt ? new Date(inv.createdAt).toLocaleDateString('vi-VN') : '—'}</td>
+                                    <td className="text-[#2563EB] text-[11px] font-bold">{inv.poId ?? '—'}</td>
+                                    <td className="text-right font-bold text-slate-900 text-sm">{formatVND(inv.amount ?? inv.totalAmount ?? 0, true)}</td>
+                                    <td className="text-slate-900 text-[11px] font-semibold">{formatDate(inv.createdAt)}</td>
                                     <td className="text-center">
                                         {inv.status === "PENDING" ? (
                                             <div className="flex justify-center">
-                                                <span className="px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest bg-emerald-500/10 text-black border border-emerald-500/20 flex items-center gap-1.5">
+                                                <span className="px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 flex items-center gap-1.5">
                                                     <CheckCircle2 size={10}/> Auto Matched
                                                 </span>
                                             </div>
                                         ) : (
                                             <div className="flex justify-center">
-                                                <span className="px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest bg-rose-500/10 text-black border border-rose-500/20 flex items-center gap-1.5 animate-pulse">
+                                                <span className="px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest bg-rose-500/10 text-rose-700 border border-rose-500/20 flex items-center gap-1.5 animate-pulse">
                                                     <ShieldAlert size={10}/> Exception
                                                 </span>
                                             </div>
@@ -207,7 +213,7 @@ export default function FinanceDashboard() {
                                     </td>
                                     <td className="text-right pr-6">
                                         <div className="flex items-center justify-end gap-2">
-                                            <button className="h-8 w-8 rounded-lg border border-[rgba(148,163,184,0.1)] text-slate-900 hover:text-[#2563EB] hover:border-[#2563EB]/30 flex items-center justify-center transition-all bg-[#FFFFFF] shadow-sm">
+                                            <button className="h-8 w-8 rounded-lg border border-slate-200 text-slate-900 hover:text-[#2563EB] hover:border-[#2563EB]/30 flex items-center justify-center transition-all bg-[#FFFFFF] shadow-sm">
                                                 <MoreHorizontal size={14} />
                                             </button>
                                             <button className="flex items-center gap-1 px-3 py-1.5 bg-[#2563EB]/10 text-[#2563EB] rounded-lg text-[11px] font-bold hover:bg-[#2563EB] hover:text-white transition-all shadow-sm border border-[#2563EB]/20">
@@ -221,12 +227,12 @@ export default function FinanceDashboard() {
                     </table>
                 </div>
 
-                <div className="p-4 bg-[#FFFFFF] border-t border-[rgba(148,163,184,0.1)] flex items-center justify-between">
-                    <p className="text-[10px] font-bold text-slate-900 uppercase tracking-widest">Showing {displayedInvoices.length} of {activeInvoices.length} invoices in queue</p>
+                <div className="p-4 bg-[#FFFFFF] border-t border-slate-200 flex items-center justify-between">
+                    <p className="text-[10px] font-bold text-slate-900 uppercase tracking-widest">Showing {Math.min(page * PAGE_SIZE, filteredInvoices.length)} of {filteredInvoices.length} invoices in queue</p>
                     <div className="flex gap-1">
-                         {[1, 2, 3].map(i => (
-                             <button key={i} className={`h-8 w-8 rounded-lg text-[11px] font-bold border transition-all ${i === 1 ? 'bg-[#2563EB] border-[#2563EB] text-white shadow-sm' : 'border-transparent text-white hover:text-white'}`}>{i}</button>
-                         ))}
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(i => (
+                            <button key={i} onClick={() => setPage(i)} className={`h-8 w-8 rounded-lg text-[11px] font-bold border transition-all ${i === page ? 'bg-[#2563EB] border-[#2563EB] text-white shadow-sm' : 'border-slate-200 text-slate-600 hover:bg-slate-50'}`}>{i}</button>
+                        ))}
                     </div>
                 </div>
             </div>
@@ -246,15 +252,15 @@ interface MetricCardProps {
 function MetricCard({ icon, label, value, unit, color, onClick, subValue }: MetricCardProps) {
     const colorStyles: Record<string, string> = {
         indigo: "bg-[#2563EB]/10 text-[#2563EB] border-[#2563EB]/20",
-        rose: "bg-rose-500/10 text-black border-rose-500/20",
-        amber: "bg-amber-500/10 text-black border-amber-500/20",
-        emerald: "bg-emerald-500/10 text-black border-emerald-500/20",
+        rose: "bg-rose-500/10 text-rose-700 border-rose-500/20",
+        amber: "bg-amber-500/10 text-amber-700 border-amber-500/20",
+        emerald: "bg-emerald-500/10 text-emerald-700 border-emerald-500/20",
     };
 
     return (
         <div 
             onClick={onClick}
-            className={`bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] rounded-xl p-6 relative overflow-hidden group transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-[#2563EB]/30 ${onClick ? 'cursor-pointer' : ''}`}
+            className={`bg-[#F1F5F9] border border-slate-200 rounded-xl p-6 relative overflow-hidden group transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-[#2563EB]/30 ${onClick ? 'cursor-pointer' : ''}`}
         >
             <div className="flex justify-between items-start mb-6">
                 <div className={`p-3 rounded-[18px] shadow-sm transition-transform group-hover:scale-110 duration-500 border ${colorStyles[color]}`}>
@@ -270,7 +276,7 @@ function MetricCard({ icon, label, value, unit, color, onClick, subValue }: Metr
                 <h4 className="text-[11px] font-bold text-slate-900 uppercase tracking-wider">{label}</h4>
             </div>
             {subValue && (
-                <div className="mt-4 pt-4 border-t border-[rgba(148,163,184,0.1)] flex items-center justify-between">
+                <div className="mt-4 pt-4 border-t border-slate-200 flex items-center justify-between">
                     <span className="text-[10px] font-bold text-slate-900 uppercase tracking-widest">Detail Forecast</span>
                     <span className={`text-[11px] font-black tabular-nums ${color === 'amber' ? 'text-black' : color === 'rose' ? 'text-black' : color === 'emerald' ? 'text-black' : 'text-[#2563EB]'}`}>{subValue}</span>
                 </div>

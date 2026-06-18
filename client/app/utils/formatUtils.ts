@@ -156,6 +156,20 @@ export const statusMap: Record<string, string> = {
     'INACTIVE': 'Không hoạt động',
 };
 
+export const formatDate = (dateString?: string | null): string => {
+    if (!dateString) return "—";
+    const d = new Date(dateString);
+    if (isNaN(d.getTime())) return dateString;
+    return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+};
+
+export const formatDateTime = (dateString?: string | null): string => {
+    if (!dateString) return "—";
+    const d = new Date(dateString);
+    if (isNaN(d.getTime())) return dateString;
+    return `${formatDate(dateString)} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+};
+
 export const getStatusLabel = (status: string | undefined): string => {
     if (!status) return 'Không xác định';
     return statusMap[status] || status.replace(/_/g, ' ');

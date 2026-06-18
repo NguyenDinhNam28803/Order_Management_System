@@ -44,7 +44,7 @@ export default function PODetailPage() {
     try {
       setSubmitting(true);
       const updated = await confirmPO(poId);
-      setPO(updated);
+      setPO(updated as POWithDetails);
       notify('PO confirmed successfully', 'success');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to confirm PO');
@@ -57,7 +57,7 @@ export default function PODetailPage() {
     try {
       setSubmitting(true);
       const updated = await submitPO(poId);
-      setPO(updated);
+      setPO(updated as POWithDetails);
       notify('PO submitted to approver', 'success');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to submit PO');
@@ -90,7 +90,7 @@ export default function PODetailPage() {
             <ArrowLeft size={14} /> Quay lại danh sách
           </button>
           <div className="flex items-center gap-4">
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight">Chi tiết Đơn hàng (PO)</h1>
+            <h1 className="page-title">Chi tiết Đơn hàng (PO)</h1>
             <span className={`status-pill ${getStatusDisplay(po.status).class}`}>
               {getStatusDisplay(po.status).label}
             </span>
@@ -118,7 +118,7 @@ export default function PODetailPage() {
             </>
           )}
           {po.status === 'CONFIRMED' && (
-            <div className="text-black font-bold bg-[#10B981]/10 px-4 py-2 rounded-xl border border-[#10B981]/30 flex items-center gap-2 text-sm">
+            <div className="text-emerald-700 font-bold bg-[#10B981]/10 px-4 py-2 rounded-xl border border-[#10B981]/30 flex items-center gap-2 text-sm">
               <CheckCircle2 size={16} /> PO Đã xác nhận - Sẵn sàng giao hàng
             </div>
           )}
@@ -133,21 +133,21 @@ export default function PODetailPage() {
           <h3 className="section-title">Thông tin Đơn hàng</h3>
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-1">
-              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-900"><FileDigit size={12}/> Mã PO</div>
+              <div className="flex items-center gap-1.5 text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B]"><FileDigit size={12}/> Mã PO</div>
               <p className="text-sm font-bold text-slate-900">{po.poNumber || po.id.split('-').pop()}</p>
             </div>
             <div className="space-y-1">
-              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-900"><Building2 size={12}/> Nhà Cung Cấp</div>
+              <div className="flex items-center gap-1.5 text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B]"><Building2 size={12}/> Nhà Cung Cấp</div>
               <p className="text-sm font-bold text-slate-900">{po.supplier?.name || "N/A"}</p>
             </div>
             <div className="space-y-1">
-              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-900">PR Tham Chiếu</div>
+              <div className="flex items-center gap-1.5 text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B]">PR Tham Chiếu</div>
               <p className="text-sm font-bold text-[#2563EB] cursor-pointer hover:underline" onClick={() => router.push(`/pr/${po.prId}`)}>
                 {po.pr?.prNumber || (po.prId ? `PR-${po.prId.substring(0, 8)}...` : 'N/A')}
               </p>
             </div>
             <div className="space-y-1">
-              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-900"><Calendar size={12}/> Ngày Tạo</div>
+              <div className="flex items-center gap-1.5 text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B]"><Calendar size={12}/> Ngày Tạo</div>
               <p className="text-sm font-bold text-slate-900">{po.createdAt ? new Date(po.createdAt).toLocaleDateString('vi-VN') : 'N/A'}</p>
             </div>
           </div>
@@ -157,15 +157,15 @@ export default function PODetailPage() {
            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#2563EB]/5 rounded-full blur-2xl"></div>
            <div>
               <h3 className="section-title">Tổng Mua Tiêu Chuẩn</h3>
-              <div className="text-4xl font-black text-slate-900 mt-2 tracking-tight">
-                  {po.totalAmount?.toLocaleString('vi-VN')} <span className="text-xl text-[#2563EB]">VND</span>
+              <div className="text-2xl font-bold text-[#0F172A] mt-2 tracking-tight">
+                  {po.totalAmount?.toLocaleString('vi-VN')} <span className="text-base text-[#2563EB]">VND</span>
               </div>
            </div>
         </div>
       </div>
 
       <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden">
-        <div className="p-5 border-b border-[rgba(148,163,184,0.1)]">
+        <div className="p-5 border-b border-slate-200">
           <h3 className="section-title m-0">Chi tiết sản phẩm</h3>
         </div>
         <div className="overflow-x-auto">
@@ -188,7 +188,7 @@ export default function PODetailPage() {
                   <td className="text-right font-semibold text-slate-900">
                     {item.unitPrice?.toLocaleString('vi-VN')} ₫
                   </td>
-                  <td className="text-right font-black text-black">
+                  <td className="text-right font-black text-slate-900">
                     {item.total?.toLocaleString('vi-VN')} ₫
                   </td>
                 </tr>

@@ -146,6 +146,7 @@ export class PaymentModuleService {
       where: {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         orgId: payment.supplierId,
+
         role: 'SUPPLIER' as const,
         isActive: true,
       },

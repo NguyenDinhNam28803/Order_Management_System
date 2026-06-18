@@ -6,7 +6,7 @@ import {
 import { CreateGrnmoduleDto } from './dto/create-grnmodule.dto';
 import { GrnRepository } from './grn.repository';
 import { PrismaService } from '../prisma/prisma.service';
-import { GrnStatus, PoStatus } from '@prisma/client';
+import { GrnStatus, PoStatus, UserRole } from '@prisma/client';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { UpdateGrnItemQcResultDto } from './dto/update-grn-item-qc.dto';
 import { NotificationModuleService } from '../notification-module/notification-module.service';
@@ -267,7 +267,7 @@ export class GrnmoduleService {
     const financeUsers = await this.prisma.user.findMany({
       where: {
         orgId: fullGrn.orgId,
-        role: { in: ['FINANCE', 'PLATFORM_ADMIN'] as ('FINANCE' | 'PLATFORM_ADMIN')[] },
+        role: { in: [UserRole.FINANCE, UserRole.PLATFORM_ADMIN] },
         isActive: true,
       },
     });

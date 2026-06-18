@@ -110,11 +110,11 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
                 <div className="flex flex-col min-w-0">
                     {/* mini breadcrumb path */}
                     <div className="hidden sm:flex items-center gap-1 leading-none mb-0.5">
-                        <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400">ProcureSmart</span>
+                        <span className="text-[0.6875rem] font-bold uppercase tracking-widest text-slate-400">ProcureSmart</span>
                         {breadcrumbParts.length > 1 && breadcrumbParts.slice(0, -1).map((p, i) => (
                             <React.Fragment key={i}>
                                 <ChevronRight size={9} className="text-slate-300" />
-                                <span className="text-[9px] font-semibold text-slate-500 truncate max-w-[60px]">{p.label}</span>
+                                <span className="text-[0.6875rem] font-semibold text-slate-500 truncate max-w-[60px]">{p.label}</span>
                             </React.Fragment>
                         ))}
                     </div>

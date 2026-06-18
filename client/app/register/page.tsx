@@ -59,7 +59,7 @@ export default function RegisterPage() {
             <div className="w-full max-w-5xl grid md:grid-cols-2 gap-12 relative z-10 items-center">
                 {/* Visual Section */}
                 <div className="hidden md:block pr-8 animate-in fade-in slide-in-from-left-12 duration-700">
-                    <div className="inline-flex items-center justify-center h-20 w-20 bg-emerald-600 rounded-3xl shadow-2xl shadow-emerald-500/30 mb-8 border border-white/10">
+                    <div className="inline-flex items-center justify-center h-20 w-20 bg-emerald-600 rounded-xl shadow-2xl shadow-emerald-500/30 mb-8 border border-white/10">
                         <CheckCircle2 size={40} className="text-slate-900" />
                     </div>
                     <h1 className="text-6xl font-black text-slate-900 tracking-tighter mb-4 uppercase leading-none">

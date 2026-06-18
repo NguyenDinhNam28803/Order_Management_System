@@ -112,7 +112,13 @@ async function bootstrap() {
         .split(',')
         .map((o) => o.trim())
         .filter(Boolean)
-    : ['http://localhost:3000', 'https://localhost:3000'];
+    : [
+        'http://localhost:3000',
+        'https://localhost:3000',
+        'http://localhost:5173',
+        'https://localhost:5173',
+        'http://localhost:3001',
+      ];
 
   app.enableCors({
     origin: allowedOrigins,

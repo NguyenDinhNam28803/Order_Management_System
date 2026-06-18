@@ -1,11 +1,12 @@
 ﻿"use client";
 
 import React, { useState } from "react";
-import { TrendingUp, ArrowLeft, Info } from "lucide-react";
+import { TrendingUp, ArrowLeft, Info, ShieldAlert } from "lucide-react";
 import { useRouter } from "next/navigation";
 import DefectRateChart from "../../components/DefectRateChart";
 import SupplierSelector from "../../components/SupplierSelector";
 import { QualityRiskPanel } from "../../components/QualityRiskPanel";
+import PageHeader from "../../components/shared/PageHeader";
 
 /**
  * Warehouse QC Analysis Page
@@ -23,7 +24,7 @@ export default function WarehouseQCAnalysis() {
   };
 
   return (
-    <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
+    <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#F8FAFC] text-slate-900">
       {/* Header */}
       <header className="mb-8">
         <div className="flex items-center gap-4 mb-4">
@@ -35,17 +36,12 @@ export default function WarehouseQCAnalysis() {
             <span className="text-sm font-medium">Quay lại Dashboard</span>
           </button>
         </div>
-        <div className="lg:flex items-end justify-between">
-          <div>
-            <h1 className="text-4xl font-black tracking-tight text-slate-900 mb-2 uppercase flex items-center gap-3">
-              <TrendingUp size={36} className="text-[#2563EB]" />
-              Phân Tích Tỷ Lệ Lỗi
-            </h1>
-            <p className="text-slate-900 font-medium">
-              Phát hiện các xu hướng bất thường trong tỷ lệ lỗi sản phẩm nhập kho qua 365 ngày.
-            </p>
-          </div>
-        </div>
+        <PageHeader
+          title="Theo dõi lỗi hàng"
+          subtitle="Phát hiện các xu hướng bất thường trong tỷ lệ lỗi sản phẩm nhập kho qua 365 ngày."
+          icon={ShieldAlert}
+          iconColor="rose"
+        />
       </header>
 
       {/* Supplier Selector Section */}
@@ -80,7 +76,7 @@ export default function WarehouseQCAnalysis() {
 
       {/* Additional Info Cards */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-        <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
+        <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-xl shadow-[#2563EB]/5 p-6">
           <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 mb-3">
             Ngưỡng Cảnh Báo
           </h3>
@@ -100,7 +96,7 @@ export default function WarehouseQCAnalysis() {
           </div>
         </div>
 
-        <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
+        <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-xl shadow-[#2563EB]/5 p-6">
           <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 mb-3">
             Pattern Nguy Hiểm
           </h3>
@@ -120,7 +116,7 @@ export default function WarehouseQCAnalysis() {
           </ul>
         </div>
 
-        <div className="bg-[#F1F5F9] rounded-xl border border-[rgba(148,163,184,0.1)] shadow-xl shadow-[#2563EB]/5 p-6">
+        <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-xl shadow-[#2563EB]/5 p-6">
           <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 mb-3">
             Hành Động Đề Xuất
           </h3>

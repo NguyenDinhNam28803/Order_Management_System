@@ -24,11 +24,11 @@ export function POAutomationButton({
   const handleAutomation = async () => {
     setLoading(true);
     try {
-      const automationResult = await processPOAutomation(poId);
+      const automationResult = await processPOAutomation(poId) as { contractCreated?: boolean; message?: string } | null;
       if (automationResult) {
         const resultData = {
           contractCreated: automationResult.contractCreated ?? false,
-          message: automationResult.message
+          message: automationResult.message ?? ''
         };
         setResult(resultData);
         onSuccess?.(resultData);
@@ -105,9 +105,9 @@ export function useAutoPOAutomation() {
       notify(`PO ${poNumber} đạt ngưỡng ${threshold.toLocaleString('vi-VN')} VND. Đang tạo hợp đồng...`, 'info');
       
       try {
-        const result = await processPOAutomation(poId);
+        const result = await processPOAutomation(poId) as { contractCreated?: boolean; message?: string } | null;
         if (result?.contractCreated) {
-          notify(result.message, 'success');
+          notify(result.message ?? '', 'success');
         }
         return result;
       } catch (error) {

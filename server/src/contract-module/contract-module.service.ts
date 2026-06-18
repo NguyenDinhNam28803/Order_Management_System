@@ -8,7 +8,7 @@ import { Cron } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateContractDto } from './dto/create-contract.dto';
 import { UpdateContractDto } from './dto/update-contract.dto';
-import { ContractStatus, DocumentType } from '@prisma/client';
+import { ContractStatus, DocumentType, UserRole } from '@prisma/client';
 import { NotificationModuleService } from '../notification-module/notification-module.service';
 import { generateDocNumber } from '../common/utils/doc-number.util';
 import { ApprovalModuleService } from '../approval-module/approval-module.service';
@@ -295,7 +295,13 @@ export class ContractModuleService {
         const buyerUsers = await this.prisma.user.findMany({
           where: {
             orgId: contract.orgId,
-            role: { in: ['PROCUREMENT', 'DIRECTOR', 'CEO'] as ('PROCUREMENT' | 'DIRECTOR' | 'CEO')[] },
+            role: {
+              in: ['PROCUREMENT', 'DIRECTOR', 'CEO'] as (
+                | 'PROCUREMENT'
+                | 'DIRECTOR'
+                | 'CEO'
+              )[],
+            },
             isActive: true,
           },
           select: { email: true, fullName: true },
@@ -418,11 +424,11 @@ export class ContractModuleService {
 
       const orgIds = [...new Set(expiringContracts.map((c) => c.orgId))];
 
-      // Batch-load all procurement users for all orgs in one query (avoid N+1)
+      // Batch-load all procurement users for all orgs in a single query (avoid N+1)
       const allProcurementUsers = await this.prisma.user.findMany({
         where: {
           orgId: { in: orgIds },
-          role: { in: ['PROCUREMENT', 'PLATFORM_ADMIN'] as ('PROCUREMENT' | 'PLATFORM_ADMIN')[] },
+          role: { in: [UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN] },
           isActive: true,
         },
       });
@@ -434,12 +440,13 @@ export class ContractModuleService {
       }
 
       for (const contract of expiringContracts) {
-        const procurementUsers = usersByOrg.get(contract.orgId) ?? [];
         const daysLeft = Math.ceil(
           (contract.endDate!.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
         );
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const supplierName =
-          (contract.supplierOrg as { name?: string })?.name ?? 'Nhà cung cấp';
+          (contract.supplierOrg as any)?.name ?? 'Nhà cung cấp';
+        const procurementUsers = usersByOrg.get(contract.orgId) ?? [];
 
         for (const user of procurementUsers) {
           if (!user.email) continue;
@@ -452,6 +459,7 @@ export class ContractModuleService {
                 name: user.fullName || user.email,
                 contractCode: contract.contractNumber,
                 contractTitle: contract.title,
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                 supplierName,
                 expiryDate: contract.endDate,
                 daysLeft,

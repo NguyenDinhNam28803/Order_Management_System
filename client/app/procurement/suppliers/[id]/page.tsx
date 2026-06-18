@@ -205,8 +205,8 @@ export default function ProcurementSupplierDetailPage() {
     const getTierColor = (tier?: string) => {
         switch (tier) {
             case "GOLD": return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
-            case "SILVER": return "bg-slate-400/20 text-black border-slate-400/30";
-            case "BRONZE": return "bg-orange-500/20 text-black border-orange-500/30";
+            case "SILVER": return "bg-slate-400/20 text-slate-600 border-slate-400/30";
+            case "BRONZE": return "bg-orange-500/20 text-orange-700 border-orange-500/30";
             default: return "bg-slate-900 text-slate-100 border-slate-200";
         }
     };
@@ -264,7 +264,7 @@ export default function ProcurementSupplierDetailPage() {
                     
                     <div className="flex items-start justify-between">
                         <div className="flex items-center gap-4">
-                            <div className="h-16 w-16 bg-blue-600/10 rounded-2xl flex items-center justify-center border border-blue-600/20">
+                            <div className="h-16 w-16 bg-blue-600/10 rounded-xl flex items-center justify-center border border-blue-600/20">
                                 <Building2 size={32} className="text-blue-600" />
                             </div>
                             <div>
@@ -280,7 +280,7 @@ export default function ProcurementSupplierDetailPage() {
                                         </span>
                                     )}
                                 </div>
-                                <p className="text-slate-900 text-sm">{supplier.code} • {supplier.email}</p>
+                                <p className="text-[0.8125rem] text-[#64748B] font-medium">{supplier.code} • {supplier.email}</p>
                             </div>
                         </div>
                         
@@ -344,7 +344,7 @@ export default function ProcurementSupplierDetailPage() {
                         {/* KPI Overview Cards with Progress Bars */}
                         <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
                             {/* OTD Score */}
-                            <div className="bg-slate-100 rounded-2xl p-5 border border-slate-200">
+                            <div className="bg-slate-100 rounded-xl p-5 border border-slate-200">
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="flex items-center gap-2">
                                         <div className="p-2 bg-emerald-500/10 rounded-lg">
@@ -374,11 +374,11 @@ export default function ProcurementSupplierDetailPage() {
                                         style={{ width: `${getScorePercentage(latestKPI?.otdScore)}%` }}
                                     />
                                 </div>
-                                <p className="text-slate-900 text-xs mt-2">Giao hàng đúng hạn (trọng số 30%)</p>
+                                <p className="text-[#64748B] text-xs mt-2">Giao hàng đúng hạn (trọng số 30%)</p>
                             </div>
                             
                             {/* Quality Score */}
-                            <div className="bg-slate-100 rounded-2xl p-5 border border-slate-200">
+                            <div className="bg-slate-100 rounded-xl p-5 border border-slate-200">
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="flex items-center gap-2">
                                         <div className="p-2 bg-blue-600/10 rounded-lg">
@@ -413,11 +413,11 @@ export default function ProcurementSupplierDetailPage() {
                                         style={{ width: `${getScorePercentage(latestKPI?.qualityScore)}%` }}
                                     />
                                 </div>
-                                <p className="text-slate-900 text-xs mt-2">Chất lượng sản phẩm (trọng số 30%)</p>
+                                <p className="text-[#64748B] text-xs mt-2">Chất lượng sản phẩm (trọng số 30%)</p>
                             </div>
                             
                             {/* Price Score */}
-                            <div className="bg-slate-100 rounded-2xl p-5 border border-slate-200">
+                            <div className="bg-slate-100 rounded-xl p-5 border border-slate-200">
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="flex items-center gap-2">
                                         <div className="p-2 bg-yellow-500/10 rounded-lg">
@@ -452,11 +452,11 @@ export default function ProcurementSupplierDetailPage() {
                                         style={{ width: `${getScorePercentage(latestKPI?.priceScore)}%` }}
                                     />
                                 </div>
-                                <p className="text-slate-900 text-xs mt-2">Cạnh tranh giá (trọng số 20%)</p>
+                                <p className="text-[#64748B] text-xs mt-2">Cạnh tranh giá (trọng số 20%)</p>
                             </div>
                             
                             {/* Manual Score */}
-                            <div className="bg-slate-100 rounded-2xl p-5 border border-slate-200">
+                            <div className="bg-slate-100 rounded-xl p-5 border border-slate-200">
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="flex items-center gap-2">
                                         <div className="p-2 bg-purple-500/10 rounded-lg">
@@ -493,12 +493,12 @@ export default function ProcurementSupplierDetailPage() {
                                         style={{ width: `${getScorePercentage(latestKPI?.manualScore)}%` }}
                                     />
                                 </div>
-                                <p className="text-slate-900 text-xs mt-2">Đánh giá thủ công (trọng số 20%)</p>
+                                <p className="text-[#64748B] text-xs mt-2">Đánh giá thủ công (trọng số 20%)</p>
                             </div>
                         </div>
 
                         {/* Overall Score Card */}
-                        <div className="bg-gradient-to-br from-blue-600/10 via-violet-500/10 to-pink-500/10 rounded-2xl p-8 border border-blue-600/20 relative">
+                        <div className="bg-gradient-to-br from-blue-600/10 via-violet-500/10 to-pink-500/10 rounded-xl p-8 border border-blue-600/20 relative">
                             <div className="absolute top-0 right-0 p-4 opacity-10">
                                 <Sparkles size={80} className="text-blue-600" />
                             </div>
@@ -538,7 +538,7 @@ export default function ProcurementSupplierDetailPage() {
                                                     </span>
                                                 </div>
                                             </div>
-                                            <p className="text-[10px] text-slate-900 mt-1">
+                                            <p className="text-[0.6875rem] text-slate-900 mt-1">
                                                 *Làm tròn 1 số thập phân
                                             </p>
                                         </div>
@@ -572,7 +572,7 @@ export default function ProcurementSupplierDetailPage() {
                                                         <span className="text-slate-900">&lt;70 điểm - Cần cải thiện</span>
                                                     </div>
                                                 </div>
-                                                <p className="text-[10px] text-slate-900 pt-1 border-t border-slate-200">
+                                                <p className="text-[0.6875rem] text-slate-900 pt-1 border-t border-slate-200">
                                                     Đánh giá dựa trên Overall Score tính toán
                                                 </p>
                                             </div>
@@ -673,7 +673,7 @@ export default function ProcurementSupplierDetailPage() {
                     <div className="space-y-6">
                         <h2 className="text-xl font-bold text-slate-900 uppercase tracking-tight">Lịch sử đánh giá KPI</h2>
                         
-                        <div className="bg-slate-100 rounded-2xl border border-slate-200 overflow-hidden">
+                        <div className="bg-slate-100 rounded-xl border border-slate-200 overflow-hidden">
                             <table className="erp-table text-xs">
                                 <thead>
                                     <tr>
@@ -713,7 +713,7 @@ export default function ProcurementSupplierDetailPage() {
                         </div>
 
                         {!kpiHistory.length && (
-                            <div className="text-center py-12 bg-slate-100 rounded-2xl border border-slate-200">
+                            <div className="text-center py-12 bg-slate-100 rounded-xl border border-slate-200">
                                 <BarChart3 size={48} className="text-slate-900 mx-auto mb-4" />
                                 <p className="text-slate-900 font-bold">Chưa có dữ liệu đánh giá</p>
                                 <p className="text-slate-900 text-sm mt-2">Chạy đánh giá AI để tạo báo cáo KPI</p>
@@ -734,15 +734,15 @@ export default function ProcurementSupplierDetailPage() {
                                     <p>Quy trình kiểm tra thanh toán chuẩn:</p>
                                     <div className="space-y-1 text-slate-900">
                                         <div className="flex items-start gap-2">
-                                            <span className="bg-blue-600/20 text-blue-600 px-1.5 rounded text-[10px] font-bold">1</span>
+                                            <span className="bg-blue-600/20 text-blue-600 px-1.5 rounded text-[0.6875rem] font-bold">1</span>
                                             <span><strong>PO</strong> - Purchase Order (Đơn đặt hàng)</span>
                                         </div>
                                         <div className="flex items-start gap-2">
-                                            <span className="bg-emerald-500/20 text-black px-1.5 rounded text-[10px] font-bold">2</span>
+                                            <span className="bg-emerald-500/10 text-emerald-700 px-1.5 rounded text-[0.6875rem] font-bold">2</span>
                                             <span><strong>GRN</strong> - Goods Receipt Note (Phiếu nhận hàng)</span>
                                         </div>
                                         <div className="flex items-start gap-2">
-                                            <span className="bg-yellow-500/20 text-yellow-400 px-1.5 rounded text-[10px] font-bold">3</span>
+                                            <span className="bg-yellow-500/20 text-yellow-400 px-1.5 rounded text-[0.6875rem] font-bold">3</span>
                                             <span><strong>Invoice</strong> - Hóa đơn từ nhà cung cấp</span>
                                         </div>
                                     </div>
@@ -759,7 +759,7 @@ export default function ProcurementSupplierDetailPage() {
                             </Tooltip>
                         </div>
                         
-                        <div className="bg-slate-100 rounded-2xl border border-slate-200 overflow-hidden">
+                        <div className="bg-slate-100 rounded-xl border border-slate-200 overflow-hidden">
                             <table className="erp-table text-xs">
                                 <thead>
                                     <tr>
@@ -797,7 +797,7 @@ export default function ProcurementSupplierDetailPage() {
                         </div>
 
                         {supplierPOs.length === 0 && (
-                            <div className="text-center py-12 bg-slate-100 rounded-2xl border border-slate-200">
+                            <div className="text-center py-12 bg-slate-100 rounded-xl border border-slate-200">
                                 <ShoppingBag size={48} className="text-slate-900 mx-auto mb-4" />
                                 <p className="text-slate-900 font-bold">Chưa có PO nào</p>
                                 <p className="text-slate-900 text-sm mt-2">Bạn chưa tạo PO nào với nhà cung cấp này</p>
@@ -810,7 +810,7 @@ export default function ProcurementSupplierDetailPage() {
             {/* Manual Review Modal */}
             {showReviewModal && (
                 <div className="fixed inset-0 bg-white/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-slate-100 rounded-2xl border border-slate-200 max-w-lg w-full max-h-[90vh] overflow-y-auto">
+                    <div className="bg-slate-100 rounded-xl border border-slate-200 max-w-lg w-full max-h-[90vh] overflow-y-auto">
                         <div className="p-6 border-b border-slate-200">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
@@ -932,3 +932,4 @@ export default function ProcurementSupplierDetailPage() {
         </main>
     );
 }
+

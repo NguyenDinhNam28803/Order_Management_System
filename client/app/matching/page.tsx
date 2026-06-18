@@ -21,10 +21,10 @@ export default function MatchingPage() {
     };
 
     return (
-        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
+        <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#F8FAFC] text-slate-900">
             <div className="mt-8 mb-8 flex justify-between items-end">
                 <div>
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tight">Đối soát 3 bên (3-Way Match)</h1>
+                    <h1 className="page-title">Đối soát 3 bên (3-Way Match)</h1>
                     <p className="text-sm text-slate-900 mt-1">Hệ thống tự động đối chiếu dữ liệu giữa PO, Nhập kho và Hóa đơn.</p>
                 </div>
             </div>
@@ -49,7 +49,7 @@ export default function MatchingPage() {
                                     <br />
                                     Thực tế nhập kho (GRN) chỉ ghi nhận: <span className="font-black underline">42 Thùng</span>.
                                     <br /><br />
-                                    <span className="bg-red-600 text-white px-2 py-0.5 rounded text-[9px] font-black uppercase">Chặn thanh toán</span>: Hệ thống đã tự động khóa thanh toán cho đơn hàng này.
+                                    <span className="bg-red-600 text-white px-2 py-0.5 rounded text-[0.6875rem] font-black uppercase">Chặn thanh toán</span>: Hệ thống đã tự động khóa thanh toán cho đơn hàng này.
                                 </p>
                             </div>
                             <button

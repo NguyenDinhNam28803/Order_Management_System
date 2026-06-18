@@ -19,12 +19,12 @@ export default function EmptyState({
   className = "",
 }: EmptyStateProps) {
   return (
-    <div className={`flex flex-col items-center justify-center py-16 px-6 text-center ${className}`}>
-      <div className="h-14 w-14 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center mb-4">
+    <div className={`empty-state ${className}`}>
+      <div className="h-14 w-14 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center mb-3 empty-state-icon">
         {icon}
       </div>
-      <p className="text-sm font-semibold text-slate-600">{title}</p>
-      <p className="text-xs text-slate-400 mt-1 max-w-xs">{description}</p>
+      <p className="empty-state-title">{title}</p>
+      <p className="empty-state-desc">{description}</p>
       {action && <div className="mt-4">{action}</div>}
     </div>
   );

@@ -36,35 +36,13 @@ export class EmailService {
   async sendEmail(
     to: string,
     subject: string,
-    body: string,
-    attachments?: { filename: string; content: Buffer; contentType: string }[],
+    _body: string,
+    _attachments?: { filename: string; content: Buffer; contentType: string }[],
   ) {
-    const startTime = Date.now();
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const info = await this.transporter.sendMail({
-        from: `"${this.configService.get('EMAIL_FROM_NAME') || 'OMS System'}" <${this.configService.get('EMAIL_FROM_EMAIL')}>`,
-        to,
-        subject,
-        html: body,
-        attachments: attachments?.map((a) => ({
-          filename: a.filename,
-          content: a.content,
-          contentType: a.contentType,
-        })),
-      });
-      const duration = Date.now() - startTime;
-      this.logger.log(
-        `Email sent to ${to} in ${duration}ms: ${info.messageId}`,
-      );
-      return true;
-    } catch (error) {
-      const duration = Date.now() - startTime;
-      this.logger.error(
-        `Error sending email to ${to} after ${duration}ms:`,
-        error,
-      );
-      throw error;
-    }
+    // EMAIL DISABLED — tất cả gửi email đã bị tắt hoàn toàn
+    this.logger.warn(
+      `[EMAIL DISABLED] Bỏ qua gửi email → to=${to} subject="${subject}"`,
+    );
+    return true;
   }
 }

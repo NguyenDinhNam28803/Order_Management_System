@@ -199,17 +199,17 @@ export default function InvoiceDetailPage() {
     switch (status) {
       case 'APPROVED':
       case 'AUTO_APPROVED':
-        return 'bg-emerald-500/10 text-black border-emerald-500/20';
+        return 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20';
       case 'EXCEPTION_REVIEW':
       case 'REJECTED':
-        return 'bg-rose-500/10 text-black border-rose-500/20';
+        return 'bg-rose-500/10 text-rose-700 border-rose-500/20';
       case 'MATCHING':
       case 'SUBMITTED':
-        return 'bg-amber-500/10 text-black border-amber-500/20';
+        return 'bg-amber-500/10 text-amber-700 border-amber-500/20';
       case 'PAID':
         return 'bg-[#2563EB]/10 text-[#3B82F6] border-[#2563EB]/20';
       default:
-        return 'bg-slate-500/10 text-black border-slate-500/20';
+        return 'bg-slate-500/10 text-slate-600 border-slate-500/20';
     }
   };
 
