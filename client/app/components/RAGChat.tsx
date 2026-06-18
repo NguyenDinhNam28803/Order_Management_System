@@ -1,10 +1,10 @@
-﻿"use client";
+"use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { 
-    Sparkles, Send, X, Loader2, Bot, FileText, Lock,
-    Database, BarChart3, FileCheck, AlertCircle,
-    MessageSquare, Wallet, TrendingUp, Users, Settings, Clock,
+import {
+    Sparkles, Send, X, Loader2, FileText,
+    BarChart3, FileCheck, AlertCircle,
+    MessageSquare, Wallet, TrendingUp, Users, Clock,
     LayoutGrid, Receipt, CreditCard, Package, ShoppingCart,
     Building2, User, Table2
 } from "lucide-react";
@@ -14,8 +14,6 @@ interface SuggestionItem {
     text: string;
     icon: React.ReactNode;
 }
-
-type UserRole = "REQUESTER" | "APPROVER" | "ACCOUNTANT" | "VENDOR" | "ADMIN" | "PROCUREMENT" | "FINANCE" | "DEPT_APPROVER" | "DIRECTOR" | "CEO";
 
 const ROLE_SUGGESTIONS: Record<string, SuggestionItem[]> = {
     REQUESTER: [
@@ -169,7 +167,7 @@ const TABLE_NAMES: Record<string, string> = {
 const formatAnswer = (text: string): React.ReactNode => {
     // Handle bold text
     const parts = text?.split(/(\*\*.*?\*\*)/g);
-    
+
     return parts?.map((part, idx) => {
         if (part.startsWith('**') && part.endsWith('**')) {
             return <strong key={idx} className="text-slate-900">{part.slice(2, -2)}</strong>;
@@ -188,7 +186,7 @@ const formatAnswer = (text: string): React.ReactNode => {
 };
 
 export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProps) {
-    const { currentUser, myPrs, prs, approvals, invoices, budgets } = useProcurement();
+    const { currentUser, myPrs, prs, invoices, budgets } = useProcurement();
     const [searchQuery, setSearchQuery] = useState("");
     const [aiResponse, setAiResponse] = useState<RagResponse | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -201,7 +199,7 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
     // Calculate real stats from data
     const isProcOrAdmin = userRole === "PROCUREMENT" || userRole === "PLATFORM_ADMIN";
     const prPool = isProcOrAdmin ? prs : myPrs;
-    
+
     // Count pending PRs (PRs with PENDING status)
     const pendingPRCount = React.useMemo(() => {
         if (!prPool) return 0;
@@ -212,7 +210,7 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
     const overdueInvoiceCount = React.useMemo(() => {
         if (!invoices) return 0;
         // Count invoices with status PENDING, PENDING_APPROVAL, or APPROVED (not yet paid)
-        return invoices.filter((inv: Invoice) => 
+        return invoices.filter((inv: Invoice) =>
             ["PENDING", "PENDING_APPROVAL", "APPROVED"].includes(inv.status)
         ).length;
     }, [invoices]);
@@ -223,7 +221,7 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
         const remaining = budgets.allocated - budgets.committed - budgets.spent;
         return Math.round((remaining / budgets.allocated) * 100);
     }, [budgets]);
-    
+
     // Role display mapping
     const roleDisplayNames: Record<string, string> = {
         REQUESTER: "Người yêu cầu",
@@ -246,16 +244,16 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
     const handleAIsolve = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!searchQuery.trim()) return;
-        
+
         setIsLoading(true);
         setAiResponse(null);
-        
+
         try {
             const resp = await apiFetch('/rag/query', {
                 method: 'POST',
                 body: JSON.stringify({ question: searchQuery, topK: 5 })
             });
-            
+
             if (resp.ok) {
                 const data: RagResponse = await resp.json();
                 setAiResponse(data);
@@ -271,7 +269,7 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
                     }
                 });
             }
-        } catch (err) {
+        } catch {
             setAiResponse({
                 status: 'error',
                 message: 'Connection error',
@@ -287,88 +285,92 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
         }
     };
 
-
     return (
-        <div className="fixed inset-0 z-[100] bg-[#FFFFFF] flex flex-col animate-in fade-in duration-300" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
-            {/* Header */}
-            <div className="px-6 py-4 flex items-center gap-3 bg-[#FFFFFF]">
-                <div className="w-10 h-10 bg-[#1E3A5F] rounded-xl flex items-center justify-center">
-                    <Lock size={20} className="text-[#3B82F6]" />
-                </div>
-                <div className="flex-1">
-                    <h2 className="text-base font-semibold text-slate-900">AI Procurement Assistant</h2>
-                    <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-[11px] px-2 py-0.5 bg-[#1E3A5F]/50 text-[#3B82F6] rounded-full">
-                            RAG • Vector Search
-                        </span>
-                        <span className="text-[11px] px-2 py-0.5 bg-[#1E3A5F]/50 text-[#3B82F6] rounded-full">
-                            20 bảng dữ liệu
-                        </span>
-                        <span className="text-[11px] px-2 py-0.5 bg-[#065F46]/50 text-[#34D399] rounded-full">
-                            {roleDisplayNames[userRole] || userRole}
-                        </span>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
+            {/* Backdrop */}
+            <div className="absolute inset-0 bg-white/65 backdrop-blur-sm" onClick={onClose} />
+
+            {/* Panel */}
+            <div className="relative bg-white rounded-xl border border-slate-200 shadow-2xl shadow-black/10 w-full max-w-3xl max-h-[85vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-300">
+                {/* Header */}
+                <div className="px-6 py-4 flex items-center gap-3 border-b border-slate-200 shrink-0">
+                    <div className="w-10 h-10 bg-[#2563EB]/10 rounded-xl flex items-center justify-center shrink-0">
+                        <Sparkles size={20} className="text-[#2563EB]" />
                     </div>
+                    <div className="flex-1 min-w-0">
+                        <h2 className="text-base font-bold text-slate-900">Trợ lý AI Mua sắm</h2>
+                        <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                            <span className="text-[11px] px-2 py-0.5 bg-[#2563EB]/10 text-[#2563EB] rounded-full font-medium">
+                                RAG • Vector Search
+                            </span>
+                            <span className="text-[11px] px-2 py-0.5 bg-[#2563EB]/10 text-[#2563EB] rounded-full font-medium">
+                                20 bảng dữ liệu
+                            </span>
+                            <span className="text-[11px] px-2 py-0.5 bg-emerald-500/10 text-emerald-700 rounded-full font-medium">
+                                {roleDisplayNames[userRole] || userRole}
+                            </span>
+                        </div>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="w-8 h-8 flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all shrink-0"
+                    >
+                        <X size={18} />
+                    </button>
                 </div>
-                <button 
-                    onClick={onClose}
-                    className="w-8 h-8 flex items-center justify-center text-slate-900 hover:text-slate-900 hover:bg-[#1E293B] rounded-lg transition-all"
-                >
-                    <X size={18} />
-                </button>
-            </div>
 
                 {/* Chat Area */}
-            <div className="flex-1 overflow-y-auto px-6 py-8 bg-[#FFFFFF] custom-scrollbar">
-                {isLoading ? (
-                    <div className="flex flex-col items-center justify-center h-full gap-5">
-                        <div className="relative">
-                            <div className="w-16 h-16 border-4 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin" />
-                            <div className="absolute inset-0 flex items-center justify-center">
-                                <Sparkles size={20} className="text-[#2563EB] animate-pulse" />
-                            </div>
-                        </div>
-                        <div className="text-center space-y-2">
-                            <p className="text-sm font-bold text-slate-900 uppercase tracking-widest animate-pulse">
-                                Đang truy vấn Vector Database...
-                            </p>
-                            <p className="text-[10px] text-slate-900/70">Embedding → Similarity Search → LLM Generation</p>
-                        </div>
-                    </div>
-                ) : aiResponse ? (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-3xl mx-auto">
-                        {/* Answer Summary Section */}
-                        <div className="space-y-3">
-                            <div className="flex items-center gap-2 text-[#2563EB]">
-                                <Sparkles size={14} />
-                                <span className="text-[10px] font-black uppercase tracking-widest">Tóm tắt từ AI</span>
-                            </div>
-                            <div className="bg-[#F1F5F9] p-6 rounded-xl border border-slate-200 shadow-xl">
-                                <div className="text-sm text-slate-900 leading-relaxed font-medium whitespace-pre-wrap">
-                                    {formatAnswer(aiResponse?.data?.answer?.summary)}
+                <div className="flex-1 overflow-y-auto px-6 py-8 custom-scrollbar">
+                    {isLoading ? (
+                        <div className="flex flex-col items-center justify-center h-full gap-5 py-16">
+                            <div className="relative">
+                                <div className="w-16 h-16 border-4 border-[#2563EB]/20 border-t-[#2563EB] rounded-full animate-spin" />
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <Sparkles size={20} className="text-[#2563EB] animate-pulse" />
                                 </div>
                             </div>
+                            <div className="text-center space-y-2">
+                                <p className="text-sm font-bold text-slate-900 uppercase tracking-widest animate-pulse">
+                                    Đang truy vấn Vector Database...
+                                </p>
+                                <p className="text-[10px] text-slate-500">Embedding → Similarity Search → LLM Generation</p>
+                            </div>
                         </div>
+                    ) : aiResponse ? (
+                        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            {/* Answer Summary Section */}
+                            <div className="space-y-3">
+                                <div className="flex items-center gap-2 text-[#2563EB]">
+                                    <Sparkles size={14} />
+                                    <span className="text-[10px] font-black uppercase tracking-widest">Tóm tắt từ AI</span>
+                                </div>
+                                <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                                    <div className="text-sm text-slate-900 leading-relaxed font-medium whitespace-pre-wrap">
+                                        {formatAnswer(aiResponse?.data?.answer?.summary)}
+                                    </div>
+                                </div>
+                            </div>
 
                             {/* Detailed Data Section - Show meaningful details only */}
                             {aiResponse?.data?.answer?.data && aiResponse.data.answer.data.length > 0 && (
                                 <div className="space-y-3">
-                                    <div className="flex items-center gap-2 text-black">
+                                    <div className="flex items-center gap-2 text-slate-900">
                                         <BarChart3 size={14} />
                                         <span className="text-[10px] font-black uppercase tracking-widest">Chi tiết thông tin</span>
                                     </div>
                                     <div className="space-y-3">
                                         {(aiResponse.data.answer.data as Array<{ status?: string; details?: Record<string, unknown>; [key: string]: unknown }>).map((item, idx) => (
-                                            <div key={idx} className="bg-[#F1F5F9] rounded-xl border border-slate-200 overflow-hidden">
+                                            <div key={idx} className="bg-slate-50 rounded-xl border border-slate-200 overflow-hidden">
                                                 {/* Header with status if available */}
                                                 {!!(item.status || item.details?.["Đánh giá nhà cung cấp"]) && (
-                                                    <div className="px-4 py-3 bg-[#FFFFFF] border-b border-slate-200 flex items-center justify-between">
+                                                    <div className="px-4 py-3 bg-white border-b border-slate-200 flex items-center justify-between">
                                                         <span className="text-xs font-bold text-slate-900">
                                                             {String(item.details?.["Đánh giá nhà cung cấp"] ?? `Kết quả ${idx + 1}`)}
                                                         </span>
                                                         {!!item.status && (
                                                             <span className={`text-[10px] font-bold uppercase px-2 py-1 rounded-full ${
                                                                 item.status === 'PREFERRED' ? 'bg-emerald-500/10 text-emerald-700' :
-                                                                item.status === 'APPROVED' ? 'bg-[#2563EB]/20 text-[#2563EB]' :
+                                                                item.status === 'APPROVED' ? 'bg-[#2563EB]/10 text-[#2563EB]' :
                                                                 'bg-amber-500/10 text-amber-700'
                                                             }`}>
                                                                 {item.status}
@@ -394,13 +396,13 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
 
                                                                     return (
                                                                         <div key={key} className="flex flex-col gap-1">
-                                                                            <span className="text-[10px] font-bold text-slate-900 uppercase tracking-wider">
+                                                                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
                                                                                 {key}
                                                                             </span>
                                                                             <span className={`text-sm font-bold ${
                                                                                 key.includes('Điểm') || key.includes('tỉ lệ') || key.includes('score') || key.includes('rate')
-                                                                                    ? isNumeric && value >= 90 ? 'text-black' :
-                                                                                      isNumeric && value >= 70 ? 'text-[#2563EB]' : 'text-black'
+                                                                                    ? isNumeric && value >= 90 ? 'text-emerald-600' :
+                                                                                      isNumeric && value >= 70 ? 'text-[#2563EB]' : 'text-slate-900'
                                                                                     : 'text-slate-900'
                                                                             }`}>
                                                                                 {displayValue}
@@ -415,8 +417,8 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
                                                 )}
                                                 {/* Notes/Ghi chú as footer */}
                                                 {!!item.details?.["Ghi chú"] && (
-                                                    <div className="px-4 py-3 bg-[#FFFFFF]/50 border-t border-slate-200">
-                                                        <p className="text-xs text-slate-900 italic">
+                                                    <div className="px-4 py-3 bg-white border-t border-slate-200">
+                                                        <p className="text-xs text-slate-600 italic">
                                                             {String(item.details["Ghi chú"])}
                                                         </p>
                                                     </div>
@@ -438,11 +440,11 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
                                     </div>
                                     <div className="grid grid-cols-1 gap-2">
                                         {aiResponse.data.sources.map((s, idx) => (
-                                            <div 
-                                                key={idx} 
-                                                className="flex items-start gap-3 p-3 bg-[#F1F5F9] rounded-xl border border-slate-200 hover:border-blue-500/30 transition-all group"
+                                            <div
+                                                key={idx}
+                                                className="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200 hover:border-[#2563EB]/30 transition-all group"
                                             >
-                                                <div className="p-2 bg-[#FFFFFF] border border-slate-200 rounded-lg text-slate-900 shrink-0 group-hover:text-[#2563EB] group-hover:border-[#2563EB]/30 transition-all">
+                                                <div className="p-2 bg-white border border-slate-200 rounded-lg text-slate-500 shrink-0 group-hover:text-[#2563EB] group-hover:border-[#2563EB]/30 transition-all">
                                                     {TABLE_ICONS[s.metadata.table] || <FileText size={14} />}
                                                 </div>
                                                 <div className="flex-1 min-w-0">
@@ -451,12 +453,12 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
                                                             {TABLE_NAMES[s.metadata.table] || s.metadata.table}
                                                         </span>
                                                         {s.similarity && (
-                                                            <span className="text-[0.6875rem] text-slate-900">
+                                                            <span className="text-[0.6875rem] text-slate-500">
                                                                 Độ tương đồng: {(s.similarity * 100).toFixed(0)}%
                                                             </span>
                                                         )}
                                                     </div>
-                                                    <p className="text-[10px] text-slate-900/70 line-clamp-2">
+                                                    <p className="text-[10px] text-slate-500 line-clamp-2">
                                                         {s.content}
                                                     </p>
                                                 </div>
@@ -467,104 +469,104 @@ export default function RAGChat({ apiFetch, onClose, onSwitchMode }: RAGChatProp
                             )}
                         </div>
                     ) : (
-                    <div className="max-w-3xl mx-auto w-full">
-                        {/* Center Icon and Welcome */}
-                        <div className="text-center mb-8">
-                            <div className="w-16 h-16 bg-[#1E3A5F] rounded-2xl flex items-center justify-center mx-auto mb-5">
-                                <LayoutGrid size={32} className="text-[#3B82F6]" />
+                        <div className="w-full">
+                            {/* Center Icon and Welcome */}
+                            <div className="text-center mb-8">
+                                <div className="w-16 h-16 bg-[#2563EB]/10 rounded-2xl flex items-center justify-center mx-auto mb-5">
+                                    <LayoutGrid size={32} className="text-[#2563EB]" />
+                                </div>
+                                <h3 className="text-xl font-semibold text-slate-900 mb-2">
+                                    Xin chào, {roleDisplayNames[userRole] || userRole} {currentUser?.name?.split(' ').pop() || ''}
+                                </h3>
+                                <p className="text-sm text-slate-600 max-w-md mx-auto">
+                                    Hỏi bất cứ điều gì về đơn hàng, ngân sách, nhà cung cấp hoặc trạng thái phê duyệt của bạn.
+                                </p>
                             </div>
-                            <h3 className="text-xl font-semibold text-slate-900 mb-2">
-                                Xin chào, {roleDisplayNames[userRole] || userRole} {currentUser?.name?.split(' ').pop() || ''}
-                            </h3>
-                            <p className="text-sm text-slate-900 max-w-md mx-auto">
-                                Hỏi bất cứ điều gì về đơn hàng, ngân sách, nhà cung cấp hoặc trạng thái phê duyệt của bạn.
-                            </p>
-                        </div>
 
-                        {/* Stats Cards */}
-                        <div className="grid grid-cols-3 gap-4 mb-8">
-                            <div className="bg-[#F1F5F9] border border-[#1E293B] rounded-xl p-4 text-center">
-                                <div className="text-2xl font-bold text-[#F59E0B] mb-1">{pendingPRCount}</div>
-                                <div className="text-xs text-slate-900">PR chờ duyệt</div>
+                            {/* Stats Cards */}
+                            <div className="grid grid-cols-3 gap-4 mb-8">
+                                <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
+                                    <div className="text-2xl font-bold text-[#F59E0B] mb-1">{pendingPRCount}</div>
+                                    <div className="text-xs text-slate-600">PR chờ duyệt</div>
+                                </div>
+                                <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
+                                    <div className="text-2xl font-bold text-[#EF4444] mb-1">{overdueInvoiceCount}</div>
+                                    <div className="text-xs text-slate-600">Hóa đơn quá hạn</div>
+                                </div>
+                                <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
+                                    <div className="text-2xl font-bold text-[#10B981] mb-1">{budgetRemainingPercent}%</div>
+                                    <div className="text-xs text-slate-600">Ngân sách còn lại</div>
+                                </div>
                             </div>
-                            <div className="bg-[#F1F5F9] border border-[#1E293B] rounded-xl p-4 text-center">
-                                <div className="text-2xl font-bold text-[#EF4444] mb-1">{overdueInvoiceCount}</div>
-                                <div className="text-xs text-slate-900">Hóa đơn quá hạn</div>
-                            </div>
-                            <div className="bg-[#F1F5F9] border border-[#1E293B] rounded-xl p-4 text-center">
-                                <div className="text-2xl font-bold text-[#10B981] mb-1">{budgetRemainingPercent}%</div>
-                                <div className="text-xs text-slate-900">Ngân sách còn lại</div>
-                            </div>
-                        </div>
-                        
-                        {/* Suggestions */}
-                        <div className="mb-3">
-                            <p className="text-xs text-slate-900 uppercase tracking-wider mb-3">GỢI Ý CÂU HỎI</p>
-                            <div className="grid grid-cols-2 gap-3">
-                                {roleSuggestions.map((item: SuggestionItem, index: number) => (
-                                    <button 
-                                        key={item.text}
-                                        onClick={() => {
-                                            if (item.text.includes("Tạo PR mới với AI") && onSwitchMode) {
-                                                onSwitchMode();
-                                            } else {
-                                                setSearchQuery(item.text);
-                                            }
-                                        }}
-                                        className="flex items-start gap-3 p-4 bg-[#F1F5F9] border border-[#1E293B] rounded-xl text-sm text-slate-900 hover:border-[#2563EB]/50 hover:bg-[#1E293B] transition-all text-left group"
-                                    >
-                                        <span className="text-[#3B82F6] mt-0.5">
-                                            {item.icon}
-                                        </span>
-                                        <span className="leading-tight">{item.text}</span>
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </div>
 
-            {/* Input Area */}
-            <div className="px-6 py-4 bg-[#FFFFFF]">
-                <form onSubmit={handleAIsolve} className="max-w-3xl mx-auto">
-                    <div className="flex items-center gap-3">
-                        <div className="flex-1 relative">
-                            <input 
-                                ref={inputRef}
-                                type="text" 
-                                placeholder="Hỏi về ngân sách, PO, hóa đơn, nhà cung cấp..."
-                                className="w-full bg-[#F1F5F9] border border-[#1E293B] rounded-xl px-4 py-3.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#2563EB]/50 transition-all"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <div className="flex gap-1">
-                                {["Ctrl", "K"].map((key) => (
-                                    <kbd key={key} className="px-2 py-1 bg-[#1E293B] border border-[#334155] rounded text-[10px] font-medium text-[#F8FAFC]">
-                                        {key}
-                                    </kbd>
-                                ))}
+                            {/* Suggestions */}
+                            <div className="mb-3">
+                                <p className="text-xs text-slate-500 uppercase tracking-wider mb-3">GỢI Ý CÂU HỎI</p>
+                                <div className="grid grid-cols-2 gap-3">
+                                    {roleSuggestions.map((item: SuggestionItem) => (
+                                        <button
+                                            key={item.text}
+                                            onClick={() => {
+                                                if (item.text.includes("Tạo PR mới với AI") && onSwitchMode) {
+                                                    onSwitchMode();
+                                                } else {
+                                                    setSearchQuery(item.text);
+                                                }
+                                            }}
+                                            className="flex items-start gap-3 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 hover:border-[#2563EB]/50 hover:bg-[#2563EB]/5 transition-all text-left group"
+                                        >
+                                            <span className="text-[#2563EB] mt-0.5">
+                                                {item.icon}
+                                            </span>
+                                            <span className="leading-tight">{item.text}</span>
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
-                            <button 
-                                type="submit"
-                                disabled={isLoading || !searchQuery.trim()}
-                                className="w-10 h-10 bg-[#2563EB] text-white rounded-xl flex items-center justify-center hover:bg-[#1D4ED8] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-                            >
-                                {isLoading ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
-                            </button>
                         </div>
-                    </div>
-                    <p className="text-[10px] text-slate-900 mt-3 text-center">
-                        <span className="inline-flex items-center gap-1">
-                            <span className="w-1 h-1 bg-[#10B981] rounded-full"></span>
-                            Powered by RAG • Vector DB • LLM — dữ liệu cập nhật theo thời gian thực
-                        </span>
-                    </p>
-                </form>
+                    )}
+                </div>
+
+                {/* Input Area */}
+                <div className="px-6 py-4 border-t border-slate-200 shrink-0">
+                    <form onSubmit={handleAIsolve}>
+                        <div className="flex items-center gap-3">
+                            <div className="flex-1 relative">
+                                <input
+                                    ref={inputRef}
+                                    type="text"
+                                    placeholder="Hỏi về ngân sách, PO, hóa đơn, nhà cung cấp..."
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#2563EB]/50 focus:ring-4 focus:ring-[#2563EB]/5 transition-all"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="hidden sm:flex gap-1">
+                                    {["Ctrl", "K"].map((key) => (
+                                        <kbd key={key} className="px-2 py-1 bg-slate-100 border border-slate-200 rounded text-[10px] font-medium text-slate-600">
+                                            {key}
+                                        </kbd>
+                                    ))}
+                                </div>
+                                <button
+                                    type="submit"
+                                    disabled={isLoading || !searchQuery.trim()}
+                                    className="w-10 h-10 bg-[#2563EB] text-white rounded-xl flex items-center justify-center hover:bg-[#1D4ED8] transition-all disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+                                >
+                                    {isLoading ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+                                </button>
+                            </div>
+                        </div>
+                        <p className="text-[10px] text-slate-500 mt-3 text-center">
+                            <span className="inline-flex items-center gap-1">
+                                <span className="w-1 h-1 bg-[#10B981] rounded-full"></span>
+                                Powered by RAG • Vector DB • LLM — dữ liệu cập nhật theo thời gian thực
+                            </span>
+                        </p>
+                    </form>
+                </div>
             </div>
         </div>
     );
 }
-
