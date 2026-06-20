@@ -12,13 +12,15 @@ import { PrmoduleService } from './prmodule.service';
 import { CreatePrDto, CreatePrItemDto } from './dto/create-pr.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
+import { RolesGuard, Roles } from '../common/roles.guard';
+import { UserRole } from '@prisma/client';
 import type { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { Throttle } from '@nestjs/throttler';
 
 @ApiTags('Purchase Requisition (PR)')
 @Controller('procurement-requests')
 @ApiBearerAuth('JWT-auth')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class PrmoduleController {
   constructor(private readonly prService: PrmoduleService) {}
 
@@ -43,6 +45,7 @@ export class PrmoduleController {
 
   @Post('/ai-suggest')
   @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'AI gợi ý công ty theo sản phẩm',
     description: 'AI hệ thống chạy để tìm kiếm công ty và gợi ý',

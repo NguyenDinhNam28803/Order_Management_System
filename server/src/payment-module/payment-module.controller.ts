@@ -10,13 +10,16 @@ import {
 import { PaymentModuleService } from './payment-module.service';
 import { CreatePaymentModuleDto } from './dto/create-payment-module.dto';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
+import { RolesGuard, Roles } from '../common/roles.guard';
+import { UserRole } from '@prisma/client';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import type { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 
 @ApiTags('Payment Management')
 @Controller('payments')
 @ApiBearerAuth('JWT-auth')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.FINANCE, UserRole.PLATFORM_ADMIN)
 export class PaymentModuleController {
   constructor(private readonly paymentService: PaymentModuleService) {}
 

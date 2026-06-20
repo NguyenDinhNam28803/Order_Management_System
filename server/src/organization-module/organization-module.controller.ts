@@ -15,12 +15,14 @@ import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
+import { RolesGuard, Roles } from '../common/roles.guard';
+import { UserRole } from '@prisma/client';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 
 @ApiTags('Organizations')
 @Controller('organizations')
 @ApiBearerAuth('JWT-auth')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class OrganizationModuleController {
   constructor(
     private readonly organizationService: OrganizationModuleService,
@@ -34,6 +36,7 @@ export class OrganizationModuleController {
   }
 
   @Post()
+  @Roles(UserRole.PLATFORM_ADMIN)
   @ApiOperation({ summary: 'Create a new organization' })
   create(@Body() createDto: CreateOrganizationDto) {
     return this.organizationService.create(createDto);
@@ -52,6 +55,7 @@ export class OrganizationModuleController {
   }
 
   @Patch(':id')
+  @Roles(UserRole.PLATFORM_ADMIN)
   @ApiOperation({ summary: 'Update organization by ID' })
   update(@Param('id') id: string, @Body() updateDto: UpdateOrganizationDto) {
     return this.organizationService.update(id, updateDto);
@@ -64,6 +68,7 @@ export class OrganizationModuleController {
   }
 
   @Post(':id/approve')
+  @Roles(UserRole.PLATFORM_ADMIN)
   @ApiOperation({ summary: 'Approve supplier' })
   approveSupplier(@Param('id') id: string, @Req() req: Request) {
     const user = req['user'] as JwtPayload;
@@ -72,6 +77,7 @@ export class OrganizationModuleController {
   }
 
   @Post(':id/reject')
+  @Roles(UserRole.PLATFORM_ADMIN)
   @ApiOperation({ summary: 'Reject supplier' })
   rejectSupplier(@Param('id') id: string, @Body('reason') reason: string) {
     return this.organizationService.rejectSupplier(id, reason);

@@ -1,11 +1,14 @@
 import { Controller, Post, Body, Param, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
+import { RolesGuard, Roles } from '../common/roles.guard';
+import { UserRole } from '@prisma/client';
 import { POAutomationService } from './po-automation.service';
 
 @ApiTags('PO Automation')
 @Controller('po-automation')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.PLATFORM_ADMIN)
 @ApiBearerAuth()
 export class POAutomationController {
   constructor(private readonly poAutomationService: POAutomationService) {}

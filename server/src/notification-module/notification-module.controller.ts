@@ -9,6 +9,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
+import { RolesGuard, Roles } from '../common/roles.guard';
+import { UserRole } from '@prisma/client';
 import { EmailService } from './email.service';
 import { EmailTemplatesService } from './email-template.service';
 import { IsEmail, IsNotEmpty, IsObject, IsString } from 'class-validator';
@@ -56,7 +58,8 @@ export class NotificationModuleController {
   @Post('templates')
   @ApiOperation({ summary: 'Tạo mẫu thông báo mới' })
   @ApiBearerAuth('JWT-auth')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.PLATFORM_ADMIN)
   async createTemplate(@Body() dto: CreateNotificationTemplateDto) {
     return this.service.createTemplate(dto);
   }
@@ -68,7 +71,8 @@ export class NotificationModuleController {
   @Get('templates')
   @ApiOperation({ summary: 'Lấy tất cả mẫu thông báo' })
   @ApiBearerAuth('JWT-auth')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.PLATFORM_ADMIN)
   async findAllTemplates() {
     return this.service.findAllTemplates();
   }

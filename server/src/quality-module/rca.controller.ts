@@ -12,8 +12,9 @@ import {
 import { RcaService } from './rca.service';
 import { UserRole } from '@prisma/client';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
+import { RolesGuard } from '../common/roles.guard';
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('quality/rca')
 export class RcaController {
   constructor(private readonly rcaService: RcaService) {}

@@ -13,8 +13,9 @@ import { PrismaService } from '../prisma/prisma.service';
 import { UserRole } from '@prisma/client';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
+import { RolesGuard } from '../common/roles.guard';
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('quality')
 export class QualityController {
   constructor(
