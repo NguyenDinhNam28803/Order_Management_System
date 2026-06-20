@@ -180,7 +180,7 @@ Trả lời JSON (KHÔNG markdown, KHÔNG giải thích):
     const result = await this.withRetry(
       () =>
         this.client.models.generateContent({
-          model: 'gemini-2.0-flash-lite',
+          model: 'gemini-2.5-flash',
           contents: [{ role: 'user', parts: [{ text: prompt }] }],
         }),
       'filterEmailRelevance',
@@ -241,7 +241,7 @@ Lưu ý:
     const result = await this.withRetry(
       () =>
         this.client.models.generateContent({
-          model: 'gemini-2.0-flash-lite',
+          model: 'gemini-2.5-flash',
           contents: [{ role: 'user', parts: [{ text: prompt }] }],
         }),
       'analyzeEmailContent',
@@ -282,7 +282,7 @@ Lưu ý:
     const result = await this.withRetry(
       () =>
         this.client.models.generateContent({
-          model: 'gemini-2.0-flash-lite',
+          model: 'gemini-2.5-flash',
           contents: [{ role: 'user', parts: [{ text: prompt }] }],
         }),
       'analyzeQuotation',
@@ -346,7 +346,7 @@ Lưu ý:
     const result = await this.withRetry(
       () =>
         this.client.models.generateContent({
-          model: 'gemini-2.0-flash-lite',
+          model: 'gemini-2.5-flash',
           contents: [{ role: 'user', parts: [{ text: prompt }] }],
         }),
       'analyzeSupplierPerformance',
@@ -398,7 +398,7 @@ Lưu ý:
       let response = await this.withRetry(
         () =>
           this.client.models.generateContent({
-            model: 'gemini-2.0-flash-lite',
+            model: 'gemini-2.5-flash',
             config: {
               systemInstruction: { parts: [{ text: systemInstruction }] },
               thinkingConfig: { thinkingLevel: ThinkingLevel.HIGH },
@@ -448,7 +448,7 @@ Lưu ý:
         response = await this.withRetry(
           () =>
             this.client.models.generateContent({
-              model: 'gemini-2.0-flash-lite',
+              model: 'gemini-2.5-flash',
               config: { tools: tools },
               contents: chatHistory,
             }),
