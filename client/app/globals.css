@@ -58,7 +58,7 @@
   --spacing-container: clamp(1rem, 5vw, 2.5rem);
   --font-sans: var(--font-inter), var(--font-jakarta), "Inter", "Helvetica Neue", system-ui, sans-serif;
   --font-serif: var(--font-inter), "Inter", "Helvetica Neue", serif;
-  --font-mono: var(--font-dm-mono), var(--font-jetbrains-mono), 'JetBrains Mono', ui-monospace, monospace;
+  --font-mono: var(--font-jetbrains-mono), 'JetBrains Mono', 'DM Mono', ui-monospace, monospace;
   --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   --letter-spacing-tight: -0.02em;
   --letter-spacing-wide: 0.02em;
@@ -186,6 +186,7 @@ strong, b { font-weight: 700; }
   border-spacing: 0;
   font-size: 0.8125rem;
   background: transparent;
+  font-variant-numeric: tabular-nums;
 }
 
 .erp-table thead {
@@ -739,6 +740,7 @@ select.erp-input {
   line-height: 1.2;
   letter-spacing: -0.02em;
   font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
 }
 
 /* ── Step Badge ──────────────────────────────────────────────── */
