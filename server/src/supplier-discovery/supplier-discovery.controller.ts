@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
+import { RolesGuard } from '../common/roles.guard';
 import { SupplierDiscoveryService } from './supplier-discovery.service';
 import {
   DiscoverSupplierDto,
@@ -27,7 +28,7 @@ import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 
 @ApiTags('Supplier Discovery')
 @ApiBearerAuth('JWT-auth')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('supplier-discovery')
 export class SupplierDiscoveryController {
   constructor(private readonly service: SupplierDiscoveryService) {}

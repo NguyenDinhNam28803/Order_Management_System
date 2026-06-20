@@ -17,6 +17,7 @@ import {
   ApiParam,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
+import { RolesGuard } from '../common/roles.guard';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { SupplierVettingService } from './supplier-vetting-module.service';
 import {
@@ -39,7 +40,7 @@ const APPROVER_ROLES = ['ADMIN', 'DIRECTOR', 'CEO', 'PLATFORM_ADMIN'];
 
 @ApiTags('Supplier Vetting')
 @ApiBearerAuth('JWT-auth')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('supplier-vetting')
 export class SupplierVettingController {
   constructor(private readonly service: SupplierVettingService) {}

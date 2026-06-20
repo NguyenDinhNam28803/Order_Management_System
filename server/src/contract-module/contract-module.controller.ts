@@ -14,13 +14,16 @@ import { ContractModuleService } from './contract-module.service';
 import { CreateContractDto } from './dto/create-contract.dto';
 import { UpdateContractDto } from './dto/update-contract.dto';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
+import { RolesGuard, Roles } from '../common/roles.guard';
+import { UserRole } from '@prisma/client';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { ApiOperation, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiTags('Contract Management')
 @ApiBearerAuth('JWT-auth')
 @Controller('contracts')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.PROCUREMENT, UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO, UserRole.SUPPLIER, UserRole.PLATFORM_ADMIN)
 export class ContractModuleController {
   constructor(private readonly contractModuleService: ContractModuleService) {}
 

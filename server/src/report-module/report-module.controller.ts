@@ -1,13 +1,16 @@
 import { Controller, Get, UseGuards, Request } from '@nestjs/common';
 import { ReportModuleService } from './report-module.service';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
+import { RolesGuard, Roles } from '../common/roles.guard';
+import { UserRole } from '@prisma/client';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { ApiOperation, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiTags('Report Management')
 @ApiBearerAuth('JWT-auth')
 @Controller('reports')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO, UserRole.PLATFORM_ADMIN)
 export class ReportModuleController {
   constructor(private readonly reportModuleService: ReportModuleService) {}
 

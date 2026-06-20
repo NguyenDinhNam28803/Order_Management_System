@@ -484,7 +484,7 @@ Lưu ý:
   private static readonly MAX_INCLUDE_DEPTH = 1;
 
   private sanitizeInclude(include: unknown, depth = 0): unknown {
-    if (depth >= AiServiceService.MAX_INCLUDE_DEPTH || typeof include !== 'object' || !include) return undefined;
+    if (depth >= AiService.MAX_INCLUDE_DEPTH || typeof include !== 'object' || !include) return undefined;
     const result: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(include as Record<string, unknown>)) {
       result[k] = v === true ? true : this.sanitizeInclude(v, depth + 1);
@@ -498,10 +498,10 @@ Lưu ý:
     queryArgs: any,
   ) {
     try {
-      if (!AiServiceService.ALLOWED_AI_MODELS.has(modelName)) {
+      if (!AiService.ALLOWED_AI_MODELS.has(modelName)) {
         return { error: `Model '${modelName}' không được phép truy vấn.` };
       }
-      if (!AiServiceService.ALLOWED_AI_ACTIONS.has(action)) {
+      if (!AiService.ALLOWED_AI_ACTIONS.has(action)) {
         return { error: `Action '${action}' không được phép.` };
       }
       const model = (this.prisma as any)[modelName];

@@ -145,6 +145,7 @@ export class PoRepository {
         items: true,
       },
       orderBy: { createdAt: 'desc' },
+      take: 200,
     });
   }
 

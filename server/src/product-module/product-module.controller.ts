@@ -15,11 +15,13 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ApiBearerAuth, ApiTags, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
+import { RolesGuard, Roles } from '../common/roles.guard';
+import { UserRole } from '@prisma/client';
 
 @ApiTags('Product Management')
 @Controller('products')
 @ApiBearerAuth('JWT-auth')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class ProductModuleController {
   constructor(private readonly productService: ProductModuleService) {}
 
@@ -31,6 +33,7 @@ export class ProductModuleController {
    * @returns Danh mục vừa tạo
    */
   @Post('categories')
+  @Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Tạo danh mục sản phẩm',
     description: 'Tạo một danh mục sản phẩm mới',
@@ -73,12 +76,11 @@ export class ProductModuleController {
    * @returns Danh mục sau khi cập nhật
    */
   @Patch('categories/:id')
+  @Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Cập nhật danh mục sản phẩm',
     description: 'Cập nhật thông tin của một danh mục sản phẩm cụ thể',
   })
-  @ApiBearerAuth('JWT-auth')
-  @UseGuards(JwtAuthGuard)
   async updateCategory(
     @Param('id') id: string,
     @Body() updateCategoryDto: UpdateProductCategoryDto,
@@ -92,6 +94,7 @@ export class ProductModuleController {
    * @returns Kết quả xóa
    */
   @Delete('categories/:id')
+  @Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Xóa danh mục sản phẩm',
     description: 'Xóa một danh mục sản phẩm cụ thể',
@@ -108,6 +111,7 @@ export class ProductModuleController {
    * @returns Sản phẩm vừa tạo
    */
   @Post()
+  @Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Tạo sản phẩm mới',
     description: 'Tạo một sản phẩm mới trong hệ thống',
@@ -157,6 +161,7 @@ export class ProductModuleController {
    * @returns Sản phẩm sau khi cập nhật
    */
   @Patch(':id')
+  @Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Cập nhật sản phẩm',
     description: 'Cập nhật thông tin của một sản phẩm cụ thể',
@@ -174,6 +179,7 @@ export class ProductModuleController {
    * @returns Kết quả xóa
    */
   @Delete(':id')
+  @Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
   @ApiOperation({
     summary: 'Xóa sản phẩm',
     description: 'Xóa một sản phẩm cụ thể',

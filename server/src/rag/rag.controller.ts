@@ -19,6 +19,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
+import { RolesGuard, Roles } from '../common/roles.guard';
+import { UserRole } from '@prisma/client';
 import { RagQueryService, RagResult } from './rag-query.service';
 import { RagIngestService } from './rag-ingest.service';
 import { RAG_SYNC_QUEUE } from './rag-sync.processor';
@@ -32,7 +34,8 @@ import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { EmailRagService, ParsedEmail } from './email-rag.service';
 
 @ApiTags('RAG (Retrieval-Augmented Generation)')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.PROCUREMENT, UserRole.REQUESTER, UserRole.PLATFORM_ADMIN)
 @ApiBearerAuth('JWT-auth')
 @Controller('rag')
 export class RagController {

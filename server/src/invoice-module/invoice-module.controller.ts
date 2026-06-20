@@ -15,9 +15,9 @@ import { InvoiceModuleService } from './invoice-module.service';
 import { CreateInvoiceModuleDto } from './dto/create-invoice-module.dto';
 import { UpdateInvoiceModuleDto } from './dto/update-invoice-module.dto';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
+import { RolesGuard, Roles } from '../common/roles.guard';
 import { ApiOperation, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { UserRole } from '@prisma/client';
-import { Roles } from '../common/roles.guard';
 
 class CreateFromTextDto {
   @ApiProperty({
@@ -34,7 +34,7 @@ class CreateFromTextDto {
 
 @ApiTags('Invoice Management')
 @ApiBearerAuth('JWT-auth')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('invoices')
 export class InvoiceModuleController {
   constructor(private readonly invoiceModuleService: InvoiceModuleService) {}

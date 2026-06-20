@@ -10,6 +10,8 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
+import { RolesGuard, Roles } from '../common/roles.guard';
+import { UserRole } from '@prisma/client';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import { AuditModuleService } from './audit-module.service';
 import { CreateAuditLogDto } from './dto/audit.dto';
@@ -17,7 +19,8 @@ import { CreateAuditLogDto } from './dto/audit.dto';
 @ApiTags('Audit Logs')
 @Controller('audit-logs')
 @ApiBearerAuth('JWT-auth')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO, UserRole.PLATFORM_ADMIN)
 export class AuditModuleController {
   constructor(private readonly auditService: AuditModuleService) {}
 

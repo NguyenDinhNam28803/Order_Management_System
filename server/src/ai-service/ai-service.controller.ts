@@ -13,6 +13,9 @@ import {
   AiSupplierEvaluation,
   AiEmailAnalysis,
 } from './ai-service.service';
+import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
+import { RolesGuard, Roles } from '../common/roles.guard';
+import { UserRole } from '@prisma/client';
 import {
   ApiOperation,
   ApiQuery,
@@ -21,11 +24,11 @@ import {
   ApiBearerAuth,
   ApiBody,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
 
 @ApiTags('AI Service')
 @ApiBearerAuth('JWT-auth')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
 @Controller('ai')
 export class AiController {
   constructor(private readonly aiService: AiService) {}
