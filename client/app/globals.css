@@ -56,8 +56,10 @@
 
   /* Typography */
   --spacing-container: clamp(1rem, 5vw, 2.5rem);
-  --font-sans: var(--font-inter), var(--font-jakarta), "Inter", "Helvetica Neue", system-ui, sans-serif;
-  --font-serif: var(--font-inter), "Inter", "Helvetica Neue", serif;
+  /* App-wide font đồng bộ JetBrains Mono — toàn bộ chữ dùng mono.
+     Inter/Jakarta vẫn được load trong layout làm fallback an toàn. */
+  --font-sans: var(--font-jetbrains-mono), 'JetBrains Mono', 'DM Mono', ui-monospace, monospace;
+  --font-serif: var(--font-jetbrains-mono), 'JetBrains Mono', 'DM Mono', ui-monospace, monospace;
   --font-mono: var(--font-jetbrains-mono), 'JetBrains Mono', 'DM Mono', ui-monospace, monospace;
   --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   --letter-spacing-tight: -0.02em;

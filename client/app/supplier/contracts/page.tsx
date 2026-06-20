@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import PageHeader from "../../components/shared/PageHeader";
 import { ContractStatus } from "../../types/api-types";
+import { convertPrismaDecimal } from "../../utils/formatUtils";
 import ContractSignModal from "../../components/ContractSignModal";
 
 const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; border: string; icon: React.ReactNode }> = {
@@ -289,7 +290,7 @@ export default function SupplierContractsPage() {
                                     </td>
                                     <td className="px-6 py-4 text-center">
                                         <div className="font-bold text-slate-900 group-hover:text-[#F8FAFC] transition-colors">
-                                            {new Intl.NumberFormat('vi-VN').format(c.totalValue || 0)} {c.currency || 'VND'}
+                                            {new Intl.NumberFormat('vi-VN').format(convertPrismaDecimal(c.totalValue))} {c.currency || 'VND'}
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
@@ -411,7 +412,7 @@ export default function SupplierContractsPage() {
                                 </div>
                                 <div className="p-4 rounded-xl bg-[#FFFFFF] border border-slate-200">
                                     <span className="text-[0.6875rem] font-black uppercase text-[#64748B] block mb-1">Giá trị</span>
-                                    <p className="font-bold text-black">{new Intl.NumberFormat('vi-VN').format(selectedContract.totalValue || 0)} {selectedContract.currency}</p>
+                                    <p className="font-bold text-black">{new Intl.NumberFormat('vi-VN').format(convertPrismaDecimal(selectedContract.totalValue))} {selectedContract.currency}</p>
                                 </div>
                                 <div className="p-4 rounded-xl bg-[#FFFFFF] border border-slate-200">
                                     <span className="text-[0.6875rem] font-black uppercase text-[#64748B] block mb-1">Ngày tạo</span>

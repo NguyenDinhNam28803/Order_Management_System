@@ -17,6 +17,8 @@ import { ExternalTokenService as ExternalTokenServiceImpl } from './external-tok
 import { PrismaService } from '../prisma/prisma.service';
 import { AutomationService } from '../common/automation/automation.service';
 import { JwtAuthGuard } from '../auth-module/jwt-auth.guard';
+import { RolesGuard, Roles } from '../common/roles.guard';
+import { UserRole } from '@prisma/client';
 import { Throttle } from '@nestjs/throttler';
 import { generateDocNumber } from '../common/utils/doc-number.util';
 import {
@@ -34,35 +36,40 @@ export class ExternalTokenController {
     private readonly automationService: AutomationService,
   ) {}
 
-  // ── Internal management endpoints — JWT required ────────────────────────────
+  // ── Internal management endpoints — JWT + Role required ─────────────────────
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
   @Post('create')
   async createToken(@Body() dto: CreateExternalTokenDto) {
     return this.externalTokenService.createToken(dto);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
   @Get('validate/:token')
   async validateToken(@Param('token') token: string) {
     return this.externalTokenService.validateToken(token);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
   @Post('use/:token')
   async markTokenAsUsed(@Param('token') token: string) {
     await this.externalTokenService.markTokenAsUsed(token);
     return { success: true };
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
   @Delete('revoke/:token')
   async revokeToken(@Param('token') token: string) {
     await this.externalTokenService.revokeToken(token);
     return { success: true };
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.PROCUREMENT, UserRole.PLATFORM_ADMIN)
   @Get('by-reference/:referenceId')
   async getActiveTokensByReference(
     @Param('referenceId') referenceId: string,

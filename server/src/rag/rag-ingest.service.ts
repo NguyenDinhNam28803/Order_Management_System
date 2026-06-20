@@ -111,6 +111,37 @@ export class RagIngestService {
     return { inserted };
   }
 
+  /**
+   * Xóa toàn bộ embeddings của một source_table khỏi Vector DB.
+   * Dùng để làm sạch dữ liệu RAG trước khi ingest lại.
+   */
+  async clearTable(table: string): Promise<{ deleted: number }> {
+    if (!ALLOWED_SOURCE_TABLES.has(table)) {
+      throw new Error(`Invalid sourceTable: "${table}"`);
+    }
+
+    // source_table validated against ALLOWED_SOURCE_TABLES; value is a bound param.
+    const deleted = await this.prisma.$executeRawUnsafe(
+      `DELETE FROM document_embeddings WHERE source_table = $1`,
+      table,
+    );
+
+    this.logger.log(`[${table}] Cleared — ${deleted} embeddings deleted`);
+    return { deleted };
+  }
+
+  /**
+   * Xóa toàn bộ embeddings khỏi Vector DB (reset hoàn toàn dữ liệu RAG).
+   */
+  async clearAll(): Promise<{ deleted: number }> {
+    const deleted = await this.prisma.$executeRawUnsafe(
+      `DELETE FROM document_embeddings`,
+    );
+
+    this.logger.log(`Cleared ALL — ${deleted} embeddings deleted`);
+    return { deleted };
+  }
+
   private async batchUpsert(
     rows: {
       content: string;

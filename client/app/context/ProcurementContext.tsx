@@ -346,6 +346,8 @@ export interface ProcurementContextType extends ProcurementState {
     // RAG / AI Sync
     syncRAG: () => Promise<boolean>;
     ingestRAGEntity: (entity: string) => Promise<boolean>;
+    clearRAGEntity: (entity: string) => Promise<boolean>;
+    clearRAG: () => Promise<boolean>;
     // Spend Reports
     fetchSpendOverview: () => Promise<SpendOverview | null>;
     fetchSpendBySupplier: () => Promise<SpendBySupplier[]>;
@@ -1543,6 +1545,26 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         return false;
     }, [apiFetch, notify]);
 
+    const clearRAGEntity = useCallback(async (entity: string): Promise<boolean> => {
+        const resp = await apiFetch(`/rag/clear/${entity}`, { method: 'DELETE' });
+        if (resp.ok) {
+            notify(`Đã xóa dữ liệu RAG: ${entity}`, 'success');
+            return true;
+        }
+        notify(`Lỗi xóa dữ liệu RAG: ${entity}`, 'error');
+        return false;
+    }, [apiFetch, notify]);
+
+    const clearRAG = useCallback(async (): Promise<boolean> => {
+        const resp = await apiFetch('/rag/clear', { method: 'DELETE' });
+        if (resp.ok) {
+            notify('Đã xóa toàn bộ dữ liệu RAG', 'success');
+            return true;
+        }
+        notify('Lỗi khi xóa dữ liệu RAG', 'error');
+        return false;
+    }, [apiFetch, notify]);
+
     // ========== Spend Reports ==========
     const fetchSpendOverview = useCallback(async (): Promise<SpendOverview | null> => {
         const resp = await apiFetch('/reports/overview');
@@ -1969,6 +1991,8 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         consolidatePRs,
         syncRAG,
         ingestRAGEntity,
+        clearRAGEntity,
+        clearRAG,
         fetchSpendOverview,
         fetchSpendBySupplier,
         fetchSpendByCategory,
@@ -2025,7 +2049,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         fetchSupplierReviews, fetchBuyerRatings, evaluateSupplierKPI, fetchSupplierKPIReport,
         fetchAuditLogsByEntity, fetchAuditLogById, createAuditLog,
         updateGrnItemQc, createContract, signContract, createDispute, createReview,
-        consolidatePRs, syncRAG, ingestRAGEntity,
+        consolidatePRs, syncRAG, ingestRAGEntity, clearRAGEntity, clearRAG,
         fetchSpendOverview, fetchSpendBySupplier, fetchSpendByCategory, fetchBuyerDashboard,
         addCategory, updateCategory, removeCategory, addProduct, updateProduct, removeProduct,
         fetchPOById, confirmPO, submitPO, rejectPO, createPOFromPR, processPOAutomation, awardQuotation, apiFetch,

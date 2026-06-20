@@ -5,6 +5,7 @@ import ConfirmDialog from '@/app/components/shared/ConfirmDialog';
 import { useParams } from 'next/navigation';
 import { useProcurement, Invoice } from '@/app/context/ProcurementContext';
 import { Contract } from '@/app/types/api-types';
+import { convertPrismaDecimal } from '@/app/utils/formatUtils';
 
 // Extended Invoice with matching result and API-specific fields
 type InvoiceWithMatching = Invoice & {
@@ -213,9 +214,9 @@ export default function InvoiceDetailPage() {
     }
   };
 
-  const formatCurrency = (value: string | number | undefined) => {
-    const num = typeof value === 'string' ? parseFloat(value) : value;
-    return num?.toLocaleString('vi-VN') || '0';
+  const formatCurrency = (value: unknown) => {
+    // Handles numbers, strings, and Prisma Decimal objects ({ s, e, d })
+    return convertPrismaDecimal(value).toLocaleString('vi-VN');
   };
 
   const formatDate = (dateString: string | null | undefined) => {
@@ -403,7 +404,7 @@ export default function InvoiceDetailPage() {
                 </div>
                 <div className="p-4 bg-bg-primary rounded-xl">
                   <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Thuế suất</label>
-                  <p className="text-text-primary font-semibold mt-2">{invoice.taxRate}%</p>
+                  <p className="text-text-primary font-semibold mt-2">{convertPrismaDecimal(invoice.taxRate)}%</p>
                 </div>
                 
                 <div className="p-4 bg-bg-primary rounded-xl md:col-span-2">
@@ -456,7 +457,7 @@ export default function InvoiceDetailPage() {
                             )}
                           </td>
                           <td className="py-3 px-4 text-right text-text-primary">
-                            {result.variance}%
+                            {convertPrismaDecimal(result.variance)}%
                           </td>
                         </tr>
                       ))}
@@ -583,7 +584,7 @@ export default function InvoiceDetailPage() {
                     </div>
                     <div className="p-3 bg-bg-primary rounded-xl">
                       <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Trust Score</label>
-                      <p className="text-black font-semibold mt-1">{invoice.supplier.trustScore}/100</p>
+                      <p className="text-black font-semibold mt-1">{convertPrismaDecimal(invoice.supplier.trustScore)}/100</p>
                     </div>
                   </div>
                 </div>

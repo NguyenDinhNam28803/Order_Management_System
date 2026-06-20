@@ -9,6 +9,7 @@ import {
     ChevronRight, RotateCcw, Ban,
 } from "lucide-react";
 import { Contract } from "../../../types/api-types";
+import { convertPrismaDecimal } from "../../../utils/formatUtils";
 import ContractSignModal from "../../../components/ContractSignModal";
 
 // ── Status config ─────────────────────────────────────────────────────────────
@@ -271,7 +272,7 @@ export default function ContractDetailPage() {
                     <div className="erp-card p-6">
                         <p className="text-[0.6875rem] font-bold uppercase tracking-widest text-slate-900 mb-3">Tổng giá trị hợp đồng</p>
                         <p className="text-3xl font-bold text-blue-600 tabular-nums">
-                            {Number(contract.totalValue || 0).toLocaleString("vi-VN")}
+                            {convertPrismaDecimal(contract.totalValue).toLocaleString("vi-VN")}
                         </p>
                         <p className="text-[0.8125rem] text-[#64748B] font-medium mt-1">{contract.currency}</p>
 

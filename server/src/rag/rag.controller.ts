@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -75,6 +76,36 @@ export class RagController {
   ingestTable(@Param('table') table: string) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return this.ingest.ingestTable(table as any);
+  }
+
+  @Delete('clear/:table')
+  @Roles(UserRole.PLATFORM_ADMIN)
+  @ApiOperation({
+    summary: 'Xóa dữ liệu RAG của một nguồn (chỉ Platform Admin)',
+    description:
+      'Xóa toàn bộ embeddings của một source_table khỏi Vector DB. ' +
+      'Dùng để làm sạch dữ liệu trước khi ingest lại.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Số lượng embeddings đã xóa: { deleted: number }',
+  })
+  clearTable(@Param('table') table: string) {
+    return this.ingest.clearTable(table);
+  }
+
+  @Delete('clear')
+  @Roles(UserRole.PLATFORM_ADMIN)
+  @ApiOperation({
+    summary: 'Xóa toàn bộ dữ liệu RAG (chỉ Platform Admin)',
+    description: 'Xóa tất cả embeddings khỏi Vector DB (reset hoàn toàn).',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Số lượng embeddings đã xóa: { deleted: number }',
+  })
+  clearAll() {
+    return this.ingest.clearAll();
   }
 
   @Post('sync')

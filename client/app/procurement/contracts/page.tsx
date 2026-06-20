@@ -11,6 +11,7 @@ import PageHeader from "../../components/shared/PageHeader";
 import Link from "next/link";
 import { ContractStatus, CurrencyCode, Contract } from "../../types/api-types";
 import { Organization } from "../../context/ProcurementContext";
+import { convertPrismaDecimal } from "../../utils/formatUtils";
 import ContractSignModal from "../../components/ContractSignModal";
 import DateInput from "../../components/shared/DateInput";
 
@@ -83,7 +84,7 @@ export default function ContractsPage() {
         expired: contracts.filter(c => c.status === "EXPIRED").length,
         totalValue: contracts
             .filter(c => c.status === "ACTIVE")
-            .reduce((s, c) => s + Number(c.totalValue || 0), 0),
+            .reduce((s, c) => s + convertPrismaDecimal(c.totalValue), 0),
     }), [contracts]);
 
     // ── Helpers ───────────────────────────────────────────────────────────────
@@ -92,7 +93,7 @@ export default function ContractsPage() {
     const openCreate = () => { setForm({ ...EMPTY }); setEditing(null); setModal("create"); };
     const openEdit = (c: Contract) => {
         setForm({
-            title: c.title, supplierId: c.supplierId, totalValue: c.totalValue,
+            title: c.title, supplierId: c.supplierId, totalValue: convertPrismaDecimal(c.totalValue),
             currency: c.currency, startDate: c.startDate?.slice(0, 10),
             endDate: c.endDate?.slice(0, 10), description: c.description, notes: c.notes,
         });
@@ -274,7 +275,7 @@ export default function ContractsPage() {
                                             {/* Giá trị */}
                                             <td className="px-5 py-4">
                                                 <p className="font-bold text-slate-900 tabular-nums">
-                                                    {Number(c.totalValue || 0).toLocaleString("vi-VN")}
+                                                    {convertPrismaDecimal(c.totalValue).toLocaleString("vi-VN")}
                                                 </p>
                                                 <p className="text-[0.6875rem] text-slate-900">{c.currency}</p>
                                             </td>
@@ -585,7 +586,7 @@ export default function ContractsPage() {
                             <p className="text-[0.6875rem] font-bold uppercase tracking-widest text-slate-900">Thông tin hợp đồng</p>
                             <p className="text-sm font-bold text-slate-900">{approveTarget.title}</p>
                             <p className="text-xs text-slate-900">
-                                Giá trị: <span className="text-slate-900 font-bold">{Number(approveTarget.totalValue || 0).toLocaleString("vi-VN")} {approveTarget.currency}</span>
+                                Giá trị: <span className="text-slate-900 font-bold">{convertPrismaDecimal(approveTarget.totalValue).toLocaleString("vi-VN")} {approveTarget.currency}</span>
                             </p>
                         </div>
 

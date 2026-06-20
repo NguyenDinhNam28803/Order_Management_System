@@ -4,9 +4,10 @@ import { useState, useCallback } from "react";
 import {
     Database, RefreshCw, Layers, CheckCircle2, AlertCircle,
     FileText, Download, Users, Zap, Search, Brain, Activity,
-    Clock, Mail, Inbox, ChevronDown, ChevronUp, Sparkles,
+    Clock, Mail, Inbox, ChevronDown, ChevronUp, Sparkles, Trash2,
 } from "lucide-react";
 import { useProcurement } from "../../context/ProcurementContext";
+import ConfirmDialog from "../../components/shared/ConfirmDialog";
 
 const SYNC_ENTITIES = [
     {
@@ -66,11 +67,16 @@ interface ParsedEmail {
 }
 
 export default function AISyncPage() {
-    const { syncRAG, ingestRAGEntity, apiFetch } = useProcurement();
+    const { syncRAG, ingestRAGEntity, clearRAGEntity, clearRAG, apiFetch } = useProcurement();
 
     const [isGlobalSyncing,   setIsGlobalSyncing]   = useState(false);
     const [syncStatuses,      setSyncStatuses]       = useState<Record<string, "idle" | "syncing" | "success" | "error">>({});
     const [globalProgress,    setGlobalProgress]     = useState(0);
+
+    // Clear data state
+    const [clearingEntity,    setClearingEntity]     = useState<string | null>(null);
+    const [isClearingAll,     setIsClearingAll]      = useState(false);
+    const [confirmClearAll,   setConfirmClearAll]    = useState(false);
 
     // Email RAG state
     const [emailLimit,        setEmailLimit]         = useState(20);
@@ -102,6 +108,25 @@ export default function AISyncPage() {
         setSyncStatuses(prev => ({ ...prev, [entity]: "syncing" }));
         const ok = await ingestRAGEntity(entity);
         setSyncStatuses(prev => ({ ...prev, [entity]: ok ? "success" : "error" }));
+    };
+
+    const handleClearEntity = async (entity: string) => {
+        setClearingEntity(entity);
+        const ok = await clearRAGEntity(entity);
+        if (ok) {
+            setSyncStatuses(prev => ({ ...prev, [entity]: "idle" }));
+        }
+        setClearingEntity(null);
+    };
+
+    const handleClearAll = async () => {
+        setConfirmClearAll(false);
+        setIsClearingAll(true);
+        const ok = await clearRAG();
+        if (ok) {
+            setSyncStatuses({});
+        }
+        setIsClearingAll(false);
     };
 
     const handleFetchEmails = useCallback(async () => {
@@ -137,6 +162,14 @@ export default function AISyncPage() {
     return (
         <div className="animate-fade-in">
 
+            <ConfirmDialog
+                open={confirmClearAll}
+                title="Xóa toàn bộ dữ liệu RAG"
+                message="Hành động này sẽ xóa tất cả embeddings khỏi Vector DB. AI Assistant sẽ không thể trả lời cho đến khi bạn đồng bộ lại. Bạn có chắc chắn?"
+                onConfirm={handleClearAll}
+                onCancel={() => setConfirmClearAll(false)}
+            />
+
             {/* ── Page Header ── */}
             <div className="mb-8 mt-2 flex flex-wrap justify-between items-start gap-4">
                 <div>
@@ -154,19 +187,30 @@ export default function AISyncPage() {
                     </p>
                 </div>
 
-                <button
-                    onClick={handleGlobalSync}
-                    disabled={isGlobalSyncing}
-                    className="relative flex items-center gap-2.5 bg-gradient-to-r from-[#2563EB] to-[#6366F1] text-white px-6 py-3 rounded-xl font-bold text-[12px] shadow-xl shadow-[#2563EB]/25 hover:shadow-[#2563EB]/45 hover:scale-[1.02] transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed overflow-hidden"
-                >
-                    {isGlobalSyncing && (
-                        <div className="absolute inset-0 bg-white/10 transition-all duration-300" style={{ width: `${globalProgress}%` }} />
-                    )}
-                    <RefreshCw size={16} className={`relative z-10 ${isGlobalSyncing ? "animate-spin" : ""}`} />
-                    <span className="relative z-10">
-                        {isGlobalSyncing ? `Đang xử lý Embeddings… ${globalProgress}%` : "Global Sync"}
-                    </span>
-                </button>
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => setConfirmClearAll(true)}
+                        disabled={isClearingAll || isGlobalSyncing}
+                        className="flex items-center gap-2 bg-white border border-rose-500/30 text-rose-600 px-5 py-3 rounded-xl font-bold text-[12px] hover:bg-rose-500/5 hover:border-rose-500/50 transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                        <Trash2 size={16} className={isClearingAll ? "animate-pulse" : ""} />
+                        {isClearingAll ? "Đang xóa…" : "Xóa toàn bộ"}
+                    </button>
+
+                    <button
+                        onClick={handleGlobalSync}
+                        disabled={isGlobalSyncing}
+                        className="relative flex items-center gap-2.5 bg-gradient-to-r from-[#2563EB] to-[#6366F1] text-white px-6 py-3 rounded-xl font-bold text-[12px] shadow-xl shadow-[#2563EB]/25 hover:shadow-[#2563EB]/45 hover:scale-[1.02] transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed overflow-hidden"
+                    >
+                        {isGlobalSyncing && (
+                            <div className="absolute inset-0 bg-white/10 transition-all duration-300" style={{ width: `${globalProgress}%` }} />
+                        )}
+                        <RefreshCw size={16} className={`relative z-10 ${isGlobalSyncing ? "animate-spin" : ""}`} />
+                        <span className="relative z-10">
+                            {isGlobalSyncing ? `Đang xử lý Embeddings… ${globalProgress}%` : "Global Sync"}
+                        </span>
+                    </button>
+                </div>
             </div>
 
             {/* ── Stats Row ── */}
@@ -225,7 +269,7 @@ export default function AISyncPage() {
                                             <p className={`text-[0.6875rem] font-bold mt-0.5 num-display ${entity.color}`}>{entity.count} vectors</p>
                                         </div>
                                     </div>
-                                    <div className="shrink-0 ml-2">
+                                    <div className="shrink-0 ml-2 flex items-center gap-1.5">
                                         {status === "success" ? (
                                             <div className="flex items-center gap-1.5 bg-emerald-500/10 text-emerald-700 px-3 py-1.5 rounded-lg text-[0.6875rem] font-black uppercase tracking-widest border border-emerald-500/20">
                                                 <CheckCircle2 size={12} /> Done
@@ -245,6 +289,14 @@ export default function AISyncPage() {
                                                     : <><Download size={11} /> Sync</>}
                                             </button>
                                         )}
+                                        <button
+                                            onClick={() => handleClearEntity(entity.id)}
+                                            disabled={clearingEntity === entity.id || status === "syncing"}
+                                            title="Xóa dữ liệu RAG của nguồn này"
+                                            className="h-8 w-8 flex items-center justify-center rounded-lg border border-rose-500/20 text-rose-500 hover:bg-rose-500/10 hover:border-rose-500/40 transition-all disabled:opacity-50"
+                                        >
+                                            <Trash2 size={13} className={clearingEntity === entity.id ? "animate-pulse" : ""} />
+                                        </button>
                                     </div>
                                 </div>
                             );

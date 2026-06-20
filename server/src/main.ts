@@ -9,6 +9,7 @@ import { randomUUID } from 'crypto';
 import type { Request, Response, NextFunction } from 'express';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { BigIntInterceptor } from './common/interceptors/bigint.interceptor';
+import { DecimalInterceptor } from './common/interceptors/decimal.interceptor';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 
 async function bootstrap() {
@@ -34,9 +35,14 @@ async function bootstrap() {
   );
 
   // --- Global Interceptors & Filters ---
+  // Thứ tự chạy trên response (lớp ngoài → trong): Transform → BigInt → Decimal.
+  // DecimalInterceptor đăng ký cuối nên chạy ĐẦU TIÊN trên dữ liệu thô từ
+  // controller, chuyển Decimal → number trước khi BigIntInterceptor build lại
+  // object (vốn sẽ bóc Decimal thành { s, e, d }).
   app.useGlobalInterceptors(
     new TransformInterceptor(),
     new BigIntInterceptor(),
+    new DecimalInterceptor(),
   );
   app.useGlobalFilters(new AllExceptionsFilter());
 
