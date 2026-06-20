@@ -33,7 +33,7 @@ export class EmailService {
     }
   }
 
-  async sendEmail(
+  sendEmail(
     to: string,
     subject: string,
     _body: string,
@@ -43,6 +43,6 @@ export class EmailService {
     this.logger.warn(
       `[EMAIL DISABLED] Bỏ qua gửi email → to=${to} subject="${subject}"`,
     );
-    return true;
+    return Promise.resolve(true);
   }
 }

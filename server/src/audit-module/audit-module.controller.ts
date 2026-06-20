@@ -20,7 +20,12 @@ import { CreateAuditLogDto } from './dto/audit.dto';
 @Controller('audit-logs')
 @ApiBearerAuth('JWT-auth')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO, UserRole.PLATFORM_ADMIN)
+@Roles(
+  UserRole.FINANCE,
+  UserRole.DIRECTOR,
+  UserRole.CEO,
+  UserRole.PLATFORM_ADMIN,
+)
 export class AuditModuleController {
   constructor(private readonly auditService: AuditModuleService) {}
 
