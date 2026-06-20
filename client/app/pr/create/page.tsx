@@ -121,7 +121,6 @@ export default function CreatePRPage() {
     const [submissionStatus, setSubmissionStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
     const [errorMessage, setErrorMessage]         = useState("");
     const [fieldErrors, setFieldErrors]           = useState<PRFormErrors>({});
-    const [activeTab, setActiveTab]               = useState<'ai' | 'manual'>('manual');
 
     const today          = new Date();
     const currentYear    = today.getFullYear();

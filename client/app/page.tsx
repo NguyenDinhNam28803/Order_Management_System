@@ -104,10 +104,10 @@ export default function Dashboard() {
                 <header className="flex items-center justify-between mb-6 pb-4 border-b border-slate-200">
                     <div className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-xl bg-[#F1F5F9] border border-slate-200 flex items-center justify-center">
-                            <span className="text-lg font-black text-[#2563EB]">{currentUser?.name?.charAt(0) || currentUser?.fullName?.charAt(0) || 'U'}</span>
+                            <span className="text-lg font-bold text-[#2563EB]">{currentUser?.name?.charAt(0) || currentUser?.fullName?.charAt(0) || 'U'}</span>
                         </div>
                         <div>
-                            <h1 className="text-lg font-black text-slate-900 tracking-tight">Xin chào, {currentUser?.name || currentUser?.fullName}</h1>
+                            <h1 className="text-lg font-bold text-slate-900 tracking-tight">Xin chào, {currentUser?.name || currentUser?.fullName}</h1>
                             <p className="text-xs text-slate-900">{currentUser?.role} • {typeof currentUser?.department === 'object' ? (currentUser.department as { name: string })?.name : (currentUser?.department || 'Phòng ban')}</p>
                         </div>
                     </div>
@@ -125,7 +125,7 @@ export default function Dashboard() {
                             </button>
                             
                             {isSimDropdownOpen && (
-                                <div className="absolute top-full right-0 mt-3 w-72 bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                                <div className="absolute top-full right-0 mt-3 w-72 bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-sm z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
                                     <Link href="/pr/create" className="flex items-center gap-4 p-5 hover:bg-slate-100 transition-colors border-b border-slate-200 text-left w-full translate-z-0">
                                         <div className="p-3 bg-[#2563EB]/10 text-[#2563EB] rounded-xl"><Plus size={18} /></div>
                                         <div>
@@ -162,7 +162,7 @@ export default function Dashboard() {
                 </header>
 
                 {/* HÀNG 1 — Stats Cards with Reports/Spend Style */}
-                <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-2xl p-6 mb-6">
+                <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-sm p-6 mb-6">
                     <h3 className="text-xs font-bold uppercase tracking-widest text-[#64748B] mb-4 flex items-center gap-2">
                         <Activity size={14} className="text-[#2563EB]" /> Tổng quan hoạt động
                     </h3>
@@ -249,12 +249,12 @@ export default function Dashboard() {
                 <div className="grid grid-cols-1 xl:grid-cols-10 gap-10">
                     {/* GIỮ 60% — Danh sách PR */}
                     <div className="xl:col-span-6 space-y-6">
-                        <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
+                        <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-sm shadow-[#2563EB]/5 overflow-hidden">
                              <div className="p-8 border-b border-slate-200 flex justify-between items-center bg-[#FFFFFF]">
-                                 <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900 flex items-center gap-3 leading-none">
+                                 <h3 className="text-[10px] font-bold uppercase tracking-wider text-slate-900 flex items-center gap-3 leading-none">
                                      <FileText size={16} className="text-[#2563EB]" /> Danh sách PR của tôi (gần nhất)
                                  </h3>
-                                 <Link href="/pr" className="text-[0.6875rem] font-black uppercase text-[#2563EB] hover:underline bg-[#FFFFFF] px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm transition-all hover:scale-105 active:scale-95">Xem tất cả ›</Link>
+                                 <Link href="/pr" className="text-[0.6875rem] font-bold uppercase text-[#2563EB] hover:underline bg-[#FFFFFF] px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm transition-all hover:scale-105 active:scale-95">Xem tất cả ›</Link>
                              </div>
                              <div className="overflow-x-auto">
                                  <table className="erp-table text-xs text-left">
@@ -272,24 +272,24 @@ export default function Dashboard() {
                                          {loadingMyPrs ? (
                                              [1, 2, 3].map(i => (
                                                  <tr key={i} className="animate-pulse px-8">
-                                                     <td className="px-8 py-6"><div className="h-4 w-16 bg-[#0F172A] rounded"></div></td>
-                                                     <td className="px-8 py-6"><div className="h-4 w-32 bg-[#0F172A] rounded"></div></td>
-                                                     <td className="px-8 py-6"><div className="h-4 w-20 bg-[#0F172A] rounded ml-auto"></div></td>
+                                                     <td className="px-8 py-6"><div className="h-4 w-16 bg-slate-200 rounded"></div></td>
+                                                     <td className="px-8 py-6"><div className="h-4 w-32 bg-slate-200 rounded"></div></td>
+                                                     <td className="px-8 py-6"><div className="h-4 w-20 bg-slate-200 rounded ml-auto"></div></td>
                                                      <td colSpan={2}></td>
                                                  </tr>
                                              ))
                                          ) : (
                                              personalPRs.slice(0, 5).map((pr) => (
                                                  <tr key={pr.id} className="hover:bg-[#FFFFFF]/50 transition-all group">
-                                                     <td className="px-8 py-6 font-black text-slate-900 text-xs tracking-tighter">{pr.prNumber || "PR-***"}</td>
+                                                     <td className="px-8 py-6 font-bold text-slate-900 text-xs tracking-tighter">{pr.prNumber || "PR-***"}</td>
                                                      <td className="px-8 py-6 font-semibold text-slate-900 text-[11px] truncate max-w-[180px]" title={pr.title}>{pr.title}</td>
                                                      <td className="px-8 py-6 text-slate-900 font-bold text-[10px]">{formatDate(pr.createdAt)}</td>
-                                                     <td className="px-8 py-6 font-black text-slate-900 text-right tracking-tight">{formatVND(pr.totalEstimate || 0)}</td>
+                                                     <td className="px-8 py-6 font-bold text-slate-900 text-right tracking-tight">{formatVND(pr.totalEstimate || 0)}</td>
                                                      <td className="px-8 py-6 text-center">
-                                                         <span className={`px-3 py-1.5 rounded-xl text-[0.6875rem] font-black uppercase border transition-all ${
+                                                         <span className={`px-3 py-1.5 rounded-xl text-[0.6875rem] font-bold uppercase border transition-all ${
                                                              pr.status === "APPROVED" ? "bg-emerald-500/10 text-emerald-700 border-emerald-500/20" : 
                                                              pr.status === "REJECTED" ? "bg-rose-500/10 text-rose-700 border-rose-500/20" :
-                                                             pr.status === "DRAFT" ? "bg-[#0F172A] text-[#F8FAFC] border-slate-200" :
+                                                             pr.status === "DRAFT" ? "bg-slate-200 text-slate-700 border-slate-200" :
                                                              pr.status.includes("PENDING") || pr.status === "SUBMITTED" ? "bg-amber-500/10 text-amber-700 border-amber-500/20" :
                                                              "bg-[#2563EB]/10 text-[#2563EB] border-[#2563EB]/20"
                                                          }`}>
@@ -318,12 +318,12 @@ export default function Dashboard() {
                     {/* GIỮ 40% — QR & NOTI */}
                     <div className="xl:col-span-4 space-y-10">
                         {/* QR Section */}
-                        <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
+                        <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-sm shadow-[#2563EB]/5 overflow-hidden">
                              <div className="p-8 border-b border-slate-200 flex justify-between items-center">
-                                 <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900 flex items-center gap-3">
+                                 <h3 className="text-[10px] font-bold uppercase tracking-wider text-slate-900 flex items-center gap-3">
                                      <ClipboardList size={16} className="text-[#2563EB]" /> Yêu cầu báo giá (QR)
                                  </h3>
-                                 <Link href="/quote-requests" className="text-[0.6875rem] font-black uppercase text-[#2563EB] hover:underline">Xem tất cả ›</Link>
+                                 <Link href="/quote-requests" className="text-[0.6875rem] font-bold uppercase text-[#2563EB] hover:underline">Xem tất cả ›</Link>
                              </div>
                              <div className="p-8 space-y-4">
                                  {quoteRequests.length > 0 ? (
@@ -331,8 +331,8 @@ export default function Dashboard() {
                                          <div key={qr.id} className="flex items-center justify-between p-5 bg-[#FFFFFF] rounded-xl border border-slate-200 hover:border-[#2563EB]/20 transition-all group">
                                              <div className="flex flex-col gap-1">
                                                  <div className="flex items-center gap-2">
-                                                     <span className="text-[10px] font-black text-slate-900">{qr.qrNumber}</span>
-                                                     <span className={`px-2 py-0.5 rounded-lg text-[8px] font-black uppercase w-fit ${
+                                                     <span className="text-[10px] font-bold text-slate-900">{qr.qrNumber}</span>
+                                                     <span className={`px-2 py-0.5 rounded-lg text-[8px] font-bold uppercase w-fit ${
                                                          qr.status === 'QUOTED' ? 'bg-emerald-500/10 text-emerald-600' : 
                                                          qr.status === 'SUBMITTED' ? 'bg-[#2563EB]/10 text-[#2563EB]' :
                                                          'bg-amber-500/10 text-amber-600'
@@ -346,29 +346,29 @@ export default function Dashboard() {
                                                         const success = await createPRFromQuoteRequest(qr.id);
                                                         if (success) await refreshData();
                                                     }} 
-                                                    className="px-3 py-1.5 bg-[#2563EB] text-white rounded-lg text-[0.6875rem] font-black uppercase tracking-widest hover:bg-[#1D4ED8] transition-all active:scale-95 shadow-md shadow-[#2563EB]/10"
+                                                    className="px-3 py-1.5 bg-[#2563EB] text-white rounded-lg text-[0.6875rem] font-bold uppercase tracking-widest hover:bg-[#1D4ED8] transition-all active:scale-95 shadow-md shadow-[#2563EB]/10"
                                                   >
                                                     CHUYỂN SANG PR
                                                   </button>
                                              ) : (
-                                                  <span className="text-[0.6875rem] font-black text-slate-900 uppercase tracking-widest px-4">Đang xử lý...</span>
+                                                  <span className="text-[0.6875rem] font-bold text-slate-900 uppercase tracking-widest px-4">Đang xử lý...</span>
                                              )}
                                          </div>
                                      ))
                                  ) : (
                                      <div className="py-10 text-center">
-                                         <p className="text-[11px] font-black text-slate-900 uppercase tracking-widest italic leading-none">Không có yêu cầu báo giá gần đây</p>
+                                         <p className="text-[11px] font-bold text-slate-900 uppercase tracking-widest italic leading-none">Không có yêu cầu báo giá gần đây</p>
                                      </div>
                                  )}
                              </div>
                         </div>
 
                         {/* Notifications */}
-                        <div className="bg-[#F1F5F9] rounded-xl shadow-2xl shadow-[#2563EB]/5 p-6 text-slate-900 relative overflow-hidden group border border-slate-200">
+                        <div className="bg-[#F1F5F9] rounded-xl shadow-sm shadow-[#2563EB]/5 p-6 text-slate-900 relative overflow-hidden group border border-slate-200">
                              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-125 transition-transform duration-700">
                                  <Bell size={100} />
                              </div>
-                             <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#2563EB] mb-8 leading-none">THÔNG BÁO MỚI NHẤT</h3>
+                             <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#2563EB] mb-8 leading-none">THÔNG BÁO MỚI NHẤT</h3>
                              <div className="space-y-8 relative">
                                  <div className="absolute left-1.5 top-2 bottom-2 w-0.5 bg-slate-100" />
                                  {notifications.map(n => (
@@ -376,8 +376,8 @@ export default function Dashboard() {
                                          <div className="absolute left-0 w-3 h-3 rounded-full bg-[#2563EB] border-2 border-[#F1F5F9] z-10 group-hover/item:scale-150 transition-transform"></div>
                                          <div className="flex-1">
                                              <div className="flex justify-between items-start mb-1 leading-none">
-                                                 <p className="text-[11px] font-black text-slate-900 leading-relaxed pr-6">{n.message}</p>
-                                                 <span className="text-[8px] font-black text-slate-900 truncate">{n.time}</span>
+                                                 <p className="text-[11px] font-bold text-slate-900 leading-relaxed pr-6">{n.message}</p>
+                                                 <span className="text-[8px] font-bold text-slate-900 truncate">{n.time}</span>
                                              </div>
                                          </div>
                                      </div>
@@ -392,15 +392,15 @@ export default function Dashboard() {
 
     function MetricCard({ title, value, icon, color }: { title: string; value: string | number; icon: React.ReactNode; color: string }) {
         return (
-            <div className={`bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 p-8! border-none shadow-xl shadow-[#2563EB]/5 relative overflow-hidden group hover:translate-y-[-4px] transition-all duration-300 bg-[#F1F5F9]`}>
+            <div className={`bg-white rounded-xl border border-slate-200 shadow-sm p-6 relative overflow-hidden group hover:-translate-y-1 transition-all duration-300`}>
                 <div className={`absolute top-0 right-0 w-24 h-24 -mr-12 -mt-12 rounded-full opacity-5 group-hover:opacity-10 transition-opacity ${color}`}></div>
                 <div className="flex justify-between items-center mb-6">
-                    <div className={`p-4 rounded-2xl ${color} bg-opacity-10 ${color.replace('bg-', 'text-')}`}>
+                    <div className={`p-4 rounded-xl ${color} bg-opacity-10 ${color.replace('bg-', 'text-')}`}>
                         {icon}
                     </div>
-                    <div className="text-4xl font-black text-slate-900 tracking-tighter">{value}</div>
+                    <div className="text-4xl font-bold text-slate-900 tracking-tighter">{value}</div>
                 </div>
-                <div className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900 leading-none">{title}</div>
+                <div className="text-[10px] font-bold uppercase tracking-wider text-slate-900 leading-none">{title}</div>
             </div>
         );
     }
@@ -408,10 +408,10 @@ export default function Dashboard() {
     function ActionRequired({ items, onConvert }: { items: QuoteRequest[]; onConvert: (id: string) => Promise<void> }) {
         if (items.length === 0) return null;
         return (
-            <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200 mb-12 shadow-2xl shadow-[#2563EB]/5">
+            <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200 mb-12 shadow-sm shadow-[#2563EB]/5">
                 <div className="flex items-center gap-3 mb-8">
                     <div className="h-2 w-2 rounded-full bg-[#2563EB] animate-pulse"></div>
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900 leading-none">CẦN HÀNH ĐỘNG NGAY ({items.length})</h3>
+                    <h3 className="text-[10px] font-bold uppercase tracking-wider text-slate-900 leading-none">CẦN HÀNH ĐỘNG NGAY ({items.length})</h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {items.map((qr) => (
@@ -439,7 +439,7 @@ export default function Dashboard() {
                 <div className="flex items-center gap-4">
                     <div className="p-4 bg-[#2563EB]/10 text-[#2563EB] rounded-xl group-hover:rotate-12 transition-transform"><Zap size={24} /></div>
                     <div>
-                        <h4 className="text-xs font-black text-slate-900 uppercase mb-1">{qr.qrNumber} ĐÃ CÓ BÁO GIÁ</h4>
+                        <h4 className="text-xs font-bold text-slate-900 uppercase mb-1">{qr.qrNumber} ĐÃ CÓ BÁO GIÁ</h4>
                         <p className="text-[10px] text-slate-900 font-bold uppercase tracking-tight opacity-70">Nhà cung cấp đã nộp giá. Chuyển sang PR để duyệt mua hàng.</p>
                     </div>
                 </div>
@@ -503,10 +503,10 @@ export default function Dashboard() {
                 <header className="flex items-center justify-between mb-6 pb-4 border-b border-slate-200">
                     <div className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-xl bg-[#F1F5F9] border border-slate-200 flex items-center justify-center">
-                            <span className="text-lg font-black text-[#2563EB]">{currentUser?.name?.charAt(0) || currentUser?.fullName?.charAt(0) || 'U'}</span>
+                            <span className="text-lg font-bold text-[#2563EB]">{currentUser?.name?.charAt(0) || currentUser?.fullName?.charAt(0) || 'U'}</span>
                         </div>
                         <div>
-                            <h1 className="text-lg font-black text-slate-900 tracking-tight">Xin chào, {currentUser?.name || currentUser?.fullName}</h1>
+                            <h1 className="text-lg font-bold text-slate-900 tracking-tight">Xin chào, {currentUser?.name || currentUser?.fullName}</h1>
                             <p className="text-xs text-slate-900">{currentUser?.role} • Tài chính Vĩ mô</p>
                         </div>
                     </div>
@@ -524,11 +524,11 @@ export default function Dashboard() {
                             </button>
                             
                             {isSimDropdownOpen && (
-                                <div className="absolute top-full right-0 mt-3 w-72 bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                                <div className="absolute top-full right-0 mt-3 w-72 bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-sm z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
                                     <Link href="/pr/create" className="flex items-center gap-4 p-5 hover:bg-slate-100 transition-colors border-b border-slate-200 text-left w-full translate-z-0">
                                         <div className="p-3 bg-[#2563EB]/10 text-[#2563EB] rounded-xl"><Plus size={18} /></div>
                                         <div>
-                                            <div className="text-[10px] font-black uppercase text-slate-900 mb-1 tracking-widest">Tạo quy trình thủ công</div>
+                                            <div className="text-[10px] font-bold uppercase text-slate-900 mb-1 tracking-widest">Tạo quy trình thủ công</div>
                                             <div className="text-[0.6875rem] text-slate-900 font-bold uppercase leading-tight">Vào PR trực tiếp</div>
                                         </div>
                                     </Link>
@@ -539,7 +539,7 @@ export default function Dashboard() {
                                     >
                                         <div className="p-3 bg-emerald-500/10 text-emerald-600 rounded-xl"><Zap size={18} /></div>
                                         <div>
-                                             <div className="text-[10px] font-black uppercase text-slate-900 mb-1 tracking-widest">Giả lập Catalog</div>
+                                             <div className="text-[10px] font-bold uppercase text-slate-900 mb-1 tracking-widest">Giả lập Catalog</div>
                                              <div className="text-[0.6875rem] text-slate-900 font-bold uppercase leading-tight">Demo full-flow từ Catalog</div>
                                         </div>
                                     </button>
@@ -550,7 +550,7 @@ export default function Dashboard() {
                                     >
                                         <div className="p-3 bg-purple-500/10 text-purple-600 rounded-xl"><RotateCcw size={18} /></div>
                                         <div>
-                                            <div className="text-[10px] font-black uppercase text-slate-900 mb-1 tracking-widest">Giả lập Non-Catalog</div>
+                                            <div className="text-[10px] font-bold uppercase text-slate-900 mb-1 tracking-widest">Giả lập Non-Catalog</div>
                                             <div className="text-[0.6875rem] text-slate-900 font-bold uppercase leading-tight">Demo full-flow từ PR</div>
                                         </div>
                                     </button>
@@ -565,30 +565,30 @@ export default function Dashboard() {
                     {/* Total Budget Card */}
                     <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200 hover:border-emerald-500/30 transition-all">
                         <div className="flex items-center justify-between mb-4">
-                            <span className="text-[10px] font-black uppercase text-slate-900 tracking-wider">Tổng Ngân Sách</span>
+                            <span className="text-[10px] font-bold uppercase text-slate-900 tracking-wider">Tổng Ngân Sách</span>
                             <div className="h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                                <Wallet size={20} className="text-black" />
+                                <Wallet size={20} className="text-slate-900" />
                             </div>
                         </div>
-                        <div className="text-2xl font-black text-black mb-2">{formatVND(totalAllocated)}</div>
+                        <div className="text-2xl font-bold text-slate-900 mb-2">{formatVND(totalAllocated)}</div>
                         <div className="w-full h-1.5 bg-[#FFFFFF] rounded-full overflow-hidden mb-2">
                             <div className="h-full bg-emerald-500 transition-all duration-1000" style={{ width: `${usagePercent}%` }}></div>
                         </div>
-                        <div className="flex justify-between text-[0.6875rem] font-black uppercase">
+                        <div className="flex justify-between text-[0.6875rem] font-bold uppercase">
                             <span className="text-slate-900">{usagePercent}% đã dùng</span>
-                            <span className="text-black">{formatVND(totalAllocated - totalUsed)} còn</span>
+                            <span className="text-slate-900">{formatVND(totalAllocated - totalUsed)} còn</span>
                         </div>
                     </div>
 
                     {/* Weekly Payment Forecast Card */}
                     <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200 hover:border-[#2563EB]/30 transition-all">
                         <div className="flex items-center justify-between mb-4">
-                            <span className="text-[10px] font-black uppercase text-slate-900 tracking-wider">Dự Kiến Chi Tuần Này</span>
+                            <span className="text-[10px] font-bold uppercase text-slate-900 tracking-wider">Dự Kiến Chi Tuần Này</span>
                             <div className="h-10 w-10 rounded-xl bg-[#2563EB]/10 flex items-center justify-center">
                                 <Calendar size={20} className="text-[#2563EB]" />
                             </div>
                         </div>
-                        <div className="text-2xl font-black text-slate-900 mb-1">{formatVND(weeklyForecast)}</div>
+                        <div className="text-2xl font-bold text-slate-900 mb-1">{formatVND(weeklyForecast)}</div>
                         <div className="text-sm font-bold text-[#2563EB]">{pendingPayments.length} PO đang chờ thanh toán</div>
                         <div className="text-[10px] text-slate-900 mt-3 pt-3 border-t border-slate-200">Dự kiến thanh toán trong 7 ngày tới</div>
                     </div>
@@ -596,12 +596,12 @@ export default function Dashboard() {
                     {/* Pending Approvals Card */}
                     <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200 hover:border-amber-500/30 transition-all">
                         <div className="flex items-center justify-between mb-4">
-                            <span className="text-[10px] font-black uppercase text-slate-900 tracking-wider">Chờ CFO Duyệt</span>
+                            <span className="text-[10px] font-bold uppercase text-slate-900 tracking-wider">Chờ CFO Duyệt</span>
                             <div className="h-10 w-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                                <FileCheck size={20} className="text-black" />
+                                <FileCheck size={20} className="text-slate-900" />
                             </div>
                         </div>
-                        <div className="text-2xl font-black text-black mb-1">{pendingPRCount + pendingBudgetCount}</div>
+                        <div className="text-2xl font-bold text-slate-900 mb-1">{pendingPRCount + pendingBudgetCount}</div>
                         <div className="text-sm font-bold text-slate-900">{formatVND(pendingPRValue + pendingBudgetValue)} cần phê duyệt</div>
                         <div className="text-[10px] text-slate-900 mt-3 pt-3 border-t border-slate-200">{pendingPRCount} PR • {pendingBudgetCount} Ngân sách</div>
                     </div>
@@ -609,9 +609,9 @@ export default function Dashboard() {
                     {/* Department Spending Breakdown */}
                     <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200 hover:border-purple-500/30 transition-all">
                         <div className="flex items-center justify-between mb-4">
-                            <span className="text-[10px] font-black uppercase text-slate-900 tracking-wider">Top Chi Tiêu</span>
+                            <span className="text-[10px] font-bold uppercase text-slate-900 tracking-wider">Top Chi Tiêu</span>
                             <div className="h-10 w-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
-                                <PieChart size={20} className="text-black" />
+                                <PieChart size={20} className="text-slate-900" />
                             </div>
                         </div>
                         <div className="space-y-2">
@@ -639,11 +639,11 @@ export default function Dashboard() {
                 {pendingBudgets.length > 0 && (
                     <div className="mb-12">
                         <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-[#2563EB] flex items-center gap-2">
+                            <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#2563EB] flex items-center gap-2">
                                 <Activity size={14} /> Duyệt Định Biên Ngân Sách ({pendingBudgetCount})
                             </h3>
                         </div>
-                        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden shadow-2xl shadow-[#2563EB]/5 border-none bg-[#F1F5F9]">
+                        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden shadow-sm shadow-[#2563EB]/5 border-none bg-[#F1F5F9]">
                             <table className="erp-table text-xs">
                                 <thead>
                                     <tr>
@@ -661,17 +661,17 @@ export default function Dashboard() {
                                         return (
                                             <tr key={b.id} className="hover:bg-[#FFFFFF]/50 group transition-all">
                                                 <td className="px-8 flex flex-col py-4">
-                                                    <span className="font-black text-slate-900 uppercase text-[10px]">{cc?.name || "N/A"}</span>
+                                                    <span className="font-bold text-slate-900 uppercase text-[10px]">{cc?.name || "N/A"}</span>
                                                     <span className="text-[0.6875rem] font-bold text-slate-900">{dept?.name || "Global"} ({cc?.code || "CC"})</span>
                                                 </td>
                                                 <td className="font-bold text-slate-900">
                                                     Q{b.budgetPeriod?.periodNumber} / {b.budgetPeriod?.fiscalYear}
                                                 </td>
-                                                <td className="text-right font-black text-[#2563EB] text-sm">{formatVND(b.allocatedAmount)} Đ</td>
+                                                <td className="text-right font-bold text-[#2563EB] text-sm">{formatVND(b.allocatedAmount)} Đ</td>
                                                 <td className="text-slate-900 italic text-[11px] font-medium">{b.notes || "Ngân sách định kỳ"}</td>
                                                 <td className="text-right px-8">
                                                     <div className="flex justify-end gap-1">
-                                                        <button onClick={() => handleQuickApprove(b.workflowId)} className="py-1.5 px-3 bg-[#059669] text-white rounded-lg font-black text-[0.6875rem] uppercase tracking-wider hover:bg-[#047857] transition-all">Duyệt</button>
+                                                        <button onClick={() => handleQuickApprove(b.workflowId)} className="py-1.5 px-3 bg-[#059669] text-white rounded-lg font-bold text-[0.6875rem] uppercase tracking-wider hover:bg-[#047857] transition-all">Duyệt</button>
                                                         <button onClick={() => actionApproval(b.workflowId, 'REJECT', 'Không hợp lệ')} className="p-1.5 bg-[#DC2626] text-white rounded-lg hover:bg-[#B91C1C] transition-all"><XCircle size={12}/></button>
                                                     </div>
                                                 </td>
@@ -686,22 +686,22 @@ export default function Dashboard() {
 
                 {/* Approval Queue Section */}
                 <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900">Queue Duyệt Phiếu Mua Sắm (PR)</h3>
+                    <h3 className="text-[11px] font-bold uppercase tracking-wider text-slate-900">Queue Duyệt Phiếu Mua Sắm (PR)</h3>
                     <div className="flex items-center gap-3">
                         <div className="relative">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#94A3B8]" size={14} />
                             <input type="text" placeholder="Tìm kiếm chứng từ..." className="pl-10 pr-6 py-2 bg-[#F1F5F9] border border-slate-200 rounded-xl text-xs font-medium w-64 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/10 transition-all text-slate-900 placeholder:text-slate-400"/>
                         </div>
-                        <button className="flex items-center gap-2 px-3 py-1.5 bg-[#F1F5F9] border border-slate-200 rounded-lg text-[0.6875rem] font-black uppercase tracking-widest text-slate-900 hover:bg-slate-100 transition-all shadow-sm">
+                        <button className="flex items-center gap-2 px-3 py-1.5 bg-[#F1F5F9] border border-slate-200 rounded-lg text-[0.6875rem] font-bold uppercase tracking-widest text-slate-900 hover:bg-slate-100 transition-all shadow-sm">
                             Lọc <ChevronDown size={14} />
                         </button>
-                        <button className="flex items-center gap-2 px-3 py-1.5 bg-[#2563EB] text-white rounded-lg text-[0.6875rem] font-black uppercase tracking-widest hover:bg-[#1D4ED8] transition-all shadow-md shadow-[#2563EB]/20">
+                        <button className="flex items-center gap-2 px-3 py-1.5 bg-[#2563EB] text-white rounded-lg text-[0.6875rem] font-bold uppercase tracking-widest hover:bg-[#1D4ED8] transition-all shadow-md shadow-[#2563EB]/20">
                             <Zap size={14} /> Xuất
                         </button>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden shadow-2xl shadow-[#2563EB]/5 border-none bg-[#F1F5F9]">
+                <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden shadow-sm shadow-[#2563EB]/5 border-none bg-[#F1F5F9]">
                     <div className="overflow-x-auto">
                         <table className="erp-table text-xs whitespace-nowrap">
                             <thead>
@@ -720,16 +720,16 @@ export default function Dashboard() {
                                     <tr key={pr.id} className="hover:bg-[#FFFFFF]/50 transition-colors group">
                                         <td className="px-8 text-center"><input type="checkbox" className="rounded-md border-slate-200 text-[#2563EB] bg-[#F1F5F9]"/></td>
                                         <td className="font-bold text-slate-900 tracking-tight">{pr.prNumber || "PR-***"}</td>
-                                        <td><span className={`px-2.5 py-1 rounded-lg font-black text-[0.6875rem] uppercase ${convertPrismaDecimal(pr.totalEstimate) > 50000000 ? 'bg-[#2563EB]/10 text-[#2563EB]' : 'bg-[#0F172A] text-[#F8FAFC]'}`}>{convertPrismaDecimal(pr.totalEstimate) > 50000000 ? 'Capex' : 'Opex'}</span></td>
+                                        <td><span className={`px-2.5 py-1 rounded-lg font-bold text-[0.6875rem] uppercase ${convertPrismaDecimal(pr.totalEstimate) > 50000000 ? 'bg-[#2563EB]/10 text-[#2563EB]' : 'bg-slate-200 text-slate-700'}`}>{convertPrismaDecimal(pr.totalEstimate) > 50000000 ? 'Capex' : 'Opex'}</span></td>
                                         <td className="font-medium text-slate-900">{pr.title}</td>
                                         <td className="text-center">
                                             {convertPrismaDecimal(pr.totalEstimate) > 50000000 ? (
-                                                <span className="text-[10px] font-black text-black uppercase flex items-center justify-center gap-1.5"><AlertTriangle size={11}/> Cảnh báo: 15% quỹ IT</span>
+                                                <span className="text-[10px] font-bold text-slate-900 uppercase flex items-center justify-center gap-1.5"><AlertTriangle size={11}/> Cảnh báo: 15% quỹ IT</span>
                                             ) : (
-                                                <span className="text-[10px] font-black text-black uppercase flex items-center justify-center gap-1.5"><CheckCircle size={11}/> An toàn: 2% quỹ IT</span>
+                                                <span className="text-[10px] font-bold text-slate-900 uppercase flex items-center justify-center gap-1.5"><CheckCircle size={11}/> An toàn: 2% quỹ IT</span>
                                             )}
                                         </td>
-                                        <td className="text-right font-black text-slate-900 text-sm">{formatVND(pr.totalEstimate)} ₫</td>
+                                        <td className="text-right font-bold text-slate-900 text-sm">{formatVND(pr.totalEstimate)} ₫</td>
                                         <td className="text-right px-8">
                                             <div className="flex justify-end gap-1">
                                                 <button onClick={() => setSelectedPRDetails(pr)} className="p-1.5 bg-[#FFFFFF] border border-slate-200 text-slate-900 hover:text-[#2563EB] hover:border-[#2563EB]/20 rounded-lg transition-all"><Eye size={12}/></button>
@@ -740,9 +740,9 @@ export default function Dashboard() {
                                     </tr>
                                 )) : (
                                     <tr>
-                                        <td colSpan={7} className="py-20 text-center text-slate-900 font-black uppercase text-[10px]">
+                                        <td colSpan={7} className="py-20 text-center text-slate-900 font-bold uppercase text-[10px]">
                                             <div className="flex flex-col items-center gap-3">
-                                                <div className="p-4 bg-[#0F172A] rounded-full"><Bell size={24} className="text-white" /></div>
+                                                <div className="p-4 bg-[#2563EB] rounded-full"><Bell size={24} className="text-white" /></div>
                                                 Không có phiếu nào chờ duyệt
                                             </div>
                                         </td>
@@ -776,7 +776,7 @@ export default function Dashboard() {
                     <div>
                         <div className="flex items-center gap-2 mb-1">
                             <div className="h-2 w-2 rounded-full bg-[#2563EB] animate-pulse"></div>
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900">Hệ thống Quản trị Chuỗi cung ứng</span>
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-900">Hệ thống Quản trị Chuỗi cung ứng</span>
                         </div>
                         <h1 className="page-title">Trung tâm Quản lý Thu mua</h1>
                     </div>
@@ -829,10 +829,10 @@ export default function Dashboard() {
                     {/* PR Sourcing Queue */}
                     <div className="space-y-6">
                         <div className="flex items-center justify-between">
-                            <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900">YÊU CẦU CẦN XỬ LÝ (PR -{">"} RFQ)</h3>
-                            <Link href="/sourcing" className="text-[10px] font-black text-[#2563EB] hover:underline uppercase tracking-widest">Xem tất cả {">"}</Link>
+                            <h3 className="text-[11px] font-bold uppercase tracking-wider text-slate-900">YÊU CẦU CẦN XỬ LÝ (PR -{">"} RFQ)</h3>
+                            <Link href="/sourcing" className="text-[10px] font-bold text-[#2563EB] hover:underline uppercase tracking-widest">Xem tất cả {">"}</Link>
                         </div>
-                        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden shadow-2xl shadow-[#2563EB]/5 border-none bg-[#F1F5F9]">
+                        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden shadow-sm shadow-[#2563EB]/5 border-none bg-[#F1F5F9]">
                             <div className="overflow-x-auto">
                                 <table className="erp-table text-xs whitespace-nowrap">
                                     <thead>
@@ -853,19 +853,19 @@ export default function Dashboard() {
                                                     <td className="py-5 px-4 first:pl-6">
                                                         <div className="flex flex-col">
                                                             <div className="flex items-center gap-2">
-                                                                <span className="text-[11px] font-black text-slate-900 tracking-tight">{pr.prNumber}</span>
-                                                                {isSimulation && <span className="bg-[#2563EB] text-white text-[7px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest animate-pulse shadow-sm ring-2 ring-[#2563EB]/20">GIẢ LẬP</span>}
+                                                                <span className="text-[11px] font-bold text-slate-900 tracking-tight">{pr.prNumber}</span>
+                                                                {isSimulation && <span className="bg-[#2563EB] text-white text-[7px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-widest animate-pulse shadow-sm ring-2 ring-[#2563EB]/20">GIẢ LẬP</span>}
                                                             </div>
                                                             <span className="text-[0.6875rem] font-bold text-slate-900 uppercase mt-1">{formatDate(pr.createdAt)}</span>
                                                         </div>
                                                     </td>
                                                     <td className="py-5 px-4">
                                                         <div className="flex items-center gap-3">
-                                                            <div className="h-8 w-8 rounded-lg bg-[#0F172A] flex items-center justify-center text-white group-hover:scale-110 transition-transform">
+                                                            <div className="h-8 w-8 rounded-lg bg-[#2563EB] flex items-center justify-center text-white group-hover:scale-110 transition-transform">
                                                                 <FileText size={14} />
                                                             </div>
                                                             <div className="flex flex-col">
-                                                                <span className="text-[11px] font-black text-slate-900 leading-tight group-hover:text-white transition-colors">{pr.title}</span>
+                                                                <span className="text-[11px] font-bold text-slate-900 leading-tight group-hover:text-[#2563EB] transition-colors">{pr.title}</span>
                                                                 <span className="text-[0.6875rem] text-slate-900 font-bold mt-1 uppercase tracking-tight">{typeof pr.department === 'object' ? pr.department?.name : (pr.department || "Phòng ban")}</span>
                                                             </div>
                                                         </div>
@@ -878,7 +878,7 @@ export default function Dashboard() {
                                                         )}
                                                     </td>
                                                     <td className="text-center">
-                                                        <span className={`px-2 py-0.5 rounded text-[0.6875rem] font-black uppercase ${pr.priority === 1 ? 'bg-rose-500/10 text-rose-600' : 'bg-amber-500/10 text-amber-600'}`}>
+                                                        <span className={`px-2 py-0.5 rounded text-[0.6875rem] font-bold uppercase ${pr.priority === 1 ? 'bg-rose-500/10 text-rose-600' : 'bg-amber-500/10 text-amber-600'}`}>
                                                             {pr.priority === 1 ? 'CAO' : 'VỪA'}
                                                         </span>
                                                     </td>
@@ -887,14 +887,14 @@ export default function Dashboard() {
                                                         {pr.type === "CATALOG" ? (
                                                             <button 
                                                                 onClick={() => setConfirmModal(pr)}
-                                                                className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 bg-[#1D4ED8] text-white text-[0.6875rem] font-black uppercase tracking-wide rounded-lg hover:bg-[#8F442B] transition-all shadow-sm"
+                                                                className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 bg-[#1D4ED8] text-white text-[0.6875rem] font-bold uppercase tracking-wide rounded-lg hover:bg-[#1D4ED8] transition-all shadow-sm"
                                                             >
                                                                 Xác nhận giá
                                                             </button>
                                                         ) : (
                                                             <Link 
                                                                 href={`/procurement/rfq/create?prId=${pr.id}`} 
-                                                                className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 bg-[#2563EB] text-white text-[0.6875rem] font-black uppercase tracking-wide rounded-lg hover:bg-[#1D4ED8] transition-all shadow-sm"
+                                                                className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 bg-[#2563EB] text-white text-[0.6875rem] font-bold uppercase tracking-wide rounded-lg hover:bg-[#1D4ED8] transition-all shadow-sm"
                                                             >
                                                                 Lấy Báo Giá
                                                             </Link>
@@ -903,7 +903,7 @@ export default function Dashboard() {
                                                 </tr>
                                             );
                                         }) : (
-                                            <tr><td colSpan={6} className="py-12 text-center text-slate-900 font-black uppercase text-[10px]">Không có PR nào cần xử lý</td></tr>
+                                            <tr><td colSpan={6} className="py-12 text-center text-slate-900 font-bold uppercase text-[10px]">Không có PR nào cần xử lý</td></tr>
                                         )}
                                     </tbody>
                                 </table>
@@ -929,7 +929,7 @@ export default function Dashboard() {
                                                         className={`w-8 h-8 rounded-lg text-[10px] font-bold transition-all ${
                                                             currentPrPage === page
                                                                 ? 'bg-[#2563EB] text-white'
-                                                                : 'bg-[#F1F5F9] text-white hover:text-white hover:bg-slate-100'
+                                                                : 'bg-[#F1F5F9] text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                                                         }`}
                                                     >
                                                         {page}
@@ -953,10 +953,10 @@ export default function Dashboard() {
                     {/* PO Tracking - Show SHIPPING/SHIPPED POs */}
                     <div className="space-y-6">
                         <div className="flex items-center justify-between">
-                            <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900">TÌNH TRẠNG GIAO HÀNG (ĐANG GIAO)</h3>
-                            <Link href="/po" className="text-[10px] font-black text-[#2563EB] hover:underline uppercase tracking-widest">PO Manager {">"}</Link>
+                            <h3 className="text-[11px] font-bold uppercase tracking-wider text-slate-900">TÌNH TRẠNG GIAO HÀNG (ĐANG GIAO)</h3>
+                            <Link href="/po" className="text-[10px] font-bold text-[#2563EB] hover:underline uppercase tracking-widest">PO Manager {">"}</Link>
                         </div>
-                        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden shadow-2xl shadow-[#2563EB]/5 border-none bg-[#F1F5F9]">
+                        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden shadow-sm shadow-[#2563EB]/5 border-none bg-[#F1F5F9]">
                             <div className="overflow-x-auto">
                                 <table className="erp-table text-xs whitespace-nowrap">
                                     <thead>
@@ -999,13 +999,13 @@ export default function Dashboard() {
                                                     <td className="font-bold text-slate-900">{po.poNumber || "PO-***"}</td>
                                                     <td className="font-semibold text-slate-900 truncate max-w-[120px]">{po.supplier?.name || po.vendor || "Vendor"}</td>
                                                     <td>
-                                                        <span className={`text-[0.6875rem] font-black uppercase px-2 py-1 rounded-full ${statusDisplay.bg} ${statusDisplay.color}`}>
+                                                        <span className={`text-[0.6875rem] font-bold uppercase px-2 py-1 rounded-full ${statusDisplay.bg} ${statusDisplay.color}`}>
                                                             {statusDisplay.label}
                                                         </span>
                                                     </td>
                                                     <td>
                                                         <div className="flex items-center gap-3">
-                                                            <div className="flex-1 h-1.5 bg-[#0F172A] rounded-full overflow-hidden">
+                                                            <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
                                                                 <div 
                                                                     className={`h-full transition-all duration-1000 ${
                                                                         po.status === 'SHIPPED' ? 'bg-emerald-500' :
@@ -1015,14 +1015,14 @@ export default function Dashboard() {
                                                                     style={{ width: `${progress}%` }}
                                                                 ></div>
                                                             </div>
-                                                            <span className="text-[0.6875rem] font-black text-[#2563EB] whitespace-nowrap">{progress}%</span>
+                                                            <span className="text-[0.6875rem] font-bold text-[#2563EB] whitespace-nowrap">{progress}%</span>
                                                         </div>
                                                     </td>
-                                                    <td className="text-right font-black text-slate-900 text-sm">{formatVND(poTotal)} ₫</td>
+                                                    <td className="text-right font-bold text-slate-900 text-sm">{formatVND(poTotal)} ₫</td>
                                                     <td className="text-right pl-2 pr-6">
                                                         <Link 
                                                             href={`/po/${po.id}`}
-                                                            className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 bg-[#2563EB] text-white text-[0.6875rem] font-black uppercase tracking-wide rounded-lg hover:bg-[#1D4ED8] transition-all"
+                                                            className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 bg-[#2563EB] text-white text-[0.6875rem] font-bold uppercase tracking-wide rounded-lg hover:bg-[#1D4ED8] transition-all"
                                                         >
                                                             Chi tiết
                                                         </Link>
@@ -1030,7 +1030,7 @@ export default function Dashboard() {
                                                 </tr>
                                             );
                                         }) : (
-                                            <tr><td colSpan={6} className="py-20 text-center text-slate-900 font-black uppercase text-[10px]">Chưa có đơn hàng đang giao</td></tr>
+                                            <tr><td colSpan={6} className="py-20 text-center text-slate-900 font-bold uppercase text-[10px]">Chưa có đơn hàng đang giao</td></tr>
                                         )}
                                     </tbody>
                                 </table>
@@ -1058,10 +1058,10 @@ export default function Dashboard() {
                 <header className="flex items-center justify-between mb-6 pb-4 border-b border-slate-200">
                     <div className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-xl bg-[#F1F5F9] border border-slate-200 flex items-center justify-center">
-                            <span className="text-lg font-black text-[#2563EB]">{currentUser?.name?.charAt(0) || currentUser?.fullName?.charAt(0) || 'U'}</span>
+                            <span className="text-lg font-bold text-[#2563EB]">{currentUser?.name?.charAt(0) || currentUser?.fullName?.charAt(0) || 'U'}</span>
                         </div>
                         <div>
-                            <h1 className="text-lg font-black text-slate-900 tracking-tight">Xin chào, {currentUser?.name || currentUser?.fullName}</h1>
+                            <h1 className="text-lg font-bold text-slate-900 tracking-tight">Xin chào, {currentUser?.name || currentUser?.fullName}</h1>
                             <p className="text-xs text-slate-900">{currentUser?.role} • {typeof currentUser?.department === 'object' ? (currentUser.department as { name: string })?.name : (currentUser?.department || 'Phòng ban')}</p>
                         </div>
                     </div>
@@ -1079,11 +1079,11 @@ export default function Dashboard() {
                             </button>
                             
                             {isSimDropdownOpen && (
-                                <div className="absolute top-full right-0 mt-3 w-72 bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                                <div className="absolute top-full right-0 mt-3 w-72 bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-sm z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
                                     <Link href="/pr/create" className="flex items-center gap-4 p-5 hover:bg-slate-100 transition-colors border-b border-slate-200 text-left w-full translate-z-0">
                                         <div className="p-3 bg-[#2563EB]/10 text-[#2563EB] rounded-xl"><Plus size={18} /></div>
                                         <div>
-                                            <div className="text-[10px] font-black uppercase text-slate-900 mb-1 tracking-widest">Tạo quy trình thủ công</div>
+                                            <div className="text-[10px] font-bold uppercase text-slate-900 mb-1 tracking-widest">Tạo quy trình thủ công</div>
                                             <div className="text-[0.6875rem] text-slate-900 font-bold uppercase leading-tight">Vào PR trực tiếp</div>
                                         </div>
                                     </Link>
@@ -1094,7 +1094,7 @@ export default function Dashboard() {
                                     >
                                         <div className="p-3 bg-emerald-500/10 text-emerald-600 rounded-xl"><Zap size={18} /></div>
                                         <div>
-                                             <div className="text-[10px] font-black uppercase text-slate-900 mb-1 tracking-widest">Giả lập Catalog</div>
+                                             <div className="text-[10px] font-bold uppercase text-slate-900 mb-1 tracking-widest">Giả lập Catalog</div>
                                              <div className="text-[0.6875rem] text-slate-900 font-bold uppercase leading-tight">Demo full-flow từ Catalog</div>
                                         </div>
                                     </button>
@@ -1105,7 +1105,7 @@ export default function Dashboard() {
                                     >
                                         <div className="p-3 bg-purple-500/10 text-purple-600 rounded-xl"><RotateCcw size={18} /></div>
                                         <div>
-                                            <div className="text-[10px] font-black uppercase text-slate-900 mb-1 tracking-widest">Giả lập Non-Catalog</div>
+                                            <div className="text-[10px] font-bold uppercase text-slate-900 mb-1 tracking-widest">Giả lập Non-Catalog</div>
                                             <div className="text-[0.6875rem] text-slate-900 font-bold uppercase leading-tight">Demo full-flow từ PR</div>
                                         </div>
                                     </button>
@@ -1120,12 +1120,12 @@ export default function Dashboard() {
                     {/* Pending PRs Card */}
                     <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200 hover:border-[#2563EB]/30 transition-all">
                         <div className="flex items-center justify-between mb-4">
-                            <span className="text-[10px] font-black uppercase text-slate-900 tracking-wider">PR Chờ Duyệt</span>
+                            <span className="text-[10px] font-bold uppercase text-slate-900 tracking-wider">PR Chờ Duyệt</span>
                             <div className="h-10 w-10 rounded-xl bg-[#2563EB]/10 flex items-center justify-center">
                                 <FileText size={20} className="text-[#2563EB]" />
                             </div>
                         </div>
-                        <div className="text-3xl font-black text-slate-900 mb-1">{pendingPRCount}</div>
+                        <div className="text-3xl font-bold text-slate-900 mb-1">{pendingPRCount}</div>
                         <div className="text-sm font-bold text-[#2563EB]">{formatVND(pendingPRValue)}</div>
                         <div className="text-[10px] text-slate-900 mt-3 pt-3 border-t border-slate-200">Tổng giá trị chờ phê duyệt</div>
                     </div>
@@ -1133,12 +1133,12 @@ export default function Dashboard() {
                     {/* Pending POs Card */}
                     <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200 hover:border-amber-500/30 transition-all">
                         <div className="flex items-center justify-between mb-4">
-                            <span className="text-[10px] font-black uppercase text-slate-900 tracking-wider">Cảnh Báo Tồn Đọng</span>
+                            <span className="text-[10px] font-bold uppercase text-slate-900 tracking-wider">Cảnh Báo Tồn Đọng</span>
                             <div className="h-10 w-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                                <AlertTriangle size={20} className="text-black" />
+                                <AlertTriangle size={20} className="text-slate-900" />
                             </div>
                         </div>
-                        <div className="text-3xl font-black text-black mb-1">{pendingPRCount}</div>
+                        <div className="text-3xl font-bold text-slate-900 mb-1">{pendingPRCount}</div>
                         <div className="text-sm font-bold text-slate-900">{pendingPRCount > 0 ? 'Cần xử lý ngay' : 'Không có tồn đọng'}</div>
                         <div className="text-[10px] text-slate-900 mt-3 pt-3 border-t border-slate-200">Phiếu đang chờ bạn duyệt</div>
                     </div>
@@ -1146,12 +1146,12 @@ export default function Dashboard() {
                     {/* Quick Action Card */}
                     <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200 hover:border-emerald-500/30 transition-all">
                         <div className="flex items-center justify-between mb-4">
-                            <span className="text-[10px] font-black uppercase text-slate-900 tracking-wider">Tạo PR Mới</span>
+                            <span className="text-[10px] font-bold uppercase text-slate-900 tracking-wider">Tạo PR Mới</span>
                             <div className="h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                                <Plus size={20} className="text-black" />
+                                <Plus size={20} className="text-slate-900" />
                             </div>
                         </div>
-                        <div className="text-lg font-black text-slate-900 mb-2">Tạo yêu cầu mua hàng</div>
+                        <div className="text-lg font-bold text-slate-900 mb-2">Tạo yêu cầu mua hàng</div>
                         <button 
                             onClick={() => setIsSimDropdownOpen(!isSimDropdownOpen)}
                             className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all"
@@ -1167,8 +1167,8 @@ export default function Dashboard() {
                     <div className="mb-8 space-y-6">
                         {/* Budget Overview Header */}
                         <div className="flex items-center justify-between">
-                            <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center gap-2">
-                                <DollarSign size={18} className="text-black" />
+                            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-widest flex items-center gap-2">
+                                <DollarSign size={18} className="text-slate-900" />
                                 Tổng quan Ngân sách Phòng ban
                             </h3>
                             <div className="flex items-center gap-3">
@@ -1186,40 +1186,40 @@ export default function Dashboard() {
                             {/* Total Allocated */}
                             <div className="bg-[#F1F5F9] rounded-xl p-5 border border-slate-200 hover:border-[#2563EB]/30 transition-all">
                                 <div className="flex items-center justify-between mb-3">
-                                    <span className="text-[10px] font-black uppercase text-slate-900 tracking-wider">Tổng ngân sách</span>
+                                    <span className="text-[10px] font-bold uppercase text-slate-900 tracking-wider">Tổng ngân sách</span>
                                     <div className="h-8 w-8 rounded-lg bg-[#2563EB]/10 flex items-center justify-center">
                                         <DollarSign size={16} className="text-[#2563EB]" />
                                     </div>
                                 </div>
-                                <div className="text-xl font-black text-slate-900">
+                                <div className="text-xl font-bold text-slate-900">
                                     {deptAllocation ? formatVND(deptAllocation.allocatedAmount) : '---'}
                                 </div>
                                 <div className="text-[10px] text-slate-900 mt-1">Được phân bổ cho kỳ này</div>
                             </div>
 
                             {/* Committed Amount */}
-                            <div className="bg-bg-secondary rounded-2xl p-5 border border-slate-200 hover:border-amber-500/30 transition-all">
+                            <div className="bg-[#F1F5F9] rounded-xl p-5 border border-slate-200 hover:border-amber-500/30 transition-all">
                                 <div className="flex items-center justify-between mb-3">
-                                    <span className="text-[10px] font-black uppercase text-slate-900 tracking-wider">Cam kết chi</span>
+                                    <span className="text-[10px] font-bold uppercase text-slate-900 tracking-wider">Cam kết chi</span>
                                     <div className="h-8 w-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
-                                        <ShoppingCart size={16} className="text-black" />
+                                        <ShoppingCart size={16} className="text-slate-900" />
                                     </div>
                                 </div>
-                                <div className="text-xl font-black text-black">
+                                <div className="text-xl font-bold text-slate-900">
                                     {deptAllocation ? formatVND(deptAllocation.committedAmount) : '---'}
                                 </div>
                                 <div className="text-[10px] text-slate-900 mt-1">PO đã tạo / Đang chờ</div>
                             </div>
 
                             {/* Spent Amount */}
-                            <div className="bg-bg-secondary rounded-2xl p-5 border border-slate-200 hover:border-purple-500/30 transition-all">
+                            <div className="bg-[#F1F5F9] rounded-xl p-5 border border-slate-200 hover:border-purple-500/30 transition-all">
                                 <div className="flex items-center justify-between mb-3">
-                                    <span className="text-[10px] font-black uppercase text-slate-900 tracking-wider">Đã chi thực tế</span>
+                                    <span className="text-[10px] font-bold uppercase text-slate-900 tracking-wider">Đã chi thực tế</span>
                                     <div className="h-8 w-8 rounded-lg bg-purple-500/10 flex items-center justify-center">
-                                        <CreditCard size={16} className="text-black" />
+                                        <CreditCard size={16} className="text-slate-900" />
                                     </div>
                                 </div>
-                                <div className="text-xl font-black text-black">
+                                <div className="text-xl font-bold text-slate-900">
                                     {deptAllocation ? formatVND(deptAllocation.spentAmount) : '---'}
                                 </div>
                                 <div className="text-[10px] text-slate-900 mt-1">Thanh toán đã thực hiện</div>
@@ -1228,12 +1228,12 @@ export default function Dashboard() {
                             {/* Remaining Budget */}
                             <div className="bg-[#F1F5F9] rounded-xl p-5 border border-slate-200 hover:border-emerald-500/30 transition-all">
                                 <div className="flex items-center justify-between mb-3">
-                                    <span className="text-[10px] font-black uppercase text-slate-900 tracking-wider">Còn lại</span>
+                                    <span className="text-[10px] font-bold uppercase text-slate-900 tracking-wider">Còn lại</span>
                                     <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                                        <CheckCircle size={16} className="text-black" />
+                                        <CheckCircle size={16} className="text-slate-900" />
                                     </div>
                                 </div>
-                                <div className="text-xl font-black text-black">
+                                <div className="text-xl font-bold text-slate-900">
                                     {deptAllocation ? formatVND(deptAllocation.allocatedAmount - deptAllocation.committedAmount - deptAllocation.spentAmount) : '---'}
                                 </div>
                                 <div className="text-[10px] text-slate-900 mt-1">Có thể sử dụng</div>
@@ -1246,10 +1246,10 @@ export default function Dashboard() {
                                 {/* Main Progress Bar */}
                                 <div className="lg:col-span-2 bg-[#F1F5F9] rounded-xl p-6 border border-slate-200">
                                     <div className="flex items-center justify-between mb-4">
-                                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">Tỷ lệ sử dụng ngân sách</h4>
-                                        <span className={`text-sm font-black ${
-                                            ((deptAllocation.committedAmount + deptAllocation.spentAmount) / deptAllocation.allocatedAmount) > 0.9 ? 'text-red-400' :
-                                            ((deptAllocation.committedAmount + deptAllocation.spentAmount) / deptAllocation.allocatedAmount) > 0.75 ? 'text-black' : 'text-black'
+                                        <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Tỷ lệ sử dụng ngân sách</h4>
+                                        <span className={`text-sm font-bold ${
+                                            ((deptAllocation.committedAmount + deptAllocation.spentAmount) / deptAllocation.allocatedAmount) > 0.9 ? 'text-rose-600' :
+                                            ((deptAllocation.committedAmount + deptAllocation.spentAmount) / deptAllocation.allocatedAmount) > 0.75 ? 'text-slate-900' : 'text-slate-900'
                                         }`}>
                                             {Math.round(((deptAllocation.committedAmount + deptAllocation.spentAmount) / deptAllocation.allocatedAmount) * 100)}%
                                         </span>
@@ -1291,38 +1291,38 @@ export default function Dashboard() {
 
                                 {/* Budget Alerts */}
                                 <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200">
-                                    <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider mb-4 flex items-center gap-2">
-                                        <AlertTriangle size={14} className="text-black" />
+                                    <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                        <AlertTriangle size={14} className="text-slate-900" />
                                         Cảnh báo ngân sách
                                     </h4>
                                     <div className="space-y-3">
                                         {((deptAllocation.committedAmount + deptAllocation.spentAmount) / deptAllocation.allocatedAmount) > 0.9 ? (
                                             <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
                                                 <div className="flex items-start gap-2">
-                                                    <AlertTriangle size={16} className="text-red-400 shrink-0 mt-0.5" />
+                                                    <AlertTriangle size={16} className="text-rose-600 shrink-0 mt-0.5" />
                                                     <div>
-                                                        <p className="text-xs font-bold text-red-400">Ngân sách sắp hết!</p>
-                                                        <p className="text-[10px] text-red-400/70 mt-1">Đã sử dụng {Math.round(((deptAllocation.committedAmount + deptAllocation.spentAmount) / deptAllocation.allocatedAmount) * 100)}% ngân sách kỳ này.</p>
+                                                        <p className="text-xs font-bold text-rose-600">Ngân sách sắp hết!</p>
+                                                        <p className="text-[10px] text-rose-600/70 mt-1">Đã sử dụng {Math.round(((deptAllocation.committedAmount + deptAllocation.spentAmount) / deptAllocation.allocatedAmount) * 100)}% ngân sách kỳ này.</p>
                                                     </div>
                                                 </div>
                                             </div>
                                         ) : ((deptAllocation.committedAmount + deptAllocation.spentAmount) / deptAllocation.allocatedAmount) > 0.75 ? (
                                             <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl">
                                                 <div className="flex items-start gap-2">
-                                                    <AlertCircle size={16} className="text-black shrink-0 mt-0.5" />
+                                                    <AlertCircle size={16} className="text-slate-900 shrink-0 mt-0.5" />
                                                     <div>
-                                                        <p className="text-xs font-bold text-black">Cảnh báo sử dụng</p>
-                                                        <p className="text-[10px] text-black/70 mt-1">Đã sử dụng {Math.round(((deptAllocation.committedAmount + deptAllocation.spentAmount) / deptAllocation.allocatedAmount) * 100)}% ngân sách.</p>
+                                                        <p className="text-xs font-bold text-slate-900">Cảnh báo sử dụng</p>
+                                                        <p className="text-[10px] text-slate-900/70 mt-1">Đã sử dụng {Math.round(((deptAllocation.committedAmount + deptAllocation.spentAmount) / deptAllocation.allocatedAmount) * 100)}% ngân sách.</p>
                                                     </div>
                                                 </div>
                                             </div>
                                         ) : (
                                             <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
                                                 <div className="flex items-start gap-2">
-                                                    <CheckCircle size={16} className="text-black shrink-0 mt-0.5" />
+                                                    <CheckCircle size={16} className="text-slate-900 shrink-0 mt-0.5" />
                                                     <div>
-                                                        <p className="text-xs font-bold text-black">Ngân sách ổn định</p>
-                                                        <p className="text-[10px] text-black/70 mt-1">Còn {Math.round(100 - ((deptAllocation.committedAmount + deptAllocation.spentAmount) / deptAllocation.allocatedAmount) * 100)}% ngân sách chưa sử dụng.</p>
+                                                        <p className="text-xs font-bold text-slate-900">Ngân sách ổn định</p>
+                                                        <p className="text-[10px] text-slate-900/70 mt-1">Còn {Math.round(100 - ((deptAllocation.committedAmount + deptAllocation.spentAmount) / deptAllocation.allocatedAmount) * 100)}% ngân sách chưa sử dụng.</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1350,7 +1350,7 @@ export default function Dashboard() {
                         {/* Cost Center Budget Breakdown */}
                         {deptAllocation && costCenters && costCenters.length > 0 && (
                             <div className="bg-[#F1F5F9] rounded-xl p-6 border border-slate-200">
-                                <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider mb-4">Phân bổ theo Cost Center</h4>
+                                <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4">Phân bổ theo Cost Center</h4>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {costCenters
                                         .filter(cc => cc.deptId === departmentId)
@@ -1365,7 +1365,7 @@ export default function Dashboard() {
                                                         <span className="text-xs font-bold text-slate-900">{cc.code}</span>
                                                         <span className="text-[10px] text-slate-900">{cc.name}</span>
                                                     </div>
-                                                    <div className="text-sm font-black text-[#2563EB] mb-2">{formatVND(ccTotal)}</div>
+                                                    <div className="text-sm font-bold text-[#2563EB] mb-2">{formatVND(ccTotal)}</div>
                                                     <div className="h-1.5 bg-[#F1F5F9] rounded-full overflow-hidden">
                                                         <div 
                                                             className={`h-full rounded-full ${ccUsed / ccTotal > 0.9 ? 'bg-red-500' : ccUsed / ccTotal > 0.7 ? 'bg-amber-500' : 'bg-emerald-500'}`}
@@ -1393,7 +1393,7 @@ export default function Dashboard() {
                         </h3>
                         <button 
                             disabled={pendingPRCount === 0} 
-                            className={`px-5 py-2 ${pendingPRCount === 0 ? 'bg-emerald-800 text-emerald-100/80 cursor-not-allowed' : 'bg-emerald-600 text-white hover:bg-emerald-700 transition-all shadow-md shadow-emerald-500/20'} text-[10px] font-black uppercase tracking-widest rounded-xl`}
+                            className={`px-5 py-2 ${pendingPRCount === 0 ? 'bg-emerald-800 text-emerald-100/80 cursor-not-allowed' : 'bg-emerald-600 text-white hover:bg-emerald-700 transition-all shadow-md shadow-emerald-500/20'} text-[10px] font-bold uppercase tracking-widest rounded-xl`}
                         >
                             Duyệt hàng loạt ({pendingPRCount})
                         </button>
@@ -1408,16 +1408,16 @@ export default function Dashboard() {
                                 className="pl-11 pr-6 py-2.5 bg-[#FFFFFF] border border-slate-200 rounded-xl text-xs font-bold w-64 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:bg-[#FFFFFF] transition-all text-slate-900 placeholder:text-slate-400"
                             />
                         </div>
-                        <button className="flex items-center gap-2 px-4 py-2.5 bg-[#F1F5F9] border border-slate-200 rounded-2xl text-[0.6875rem] font-black uppercase tracking-widest text-slate-900 hover:bg-slate-100 transition-all shadow-sm">
+                        <button className="flex items-center gap-2 px-4 py-2.5 bg-[#F1F5F9] border border-slate-200 rounded-xl text-[0.6875rem] font-bold uppercase tracking-widest text-slate-900 hover:bg-slate-100 transition-all shadow-sm">
                             Lọc theo Cấp độ <ChevronDown size={14} />
                         </button>
-                        <button className="flex items-center gap-2 px-4 py-2.5 bg-[#F1F5F9] border border-slate-200 rounded-2xl text-[0.6875rem] font-black uppercase tracking-widest text-slate-900 hover:bg-slate-100 transition-all shadow-sm">
+                        <button className="flex items-center gap-2 px-4 py-2.5 bg-[#F1F5F9] border border-slate-200 rounded-xl text-[0.6875rem] font-bold uppercase tracking-widest text-slate-900 hover:bg-slate-100 transition-all shadow-sm">
                             Lọc theo Phân loại <ChevronDown size={14} />
                         </button>
-                        <button className="flex items-center gap-2 px-4 py-2.5 bg-[#F1F5F9] border border-slate-200 rounded-2xl text-[0.6875rem] font-black uppercase tracking-widest text-slate-900 hover:bg-slate-100 transition-all shadow-sm">
+                        <button className="flex items-center gap-2 px-4 py-2.5 bg-[#F1F5F9] border border-slate-200 rounded-xl text-[0.6875rem] font-bold uppercase tracking-widest text-slate-900 hover:bg-slate-100 transition-all shadow-sm">
                             Khoảng giá <ChevronDown size={14} />
                         </button>
-                        <Link href="/approvals" className="ml-2 text-[0.6875rem] font-black uppercase text-[#2563EB] hover:underline bg-[#2563EB]/10 px-4 py-2.5 rounded-xl border border-[#2563EB]/20 transition-all">
+                        <Link href="/approvals" className="ml-2 text-[0.6875rem] font-bold uppercase text-[#2563EB] hover:underline bg-[#2563EB]/10 px-4 py-2.5 rounded-xl border border-[#2563EB]/20 transition-all">
                             Tới màn hình duyệt &gt;
                         </Link>
                     </div>
@@ -1445,7 +1445,7 @@ export default function Dashboard() {
                                 {myPendingPRs.length > 0 ? myPendingPRs.map((pr) => {
                                     const priorityInfo = pr.priority === 1
                                         ? { label: 'CAO', color: 'bg-red-500' }
-                                        : (pr.priority === 2 ? { label: 'VỪA', color: 'bg-amber-500' } : { label: 'THẤP', color: 'bg-[#000000]' });
+                                        : (pr.priority === 2 ? { label: 'VỪA', color: 'bg-amber-500' } : { label: 'THẤP', color: 'bg-slate-400' });
 
                                     const requesterName = pr.requester?.fullName || pr.requester?.name || "N/A";
 
@@ -1457,13 +1457,13 @@ export default function Dashboard() {
                                             <td className="font-bold text-slate-900">{pr.prNumber || "PR-***"}</td>
                                             <td className="text-slate-900 font-medium">{formatDate(pr.createdAt)}</td>
                                             <td className="text-center">
-                                                <span className={`px-2.5 py-1 ${priorityInfo.color} text-slate-900 rounded-lg font-black text-[0.6875rem] uppercase shadow-sm`}>
+                                                <span className={`px-2.5 py-1 ${priorityInfo.color} text-slate-900 rounded-lg font-bold text-[0.6875rem] uppercase shadow-sm`}>
                                                     {priorityInfo.label}
                                                 </span>
                                             </td>
                                             <td>
                                                 <div className="flex items-center gap-2">
-                                                    <div className="w-7 h-7 rounded-full bg-[#0F172A] flex items-center justify-center overflow-hidden border border-slate-200">
+                                                    <div className="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center overflow-hidden border border-slate-200">
                                                         <Image src={`https://ui-avatars.com/api/?name=${encodeURIComponent(requesterName)}&background=random`} alt="avatar" width={28} height={28} unoptimized />
                                                     </div>
                                                     <span className="font-bold text-slate-900 truncate max-w-[120px]">{requesterName}</span>
@@ -1475,19 +1475,19 @@ export default function Dashboard() {
                                                 </span>
                                             </td>
                                             <td className="max-w-[200px] truncate font-medium text-slate-900">{pr.title}</td>
-                                            <td className="text-right font-black text-black text-sm">{formatVND(pr.totalEstimate || 0)} ₫</td>
+                                            <td className="text-right font-bold text-slate-900 text-sm">{formatVND(pr.totalEstimate || 0)} ₫</td>
                                             <td className="text-right px-8">
                                                 <div className="flex justify-end gap-1.5">
                                                     <button onClick={() => setSelectedPRDetails(pr)} className="p-2 bg-[#FFFFFF] border border-slate-200 text-slate-900 hover:text-[#2563EB] hover:border-[#2563EB]/20 rounded-xl transition-all shadow-sm" title="Xem chi tiết">
                                                         <Eye size={14} />
                                                     </button>
-                                                    <button onClick={() => handleQuickApprove(pr.workflowId)} disabled={isSubmitting} className="p-2 bg-[#FFFFFF] border border-slate-200 text-black hover:bg-emerald-500 hover:text-white rounded-xl transition-all shadow-sm disabled:opacity-50" title="Duyệt nhanh">
+                                                    <button onClick={() => handleQuickApprove(pr.workflowId)} disabled={isSubmitting} className="p-2 bg-[#FFFFFF] border border-slate-200 text-slate-900 hover:bg-emerald-500 hover:text-white rounded-xl transition-all shadow-sm disabled:opacity-50" title="Duyệt nhanh">
                                                         <CheckCircle size={14} />
                                                     </button>
-                                                    <button className="p-2 bg-[#FFFFFF] border border-slate-200 text-black hover:bg-rose-500 hover:text-white rounded-xl transition-all shadow-sm" title="Từ chối nhanh">
+                                                    <button className="p-2 bg-[#FFFFFF] border border-slate-200 text-slate-900 hover:bg-rose-500 hover:text-white rounded-xl transition-all shadow-sm" title="Từ chối nhanh">
                                                         <XCircle size={14} />
                                                     </button>
-                                                    <button className="p-2 bg-[#FFFFFF] border border-slate-200 text-black hover:bg-amber-500 hover:text-white rounded-xl transition-all shadow-sm" title="Yêu cầu chỉnh sửa">
+                                                    <button className="p-2 bg-[#FFFFFF] border border-slate-200 text-slate-900 hover:bg-amber-500 hover:text-white rounded-xl transition-all shadow-sm" title="Yêu cầu chỉnh sửa">
                                                         <RotateCcw size={14} />
                                                     </button>
                                                 </div>
@@ -1496,9 +1496,9 @@ export default function Dashboard() {
                                     );
                                 }) : (
                                     <tr>
-                                        <td colSpan={9} className="py-20 text-center text-slate-900 font-black uppercase tracking-widest text-[10px]">
+                                        <td colSpan={9} className="py-20 text-center text-slate-900 font-bold uppercase tracking-widest text-[10px]">
                                             <div className="flex flex-col items-center gap-3">
-                                                <div className="p-4 bg-[#0F172A] rounded-full"><Bell size={24} className="text-white" /></div>
+                                                <div className="p-4 bg-[#2563EB] rounded-full"><Bell size={24} className="text-white" /></div>
                                                 Hiện tại không có phiếu nào cần bạn phê duyệt
                                             </div>
                                         </td>
@@ -1523,14 +1523,14 @@ export default function Dashboard() {
                     <div>
                         <div className="flex items-center gap-2 mb-1">
                             <div className="h-2 w-2 rounded-full bg-orange-500 animate-pulse"></div>
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900">Hệ thống Quản trị Nhà cung cấp</span>
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-900">Hệ thống Quản trị Nhà cung cấp</span>
                         </div>
-                        <h1 className="text-4xl font-black text-slate-900 tracking-tight">Bảng điều khiển B2B</h1>
+                        <h1 className="text-4xl font-bold text-slate-900 tracking-tight">Bảng điều khiển B2B</h1>
                     </div>
                     <div className="flex items-center gap-3">
                         <div className="text-right">
-                            <p className="text-[10px] font-black text-slate-900 mb-0.5">{myOrg?.name || "Đối tác ProcurePro"}</p>
-                            <p className="text-[8px] font-bold text-black uppercase tracking-tighter">Xác thực: Gold Partner</p>
+                            <p className="text-[10px] font-bold text-slate-900 mb-0.5">{myOrg?.name || "Đối tác ProcurePro"}</p>
+                            <p className="text-[8px] font-bold text-slate-900 uppercase tracking-tighter">Xác thực: Gold Partner</p>
                         </div>
                         <div className="w-10 h-10 rounded-xl bg-[#F1F5F9] border border-slate-200 flex items-center justify-center shadow-sm">
                             <Building2 size={20} className="text-[#2563EB]" />
@@ -1550,8 +1550,8 @@ export default function Dashboard() {
                     {/* RFQ List */}
                     <div className="space-y-6">
                         <div className="flex items-center justify-between">
-                            <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900">YÊU CẦU BÁO GIÁ ĐẾN (RFQ)</h3>
-                            <Link href="/supplier/rfq" className="text-[10px] font-black text-[#2563EB] hover:underline uppercase tracking-widest">Xem tất cả ›</Link>
+                            <h3 className="text-[11px] font-bold uppercase tracking-wider text-slate-900">YÊU CẦU BÁO GIÁ ĐẾN (RFQ)</h3>
+                            <Link href="/supplier/rfq" className="text-[10px] font-bold text-[#2563EB] hover:underline uppercase tracking-widest">Xem tất cả ›</Link>
                         </div>
                         <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden shadow-xl shadow-[#2563EB]/5 border-none bg-[#F1F5F9]">
                             <table className="erp-table text-xs">
@@ -1566,15 +1566,15 @@ export default function Dashboard() {
                                 <tbody className="divide-y divide-slate-100">
                                     {myPendingRFQs.length > 0 ? myPendingRFQs.slice(0, 5).map(rfq => (
                                         <tr key={rfq.id} className="hover:bg-[#FFFFFF]/50 transition-all">
-                                            <td className="px-8 font-black text-slate-900">{rfq.rfqNumber}</td>
+                                            <td className="px-8 font-bold text-slate-900">{rfq.rfqNumber}</td>
                                             <td className="font-semibold text-slate-900">ProcurePro Corp</td>
                                             <td className="text-right text-slate-900 font-bold">{formatDate(rfq.createdAt)}</td>
                                             <td className="text-right px-8 whitespace-nowrap">
-                                                <Link href="/supplier/rfq" className="px-4 py-2 bg-[#2563EB] text-white text-[0.6875rem] font-black uppercase tracking-widest rounded-xl hover:bg-[#1D4ED8] transition-all">Báo giá</Link>
+                                                <Link href="/supplier/rfq" className="px-4 py-2 bg-[#2563EB] text-white text-[0.6875rem] font-bold uppercase tracking-widest rounded-xl hover:bg-[#1D4ED8] transition-all">Báo giá</Link>
                                             </td>
                                         </tr>
                                     )) : (
-                                        <tr><td colSpan={4} className="py-20 text-center text-slate-900 font-black uppercase text-[10px]">Không có RFQ mới</td></tr>
+                                        <tr><td colSpan={4} className="py-20 text-center text-slate-900 font-bold uppercase text-[10px]">Không có RFQ mới</td></tr>
                                     )}
                                 </tbody>
                             </table>
@@ -1583,10 +1583,10 @@ export default function Dashboard() {
 
                     {/* Quick Tips or Announcements */}
                     <div className="space-y-6">
-                        <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900 flex items-center gap-2">
+                        <h3 className="text-[11px] font-bold uppercase tracking-wider text-slate-900 flex items-center gap-2">
                              <Bell size={14} className="text-[#2563EB]" /> THÔNG BÁO TỪ HỆ THỐNG
                         </h3>
-                        <div className="bg-[#F1F5F9] rounded-xl p-6 text-slate-900 relative overflow-hidden group shadow-2xl shadow-[#2563EB]/5 border border-slate-200">
+                        <div className="bg-[#F1F5F9] rounded-xl p-6 text-slate-900 relative overflow-hidden group shadow-sm shadow-[#2563EB]/5 border border-slate-200">
                              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-125 transition-transform duration-700">
                                  <Zap size={100} />
                              </div>
@@ -1609,10 +1609,10 @@ export default function Dashboard() {
 
     const renderAdminDashboard = () => (
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#FFFFFF] text-slate-900">
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-8">Hệ thống Quản trị Tổng thể</h1>
+            <h1 className="text-3xl font-bold text-slate-900 tracking-tight mb-8">Hệ thống Quản trị Tổng thể</h1>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
                 <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 border-l-4 border-slate-200 bg-[#F1F5F9]">
-                    <div className="text-2xl font-black text-slate-900">{formatVND(budgets?.allocated || 0)} ₫</div>
+                    <div className="text-2xl font-bold text-slate-900">{formatVND(budgets?.allocated || 0)} ₫</div>
                     <div className="mt-2 text-[10px] text-slate-900 font-bold">Ngân sách đã phân bổ</div>
                 </div>
             </div>
@@ -1626,7 +1626,7 @@ export default function Dashboard() {
                             <tr key={pr.id} className="hover:bg-[#FFFFFF]/50 transition-colors">
                                 <td className="font-bold text-slate-900">{pr.prNumber || "PR-***"}</td>
                                 <td className="font-semibold text-slate-900">{typeof pr.department === 'object' ? pr.department?.name : (pr.department || "N/A")}</td>
-                                <td className="text-right font-black text-slate-900">{formatVND(pr.totalEstimate || 0)} ₫</td>
+                                <td className="text-right font-bold text-slate-900">{formatVND(pr.totalEstimate || 0)} ₫</td>
                                 <td className="text-right text-slate-900"><button onClick={() => setSelectedPRDetails(pr)} className="p-2 hover:bg-[#FFFFFF] rounded-xl transition-colors"><Eye size={16} /></button></td>
                             </tr>
                         ))}
@@ -1647,16 +1647,16 @@ export default function Dashboard() {
 
             {selectedPRDetails && (
                 <div className="fixed inset-0 z-[100] bg-[#FFFFFF]/80 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in duration-300">
-                    <div className="bg-[#F1F5F9] rounded-xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-300 border border-slate-200">
+                    <div className="bg-[#F1F5F9] rounded-xl shadow-sm w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-300 border border-slate-200">
                         <div className="flex justify-between items-center p-8 border-b border-slate-200 bg-[#FFFFFF]">
                             <div>
-                                <h2 className="text-2xl font-black text-slate-900 flex items-center gap-3 tracking-tighter">
+                                <h2 className="text-2xl font-bold text-slate-900 flex items-center gap-3 tracking-tighter">
                                     <FileText size={24} className="text-[#2563EB]" />
                                     CHI TIẾT PHIẾU: <span className="text-[#2563EB]">{selectedPRDetails.prNumber || selectedPRDetails.id}</span>
                                 </h2>
-                                <p className="text-[10px] font-black text-slate-900 uppercase tracking-widest mt-1">Cập nhật: {new Date(selectedPRDetails.createdAt || "").toLocaleString('vi-VN')}</p>
+                                <p className="text-[10px] font-bold text-slate-900 uppercase tracking-widest mt-1">Cập nhật: {new Date(selectedPRDetails.createdAt || "").toLocaleString('vi-VN')}</p>
                             </div>
-                            <button onClick={() => setSelectedPRDetails(null)} className="h-12 w-12 bg-[#FFFFFF] border border-slate-200 text-slate-900 hover:text-black rounded-xl flex items-center justify-center transition-all">
+                            <button onClick={() => setSelectedPRDetails(null)} className="h-12 w-12 bg-[#FFFFFF] border border-slate-200 text-slate-900 hover:text-slate-900 rounded-xl flex items-center justify-center transition-all">
                                 <Plus className="rotate-45" size={24} />
                             </button>
                         </div>
@@ -1665,23 +1665,23 @@ export default function Dashboard() {
                             <div className="p-8 md:w-2/3 border-r border-slate-200 space-y-8">
                                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                                     <div className="p-4 bg-[#FFFFFF] rounded-xl border border-slate-200 text-center">
-                                        <div className="text-[0.6875rem] font-black uppercase text-slate-900 mb-1">Trạng thái</div>
+                                        <div className="text-[0.6875rem] font-bold uppercase text-slate-900 mb-1">Trạng thái</div>
                                         <span className={`status-pill status-${(selectedPRDetails.status || 'draft').toLowerCase()}`}>{getStatusLabel(selectedPRDetails.status)}</span>
                                     </div>
-                                    <div className="p-4 bg-amber-500/10 rounded-2xl border border-amber-500/20 text-center">
-                                        <div className="text-[0.6875rem] font-black uppercase text-black mb-1">Ngày cần hàng</div>
-                                        <div className="text-sm font-black text-slate-900">
+                                    <div className="p-4 bg-amber-500/10 rounded-xl border border-amber-500/20 text-center">
+                                        <div className="text-[0.6875rem] font-bold uppercase text-slate-900 mb-1">Ngày cần hàng</div>
+                                        <div className="text-sm font-bold text-slate-900">
                                             {formatDate(selectedPRDetails.requiredDate)}
                                         </div>
                                     </div>
                                     <div className="p-4 bg-[#FFFFFF] rounded-xl text-center border border-slate-200">
-                                        <div className="text-[0.6875rem] font-black uppercase text-slate-900 mb-1">Tổng dự toán</div>
-                                        <div className="text-sm font-black text-black">{formatVND(selectedPRDetails.totalEstimate || 0)} ₫</div>
+                                        <div className="text-[0.6875rem] font-bold uppercase text-slate-900 mb-1">Tổng dự toán</div>
+                                        <div className="text-sm font-bold text-slate-900">{formatVND(selectedPRDetails.totalEstimate || 0)} ₫</div>
                                     </div>
                                 </div>
 
                                 <div className="space-y-4">
-                                    <h3 className="text-[10px] font-black text-slate-900 uppercase">Danh sách hàng hóa</h3>
+                                    <h3 className="text-[10px] font-bold text-slate-900 uppercase">Danh sách hàng hóa</h3>
                                     <div className="border border-slate-200 rounded-xl overflow-hidden">
                                         <table className="erp-table text-xs text-left">
                                             <thead className="border-b border-slate-200">
@@ -1690,9 +1690,9 @@ export default function Dashboard() {
                                             <tbody>
                                                 {selectedPRDetails.items?.map((item) => (
                                                     <tr key={item.id} className="border-b border-slate-200">
-                                                        <td className="p-4 font-black text-slate-900">{item.productName || item.description}</td>
+                                                        <td className="p-4 font-bold text-slate-900">{item.productName || item.description}</td>
                                                         <td className="p-4 text-center text-slate-900">{item.qty} {item.unit}</td>
-                                                        <td className="p-4 text-right font-black text-slate-900">{formatVND((item.qty || 0) * (item.estimatedPrice || 0))} ₫</td>
+                                                        <td className="p-4 text-right font-bold text-slate-900">{formatVND((item.qty || 0) * (item.estimatedPrice || 0))} ₫</td>
                                                     </tr>
                                                 ))}
                                             </tbody>
@@ -1703,12 +1703,12 @@ export default function Dashboard() {
 
                             <div className="p-8 md:w-1/3 bg-[#FFFFFF] flex flex-col justify-between">
                                 <div className="space-y-8">
-                                    <h3 className="text-[10px] font-black text-slate-900 uppercase flex items-center gap-2"><History size={14} /> Quy trình phê duyệt</h3>
+                                    <h3 className="text-[10px] font-bold text-slate-900 uppercase flex items-center gap-2"><History size={14} /> Quy trình phê duyệt</h3>
                                     <div className="space-y-6">
                                         <div className="flex gap-4">
                                             <div className="w-2 h-2 rounded-full bg-emerald-500 mt-1"></div>
                                             <div>
-                                                <div className="text-[10px] font-black uppercase text-slate-900">Khởi tạo</div>
+                                                <div className="text-[10px] font-bold uppercase text-slate-900">Khởi tạo</div>
                                                 <div className="text-[0.6875rem] text-slate-900">{new Date(selectedPRDetails.createdAt || "").toLocaleString('vi-VN')}</div>
                                             </div>
                                         </div>
@@ -1720,12 +1720,12 @@ export default function Dashboard() {
                                         <button
                                             onClick={() => handleQuickApprove((selectedPRDetails as PR & { workflowId: string }).workflowId)}
                                             disabled={isSubmitting}
-                                            className="w-full h-14 bg-emerald-500 text-white rounded-2xl font-black uppercase text-[10px] shadow-lg shadow-emerald-500/20 flex flex-col items-center justify-center hover:bg-emerald-600 transition-all"
+                                            className="w-full h-14 bg-emerald-500 text-white rounded-xl font-bold uppercase text-[10px] shadow-lg shadow-emerald-500/20 flex flex-col items-center justify-center hover:bg-emerald-600 transition-all"
                                         >
                                             {isSubmitting ? <Loader2 className="animate-spin" /> : <><span>Phê duyệt nhanh</span><span className="text-[8px] opacity-60">Duyệt ngay trên Dashboard</span></>}
                                         </button>
                                     )}
-                                    <button onClick={() => setSelectedPRDetails(null)} className="w-full h-12 bg-[#F1F5F9] border border-slate-200 rounded-2xl text-[10px] font-black uppercase text-slate-900 hover:bg-slate-100 transition-all">Đóng</button>
+                                    <button onClick={() => setSelectedPRDetails(null)} className="w-full h-12 bg-[#F1F5F9] border border-slate-200 rounded-xl text-[10px] font-bold uppercase text-slate-900 hover:bg-slate-100 transition-all">Đóng</button>
                                 </div>
                             </div>
                         </div>
