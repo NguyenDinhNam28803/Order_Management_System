@@ -470,21 +470,44 @@ Lưu ý:
   }
 
   private static readonly ALLOWED_AI_MODELS = new Set([
-    'purchaseRequisition', 'prItem', 'rfqRequest', 'rfqQuotation',
-    'purchaseOrder', 'poItem', 'goodsReceipt', 'grnItem',
-    'supplierInvoice', 'payment', 'contract', 'dispute',
-    'supplierKpiScore', 'budgetAllocation', 'budgetPeriod',
-    'spendAnalyticsSnapshot', 'organization', 'product', 'productCategory',
+    'purchaseRequisition',
+    'prItem',
+    'rfqRequest',
+    'rfqQuotation',
+    'purchaseOrder',
+    'poItem',
+    'goodsReceipt',
+    'grnItem',
+    'supplierInvoice',
+    'payment',
+    'contract',
+    'dispute',
+    'supplierKpiScore',
+    'budgetAllocation',
+    'budgetPeriod',
+    'spendAnalyticsSnapshot',
+    'organization',
+    'product',
+    'productCategory',
   ]);
 
   private static readonly ALLOWED_AI_ACTIONS = new Set([
-    'findMany', 'findFirst', 'findUnique', 'count', 'aggregate',
+    'findMany',
+    'findFirst',
+    'findUnique',
+    'count',
+    'aggregate',
   ]);
 
   private static readonly MAX_INCLUDE_DEPTH = 1;
 
   private sanitizeInclude(include: unknown, depth = 0): unknown {
-    if (depth >= AiService.MAX_INCLUDE_DEPTH || typeof include !== 'object' || !include) return undefined;
+    if (
+      depth >= AiService.MAX_INCLUDE_DEPTH ||
+      typeof include !== 'object' ||
+      !include
+    )
+      return undefined;
     const result: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(include as Record<string, unknown>)) {
       result[k] = v === true ? true : this.sanitizeInclude(v, depth + 1);
