@@ -23,7 +23,14 @@ import { ApiOperation, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 @ApiBearerAuth('JWT-auth')
 @Controller('contracts')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(UserRole.PROCUREMENT, UserRole.FINANCE, UserRole.DIRECTOR, UserRole.CEO, UserRole.SUPPLIER, UserRole.PLATFORM_ADMIN)
+@Roles(
+  UserRole.PROCUREMENT,
+  UserRole.FINANCE,
+  UserRole.DIRECTOR,
+  UserRole.CEO,
+  UserRole.SUPPLIER,
+  UserRole.PLATFORM_ADMIN,
+)
 export class ContractModuleController {
   constructor(private readonly contractModuleService: ContractModuleService) {}
 
