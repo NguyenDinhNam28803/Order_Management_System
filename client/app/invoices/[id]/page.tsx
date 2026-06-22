@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import { useProcurement, Invoice } from '@/app/context/ProcurementContext';
 import { Contract } from '@/app/types/api-types';
 import { convertPrismaDecimal } from '@/app/utils/formatUtils';
+import StatusBadge from '@/app/components/shared/StatusBadge';
 
 // Extended Invoice with matching result and API-specific fields
 type InvoiceWithMatching = Invoice & {
@@ -53,7 +54,6 @@ import {
   FileText,
   CheckCircle2,
   AlertCircle,
-  Clock,
   XCircle,
   Building2,
   ShoppingCart,
@@ -178,42 +178,6 @@ export default function InvoiceDetailPage() {
     });
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'APPROVED':
-      case 'AUTO_APPROVED':
-        return <CheckCircle2 size={20} className="text-black" />;
-      case 'EXCEPTION_REVIEW':
-      case 'REJECTED':
-        return <XCircle size={20} className="text-black" />;
-      case 'MATCHING':
-      case 'SUBMITTED':
-        return <Clock size={20} className="text-black" />;
-      case 'PAID':
-        return <CreditCard size={20} className="text-[#3B82F6]" />;
-      default:
-        return <FileText size={20} className="text-black" />;
-    }
-  };
-
-  const getStatusClass = (status: string) => {
-    switch (status) {
-      case 'APPROVED':
-      case 'AUTO_APPROVED':
-        return 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20';
-      case 'EXCEPTION_REVIEW':
-      case 'REJECTED':
-        return 'bg-rose-500/10 text-rose-700 border-rose-500/20';
-      case 'MATCHING':
-      case 'SUBMITTED':
-        return 'bg-amber-500/10 text-amber-700 border-amber-500/20';
-      case 'PAID':
-        return 'bg-[#2563EB]/10 text-[#3B82F6] border-[#2563EB]/20';
-      default:
-        return 'bg-slate-500/10 text-slate-600 border-slate-500/20';
-    }
-  };
-
   const formatCurrency = (value: unknown) => {
     // Handles numbers, strings, and Prisma Decimal objects ({ s, e, d })
     return convertPrismaDecimal(value).toLocaleString('vi-VN');
@@ -302,10 +266,7 @@ export default function InvoiceDetailPage() {
                   {formatCurrency(invoice.totalAmount)} {invoice.currency}
                 </p>
               </div>
-              <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-bold ${getStatusClass(invoice.status)}`}>
-                {getStatusIcon(invoice.status)}
-                {invoice.status}
-              </div>
+              <StatusBadge status={invoice.status} />
             </div>
           </div>
 

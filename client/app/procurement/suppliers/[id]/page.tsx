@@ -11,6 +11,7 @@ import {
     Sparkles, Clock, Target, Zap, Shield, MessageSquare,
     HelpCircle, FileCheck, Scale
 } from "lucide-react";
+import StatusBadge from "../../../components/shared/StatusBadge";
 
 // Tooltip Component
 const Tooltip = ({ children, content, position = 'top' }: { children: React.ReactNode; content: React.ReactNode; position?: 'top' | 'bottom' | 'left' | 'right' }) => {
@@ -216,16 +217,6 @@ export default function ProcurementSupplierDetailPage() {
         if (score >= 90) return "text-black";
         if (score >= 70) return "text-yellow-400";
         return "text-black";
-    };
-
-    const getStatusColor = (status?: string) => {
-        switch (status) {
-            case "COMPLETED": return "text-black bg-emerald-500/10";
-            case "SHIPPED": return "text-blue-600 bg-blue-600/10";
-            case "CONFIRMED": return "text-yellow-400 bg-yellow-500/10";
-            case "CANCELLED": return "text-black bg-rose-500/10";
-            default: return "text-slate-100 bg-slate-900";
-        }
     };
 
     const latestKPI = kpiHistory[0];
@@ -783,9 +774,7 @@ export default function ProcurementSupplierDetailPage() {
                                                 {(po.total || po.items?.reduce((sum, item) => sum + (item.estimatedPrice || item.qty * (item?.unitPrice || 0)), 0))?.toLocaleString("vi-VN")} ₫
                                             </td>
                                             <td className="px-6 py-4 text-center">
-                                                <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${getStatusColor(po.status)}`}>
-                                                    {po.status}
-                                                </span>
+                                                <StatusBadge status={po.status} size="sm" />
                                             </td>
                                             <td className="px-6 py-4 text-center text-sm text-slate-900">
                                                 {po.items?.length || 0} items

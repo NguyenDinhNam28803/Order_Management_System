@@ -501,6 +501,7 @@ export default function POPage() {
                         <ERPTable
                             columns={poColumns}
                             data={pos as PO[]}
+                            pageSize={12}
                             emptyMessage="Chưa có đơn mua hàng nào"
                             emptyDescription="Đơn mua hàng sẽ xuất hiện sau khi được tạo từ báo giá"
                         />

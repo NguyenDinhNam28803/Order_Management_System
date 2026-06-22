@@ -239,7 +239,7 @@ export default function PRPage() {
                         <div className="empty-state-desc">Chưa có yêu cầu nào được thiết lập cho mục này.</div>
                     </div>
                 ) : (
-                    <ERPTable columns={columns} data={displayData} />
+                    <ERPTable columns={columns} data={displayData} pageSize={12} />
                 )}
             </div>
         </main>

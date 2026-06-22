@@ -5,11 +5,14 @@ import { useProcurement, Organization } from "../../context/ProcurementContext";
 import { CreateOrganizationPayload } from "@/app/types/api-types";
 import ConfirmDialog from "../../components/shared/ConfirmDialog";
 import {
-    Truck, Plus, Search,
-    Trash2, CheckCircle2, XCircle, Star,
+    Truck, Plus,
+    Trash2, Star,
     Mail, Phone, Globe
 } from "lucide-react";
 import PageHeader from "../../components/shared/PageHeader";
+import { DataTable, DataTableColumn } from "../../components/shared/DataTable";
+import TableToolbar from "../../components/shared/TableToolbar";
+import StatusBadge from "../../components/shared/StatusBadge";
 
 export interface Supplier {
     id: string;
@@ -69,11 +72,73 @@ export default function SupplierManagementPage() {
         }
     };
 
-    const filteredSuppliers = suppliers.filter(s => 
-        s.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    const filteredSuppliers = suppliers.filter(s =>
+        s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         s.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (s.industry || "").toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    type SupplierOrg = (typeof filteredSuppliers)[number];
+    const columns: DataTableColumn<SupplierOrg>[] = [
+        {
+            label: "Nhà cung cấp", key: "name", sortable: true,
+            render: (s) => (
+                <div className="flex items-center gap-4">
+                    <div className={`w-11 h-11 rounded-xl flex items-center justify-center font-black text-white shrink-0 ${s.isActive !== false ? 'bg-[#2563EB]' : 'bg-slate-400'}`}>
+                        {s.name.substring(0, 2).toUpperCase()}
+                    </div>
+                    <div className="flex flex-col">
+                        <span className="font-bold text-slate-900 leading-none mb-1">{s.name}</span>
+                        <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-black text-slate-500 uppercase bg-white px-1.5 py-0.5 rounded border border-slate-200 num-display">{s.code}</span>
+                            {s.website && <Globe size={10} className="text-[#94A3B8]" />}
+                        </div>
+                    </div>
+                </div>
+            ),
+        },
+        { label: "Lĩnh vực", hideOnMobile: true, render: (s) => <span className="text-xs font-bold text-slate-900 uppercase">{s.industry || "General"}</span> },
+        {
+            label: "Liên hệ", hideOnMobile: true,
+            render: (s) => (
+                <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2 text-xs text-slate-900"><Mail size={12} className="text-[#94A3B8]" /> {s.email || "N/A"}</div>
+                    <div className="flex items-center gap-2 text-xs text-slate-900"><Phone size={12} className="text-[#94A3B8]" /> {s.phone || "N/A"}</div>
+                </div>
+            ),
+        },
+        {
+            label: "Đánh giá",
+            render: (s) => (
+                <div className="flex gap-0.5">
+                    {[1, 2, 3, 4, 5].map(i => (
+                        <Star key={i} size={12} className={i <= (s.trustScore ? Math.ceil(Number(s.trustScore) / 20) : 4) ? "fill-amber-400 text-amber-400" : "text-slate-300"} />
+                    ))}
+                </div>
+            ),
+        },
+        {
+            label: "Trạng thái",
+            render: (s) => <StatusBadge status={s.isActive !== false ? "ACTIVE" : "INACTIVE"} label={s.isActive !== false ? "Đang hoạt động" : "Tạm ngưng"} size="sm" />,
+        },
+        {
+            label: "", align: "right",
+            render: (s) => (
+                <button
+                    onClick={() => setConfirmState({
+                        open: true,
+                        title: "Xóa nhà cung cấp",
+                        message: "Xác nhận xóa đối tác này?",
+                        onConfirm: () => { removeOrganization(s.id); setConfirmState(st => ({ ...st, open: false })); }
+                    })}
+                    className="p-2 border border-slate-200 rounded-lg hover:bg-red-50 hover:border-red-200 transition-colors text-slate-500 hover:text-red-500"
+                    aria-label="Xóa nhà cung cấp"
+                >
+                    <Trash2 size={16} />
+                </button>
+            ),
+        },
+    ];
 
     return (
         <div className="animate-in fade-in duration-500">
@@ -99,106 +164,20 @@ export default function SupplierManagementPage() {
                 }
             />
 
-            <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden bg-[#F1F5F9] border border-slate-200">
-                <div className="p-8 border-b border-slate-200 flex items-center justify-between gap-6 bg-[#FFFFFF]">
-                    <div className="relative flex-1 max-w-md group">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#94A3B8] group-focus-within:text-[#2563EB] transition-colors" size={18} />
-                        <input 
-                            className="erp-input pl-12" 
-                            placeholder="Tìm theo tên, mã hoặc lĩnh vực..." 
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
-                </div>
-
-                <div className="overflow-x-auto">
-                    <table className="erp-table">
-                        <thead>
-                            <tr>
-                                <th className="px-8 py-5">Nhà cung cấp</th>
-                                <th className="px-6 py-5">Lĩnh vực</th>
-                                <th className="px-6 py-5">Liên hệ</th>
-                                <th className="px-6 py-5">Đánh giá</th>
-                                <th className="px-6 py-5">Trạng thái</th>
-                                <th className="px-8 py-5 text-right w-20"></th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100">
-                            {filteredSuppliers.length === 0 && (
-                                <tr>
-                                    <td colSpan={6} className="py-16 text-center text-slate-400">
-                                        <svg className="mx-auto mb-2" xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 13.5h3.86a2.25 2.25 0 0 1 2.012 1.244l.256.512a2.25 2.25 0 0 0 2.013 1.244h3.218a2.25 2.25 0 0 0 2.013-1.244l.256-.512a2.25 2.25 0 0 1 2.013-1.244h3.859m-19.5.338V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 0 0-2.15-1.588H6.911a2.25 2.25 0 0 0-2.15 1.588L2.35 13.177a2.25 2.25 0 0 0-.1.661Z" /></svg>
-                                        <p className="text-sm font-semibold">Không tìm thấy nhà cung cấp nào</p>
-                                        <p className="text-xs mt-1">Thử thay đổi từ khóa tìm kiếm</p>
-                                    </td>
-                                </tr>
-                            )}
-                            {filteredSuppliers.map((s) => (
-                                <tr key={s.id} className="hover:bg-[#FFFFFF]/50 transition-all group">
-                                    <td className="px-8 py-6">
-                                        <div className="flex items-center gap-4">
-                                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-black text-white shadow-lg shadow-black/20 transition-transform group-hover:scale-110 ${s.isActive !== false ? 'bg-[#2563EB]' : 'bg-slate-500'}`}>
-                                                {s.name.substring(0,2).toUpperCase()}
-                                            </div>
-                                            <div className="flex flex-col">
-                                                <span className="font-black text-slate-900 leading-none mb-1 group-hover:text-[#2563EB] transition-colors">{s.name}</span>
-                                                <div className="flex items-center gap-2">
-                                                                        <span className="text-[10px] font-black text-slate-900 uppercase tracking-tighter bg-[#FFFFFF] px-1.5 py-0.5 rounded border border-slate-200">{s.code}</span>
-                                                    {s.website && <Globe size={10} className="text-[#94A3B8]" />}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-6">
-                                        <span className="text-xs font-black text-slate-900 uppercase tracking-tight">{s.industry || "General"}</span>
-                                    </td>
-                                    <td className="px-6 py-6 font-medium">
-                                        <div className="flex flex-col gap-1">
-                                                            <div className="flex items-center gap-2 text-xs text-slate-900">
-                                                <Mail size={12} className="text-[#94A3B8]" /> {s.email || "N/A"}
-                                            </div>
-                                            <div className="flex items-center gap-2 text-xs text-slate-900">
-                                                <Phone size={12} className="text-[#94A3B8]" /> {s.phone || "N/A"}
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-6">
-                                        <div className="flex gap-0.5">
-                                            {[1,2,3,4,5].map(i => (
-                                                <Star key={i} size={12} className={i <= (s.trustScore ? Math.ceil(s.trustScore / 20) : 4) ? "fill-amber-400 text-amber-400" : "text-slate-300"} />
-                                            ))}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-6">
-                                        <div className={`status-pill ${
-                                            s.isActive !== false ? 'status-approved' : 'status-draft'
-                                        }`}>
-                                            {s.isActive !== false ? <CheckCircle2 size={10} /> : <XCircle size={10} />}
-                                            {s.isActive !== false ? 'Đang hoạt động' : 'Tạm ngưng'}
-                                        </div>
-                                    </td>
-                                    <td className="px-8 py-6 text-right">
-                                        <div className="flex justify-end gap-2 text-slate-900">
-                                            <button
-                                                onClick={() => setConfirmState({
-                                                    open: true,
-                                                    title: "Xóa nhà cung cấp",
-                                                    message: "Xác nhận xóa đối tác này?",
-                                                    onConfirm: () => { removeOrganization(s.id); setConfirmState(st => ({ ...st, open: false })); }
-                                                })}
-                                                className="p-2 border border-slate-200 rounded-lg hover:bg-red-50 hover:border-red-200 transition-colors text-slate-500 hover:text-red-500"
-                                                aria-label="Xóa nhà cung cấp"
-                                            >
-                                                <Trash2 size={18} />
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+            <div className="erp-card table-card p-4 space-y-4">
+                <TableToolbar
+                    search={searchTerm}
+                    onSearchChange={setSearchTerm}
+                    searchPlaceholder="Tìm theo tên, mã hoặc lĩnh vực..."
+                />
+                <DataTable
+                    columns={columns}
+                    data={filteredSuppliers}
+                    pageSize={12}
+                    getRowKey={(s) => s.id}
+                    emptyMessage="Không tìm thấy nhà cung cấp nào"
+                    emptyDescription="Thử thay đổi từ khóa tìm kiếm"
+                />
             </div>
 
             {/* Add Supplier Modal */}
