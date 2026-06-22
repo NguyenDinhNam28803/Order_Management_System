@@ -3,7 +3,14 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useProcurement, PO, POItem } from '@/app/context/ProcurementContext';
-import { ArrowLeft, CheckCircle2, Clock, FileText, Send, Building2, User, FileDigit, Calendar } from 'lucide-react';
+import { CheckCircle2, Clock, FileText, Send, ShoppingCart } from 'lucide-react';
+import { formatVND } from '@/app/utils/formatUtils';
+import StatusBadge from '@/app/components/shared/StatusBadge';
+import { DataTable, DataTableColumn } from '@/app/components/shared/DataTable';
+import {
+    DetailPage, BackLink, DetailHeader, DetailGrid, DetailMain, DetailSide,
+    Section, InfoCell, InfoGrid,
+} from '@/app/components/shared/DetailPrimitives';
 
 type ExtendedPOItem = POItem;
 
@@ -70,139 +77,74 @@ export default function PODetailPage() {
   if (error) return <div className="p-8 text-red-600">Error: {error}</div>;
   if (!po) return <div className="p-8">PO not found</div>;
 
-  const getStatusDisplay = (status: string) => {
-    switch (status) {
-        case 'CONFIRMED': return { label: 'Đã xác nhận', class: 'status-approved' };
-        case 'DRAFT': return { label: 'Bản nháp', class: 'status-draft' };
-        default: return { label: status, class: 'status-info' };
-    }
-  };
+  const itemColumns: DataTableColumn<ExtendedPOItem>[] = [
+    { label: "Sản phẩm / Dịch vụ", render: (item) => <span className="font-bold text-slate-900">{item.description || "N/A"}</span> },
+    { label: "Số lượng", align: "right", render: (item) => <span className="font-bold text-[#2563EB] num-display">{item.qty}</span> },
+    { label: "Đơn giá", align: "right", render: (item) => <span className="font-semibold text-slate-900 num-display">{formatVND(item.unitPrice)} ₫</span> },
+    { label: "Tổng cộng", align: "right", render: (item) => <span className="font-black text-slate-900 num-display">{formatVND(item.total)} ₫</span> },
+  ];
 
   return (
-    <div className="max-w-7xl mx-auto">
-      {/* Header with Breadcrumbs */}
-      <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <button 
-            onClick={() => router.back()} 
-            className="flex items-center gap-2 text-xs font-bold text-slate-900 hover:text-[#2563EB] transition-colors mb-4 uppercase tracking-widest"
-          >
-            <ArrowLeft size={14} /> Quay lại danh sách
-          </button>
-          <div className="flex items-center gap-4">
-            <h1 className="page-title">Chi tiết Đơn hàng (PO)</h1>
-            <span className={`status-pill ${getStatusDisplay(po.status).class}`}>
-              {getStatusDisplay(po.status).label}
-            </span>
-          </div>
-        </div>
-        <div className="flex gap-4">
-          {po.status === 'DRAFT' && (
+    <DetailPage>
+      <BackLink href="/procurement/pos" label="Quay lại danh sách" />
+      <DetailHeader
+        icon={FileText}
+        title="Chi tiết Đơn hàng (PO)"
+        subtitle={`Mã: ${po.poNumber || po.id.split('-').pop()}`}
+        aside={<StatusBadge status={po.status} />}
+        actions={
+          po.status === 'DRAFT' ? (
             <>
-              <button
-                onClick={handleConfirm}
-                disabled={submitting}
-                className="btn-success w-full md:w-auto text-xs uppercase tracking-widest"
-              >
-                {submitting ? <Clock size={16} className="animate-spin" /> : <CheckCircle2 size={16} />} 
-                Xác nhận PO
+              <button onClick={handleConfirm} disabled={submitting} className="btn-success text-xs uppercase tracking-widest">
+                {submitting ? <Clock size={16} className="animate-spin" /> : <CheckCircle2 size={16} />} Xác nhận PO
               </button>
-              <button
-                onClick={handleSubmit}
-                disabled={submitting}
-                className="btn-primary w-full md:w-auto text-xs uppercase tracking-widest shadow-xl shadow-[#2563EB]/20"
-              >
-                {submitting ? <Clock size={16} className="animate-spin" /> : <Send size={16} />}
-                Gửi phê duyệt
+              <button onClick={handleSubmit} disabled={submitting} className="btn-primary text-xs uppercase tracking-widest">
+                {submitting ? <Clock size={16} className="animate-spin" /> : <Send size={16} />} Gửi phê duyệt
               </button>
             </>
-          )}
-          {po.status === 'CONFIRMED' && (
+          ) : po.status === 'CONFIRMED' ? (
             <div className="text-emerald-700 font-bold bg-[#10B981]/10 px-4 py-2 rounded-xl border border-[#10B981]/30 flex items-center gap-2 text-sm">
-              <CheckCircle2 size={16} /> PO Đã xác nhận - Sẵn sàng giao hàng
+              <CheckCircle2 size={16} /> PO đã xác nhận — sẵn sàng giao hàng
             </div>
-          )}
-        </div>
-      </div>
+          ) : undefined
+        }
+      />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <div className="lg:col-span-2 bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 space-y-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
-            <FileText size={160} />
-          </div>
-          <h3 className="section-title">Thông tin Đơn hàng</h3>
-          <div className="grid grid-cols-2 gap-6">
-            <div className="space-y-1">
-              <div className="flex items-center gap-1.5 text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B]"><FileDigit size={12}/> Mã PO</div>
-              <p className="text-sm font-bold text-slate-900">{po.poNumber || po.id.split('-').pop()}</p>
-            </div>
-            <div className="space-y-1">
-              <div className="flex items-center gap-1.5 text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B]"><Building2 size={12}/> Nhà Cung Cấp</div>
-              <p className="text-sm font-bold text-slate-900">{po.supplier?.name || "N/A"}</p>
-            </div>
-            <div className="space-y-1">
-              <div className="flex items-center gap-1.5 text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B]">PR Tham Chiếu</div>
-              <p className="text-sm font-bold text-[#2563EB] cursor-pointer hover:underline" onClick={() => router.push(`/pr/${po.prId}`)}>
-                {po.pr?.prNumber || (po.prId ? `PR-${po.prId.substring(0, 8)}...` : 'N/A')}
-              </p>
-            </div>
-            <div className="space-y-1">
-              <div className="flex items-center gap-1.5 text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B]"><Calendar size={12}/> Ngày Tạo</div>
-              <p className="text-sm font-bold text-slate-900">{po.createdAt ? new Date(po.createdAt).toLocaleDateString('vi-VN') : 'N/A'}</p>
-            </div>
-          </div>
-        </div>
+      <DetailGrid>
+        <DetailMain>
+          <Section title="Thông tin đơn hàng" icon={FileText}>
+            <InfoGrid cols={2}>
+              <InfoCell label="Mã PO" value={po.poNumber || po.id.split('-').pop()} />
+              <InfoCell label="Nhà cung cấp" value={po.supplier?.name || "N/A"} />
+              <InfoCell
+                label="PR tham chiếu"
+                value={
+                  <span className="text-[#2563EB] cursor-pointer hover:underline" onClick={() => po.prId && router.push(`/pr/${po.prId}`)}>
+                    {po.pr?.prNumber || (po.prId ? `PR-${po.prId.substring(0, 8)}...` : 'N/A')}
+                  </span>
+                }
+              />
+              <InfoCell label="Ngày tạo" value={po.createdAt ? new Date(po.createdAt).toLocaleDateString('vi-VN') : 'N/A'} />
+            </InfoGrid>
+          </Section>
 
-        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 flex flex-col justify-between relative overflow-hidden">
-           <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#2563EB]/5 rounded-full blur-2xl"></div>
-           <div>
-              <h3 className="section-title">Tổng Mua Tiêu Chuẩn</h3>
-              <div className="text-2xl font-bold text-[#0F172A] mt-2 tracking-tight">
-                  {po.totalAmount?.toLocaleString('vi-VN')} <span className="text-base text-[#2563EB]">VND</span>
-              </div>
-           </div>
-        </div>
-      </div>
+          <Section title="Chi tiết sản phẩm" icon={ShoppingCart}>
+            <DataTable
+              columns={itemColumns}
+              data={po.items ?? []}
+              getRowKey={(it, i) => it.id ?? i}
+              emptyMessage="Không có mặt hàng nào"
+              emptyDescription="Chi tiết sản phẩm của PO sẽ hiển thị tại đây"
+            />
+          </Section>
+        </DetailMain>
 
-      <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden">
-        <div className="p-5 border-b border-slate-200">
-          <h3 className="section-title m-0">Chi tiết sản phẩm</h3>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="erp-table text-xs">
-            <thead>
-              <tr>
-                <th className="w-12 text-center">STT</th>
-                <th className="">Sản phẩm / Dịch vụ</th>
-                <th className="text-right w-24">Số lượng</th>
-                <th className="text-right w-40">Đơn giá</th>
-                <th className="text-right w-48">Tổng cộng</th>
-              </tr>
-            </thead>
-            <tbody>
-              {po.items && po.items.length > 0 ? po.items.map((item: ExtendedPOItem, idx: number) => (
-                <tr key={item.id}>
-                  <td className="text-center font-bold text-slate-900">{idx + 1}</td>
-                  <td className="font-bold text-slate-900">{item.description || "N/A"}</td>
-                  <td className="text-right font-bold text-[#2563EB]">{item.qty}</td>
-                  <td className="text-right font-semibold text-slate-900">
-                    {item.unitPrice?.toLocaleString('vi-VN')} ₫
-                  </td>
-                  <td className="text-right font-black text-slate-900">
-                    {item.total?.toLocaleString('vi-VN')} ₫
-                  </td>
-                </tr>
-              )) : (
-                <tr>
-                   <td colSpan={5} className="py-12 text-center text-slate-900 font-bold text-xs uppercase tracking-widest">
-                      Không có mặt hàng nào
-                   </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+        <DetailSide>
+          <Section title="Tổng mua tiêu chuẩn">
+            <div className="text-2xl font-bold text-slate-900 num-display">{formatVND(po.totalAmount)} <span className="text-base text-[#2563EB]">VND</span></div>
+          </Section>
+        </DetailSide>
+      </DetailGrid>
+    </DetailPage>
   );
 }

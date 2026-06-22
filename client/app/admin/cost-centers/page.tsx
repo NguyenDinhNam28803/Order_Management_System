@@ -1,12 +1,14 @@
 ﻿"use client";
 
 import React, { useState } from "react";
-import { Plus, Edit2, Trash2, Search, DollarSign, Building, Eye, X } from "lucide-react";
+import { Plus, Edit2, Trash2, DollarSign, Building, Eye, X } from "lucide-react";
 import PageHeader from "../../components/shared/PageHeader";
 import { useProcurement, Department, CurrencyCode } from "../../context/ProcurementContext";
 import ConfirmDialog from "../../components/shared/ConfirmDialog";
 import { formatVND, parseMoney } from "../../utils/formatUtils";
 import { CostCenter } from "@/app/types/api-types";
+import { DataTable, DataTableColumn } from "../../components/shared/DataTable";
+import TableToolbar from "../../components/shared/TableToolbar";
 
 export default function CostCentersPage() {
     const { costCenters, departments, addCostCenter, updateCostCenter, removeCostCenter, fetchCostCenter, fetchMyDeptCostCenters, refreshData, notify, currentUser } = useProcurement();
@@ -114,8 +116,85 @@ export default function CostCentersPage() {
         }
     };
 
+    const columns: DataTableColumn<CostCenter>[] = [
+        {
+            label: "Mã & Tên Đơn vị", key: "name", sortable: true,
+            render: (cc) => (
+                <div className="flex items-center gap-4">
+                    <div className="h-10 w-10 rounded-lg bg-[#2563EB]/10 flex items-center justify-center text-[#2563EB] border border-[#2563EB]/20 shrink-0">
+                        <Building size={18} />
+                    </div>
+                    <div>
+                        <div className="text-sm font-bold text-slate-900 leading-tight">{cc.name}</div>
+                        <div className="text-[10px] text-[#2563EB] font-bold mt-0.5 tracking-wider num-display">{cc.code}</div>
+                    </div>
+                </div>
+            ),
+        },
+        {
+            label: "Phòng ban quản lý", hideOnMobile: true,
+            render: (cc) => <span className="font-medium text-slate-900 text-xs">{departments.find(d => d.id === cc.deptId)?.name || "Hệ thống chung"}</span>,
+        },
+        {
+            label: "Ngân sách định mức", align: "right",
+            render: (cc) => (
+                <div className="flex items-center justify-end gap-1.5 font-bold text-slate-900 num-display">
+                    <DollarSign size={14} className="text-slate-400" />
+                    {formatVND(cc.budgetAnnual)}
+                </div>
+            ),
+        },
+        {
+            label: "Tình trạng tiêu thụ",
+            render: (cc) => {
+                const annual = Number(cc.budgetAnnual) || 0;
+                const used = Number(cc.budgetUsed) || 0;
+                const usagePercent = annual > 0 ? (used / annual) * 100 : 0;
+                return (
+                    <div className="space-y-1.5 max-w-[200px]">
+                        <div className="flex justify-between text-[10px] font-bold">
+                            <span className="text-slate-900 uppercase tracking-wider num-display">{formatVND(cc.budgetUsed || 0)}</span>
+                            <span className={usagePercent > 90 ? 'text-rose-500 num-display' : 'text-[#2563EB] num-display'}>{usagePercent.toFixed(1)}%</span>
+                        </div>
+                        <div className="budget-meter">
+                            <div
+                                className={`h-full transition-all duration-700 ${usagePercent > 90 ? 'bg-rose-500' : usagePercent > 70 ? 'bg-amber-400' : 'bg-[#2563EB]'}`}
+                                style={{ width: `${Math.min(usagePercent, 100)}%` }}
+                            />
+                        </div>
+                    </div>
+                );
+            },
+        },
+        {
+            label: "Thao tác", align: "right",
+            render: (cc) => (
+                <div className="flex justify-end gap-2">
+                    <button onClick={() => handleViewDetail(cc.id)} className="p-2 border border-slate-200 rounded-lg hover:bg-white transition-colors text-slate-900 hover:text-[#2563EB]" title="Xem chi tiết">
+                        <Eye size={14} />
+                    </button>
+                    <button onClick={() => handleOpenModal(cc)} className="p-2 border border-slate-200 rounded-lg hover:bg-white transition-colors text-slate-900 hover:text-[#2563EB]" title="Sửa">
+                        <Edit2 size={14} />
+                    </button>
+                    <button
+                        onClick={() => setConfirmState({
+                            open: true,
+                            title: "Xóa trung tâm chi phí",
+                            message: "Bạn có chắc chắn muốn xóa trung tâm chi phí này?",
+                            onConfirm: () => { removeCostCenter(cc.id); setConfirmState(s => ({ ...s, open: false })); }
+                        })}
+                        className="p-2 border border-slate-200 rounded-lg hover:bg-red-50 hover:border-red-200 transition-colors text-slate-500 hover:text-red-500"
+                        aria-label="Xóa"
+                    >
+                        <Trash2 size={14} />
+                    </button>
+                </div>
+            ),
+        },
+    ];
+
     return (
-        <div className="animate-in fade-in duration-500">
+        <div className="animate-in fade-in duration-500 p-6 space-y-6">
             <ConfirmDialog
                 open={confirmState.open}
                 title={confirmState.title}
@@ -138,151 +217,40 @@ export default function CostCentersPage() {
                 }
             />
 
-            <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden bg-[#F1F5F9] border border-slate-200">
-                <div className="p-5 bg-[#FFFFFF] border-b border-slate-200 flex justify-between items-center">
-                    <div className="flex items-center gap-3">
-                        <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">Hệ thống:</span>
-                        <div className="status-pill status-approved py-0.5 px-3">{costCenters?.length || 0} Đơn vị</div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <button 
-                            onClick={toggleMyDept}
-                            className={`text-[10px] font-black px-4 py-2 rounded-xl transition-all border ${isMyDept ? 'bg-[#2563EB] text-white border-[#2563EB]' : 'bg-transparent text-white border-slate-200 hover:border-[#2563EB]/30'}`}
-                        >
-                            {isMyDept ? "PHÒNG BAN CỦA TÔI" : "TẤT CẢ ĐƠN VỊ"}
-                        </button>
-
-                        <select
-                            value={selectedDeptId}
-                            onChange={(e) => setSelectedDeptId(e.target.value)}
-                            className="erp-input py-2 text-[10px] font-bold w-48 shadow-sm bg-[#FFFFFF] border-slate-200 text-slate-900 outline-none"
-                        >
-                            <option value="">Tất cả phòng ban</option>
-                            {departments?.map(dept => (
-                                <option key={dept.id} value={dept.id}>{dept.name}</option>
-                            ))}
-                        </select>
-
-                        <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]" size={14} />
-                            <input
-                                type="text"
-                                placeholder="Tìm kiếm mã hoặc tên..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="erp-input pl-10 py-2 text-xs w-64 h-10 shadow-sm bg-[#FFFFFF] border-slate-200 text-slate-900 placeholder:text-[#94A3B8]"
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                <div className="overflow-x-auto">
-                    <table className="erp-table border-none">
-                        <thead>
-                            <tr>
-                                <th>Mã & Tên Đơn vị</th>
-                                <th>Phòng ban quản lý</th>
-                                <th>Ngân sách định mức</th>
-                                <th className="w-64">Tình trạng tiêu thụ</th>
-                                <th className="text-right pr-6">Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {(!filteredCostCenters || filteredCostCenters.length === 0) && (
-                                <tr>
-                                    <td colSpan={5} className="py-16 text-center text-slate-400">
-                                        <svg className="mx-auto mb-2" xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 13.5h3.86a2.25 2.25 0 0 1 2.012 1.244l.256.512a2.25 2.25 0 0 0 2.013 1.244h3.218a2.25 2.25 0 0 0 2.013-1.244l.256-.512a2.25 2.25 0 0 1 2.013-1.244h3.859m-19.5.338V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 0 0-2.15-1.588H6.911a2.25 2.25 0 0 0-2.15 1.588L2.35 13.177a2.25 2.25 0 0 0-.1.661Z" /></svg>
-                                        <p className="text-sm font-semibold">Chưa có cost center nào</p>
-                                        <p className="text-xs mt-1">Nhấn &ldquo;Thêm Cost Center&rdquo; để bắt đầu</p>
-                                    </td>
-                                </tr>
-                            )}
-                            {filteredCostCenters?.map((cc: CostCenter) => {
-                                const dept = departments.find(d => d.id === cc.deptId);
-                                const annual = Number(cc.budgetAnnual) || 0;
-                                const used = Number(cc.budgetUsed) || 0;
-                                const usagePercent = annual > 0 ? (used / annual) * 100 : 0;
-
-                                return (
-                                    <tr key={cc.id} className="hover:bg-[#FFFFFF]/50 transition-colors border-b border-slate-200">
-                                        <td className="py-5">
-                                            <div className="flex items-center gap-4">
-                                                <div className="h-10 w-10 rounded-lg bg-[#2563EB]/10 flex items-center justify-center text-[#2563EB] border border-[#2563EB]/20">
-                                                    <Building size={18} />
-                                                </div>
-                                                <div>
-                                                    <div className="text-sm font-bold text-slate-900 leading-tight">{cc.name}</div>
-                                                    <div className="text-[10px] text-[#2563EB] font-bold mt-0.5 tracking-wider">
-                                                        {cc.code}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div className="flex items-center gap-2">
-                                                <span className="font-semibold text-slate-900 text-xs">{dept?.name || "Hệ thống chung"}</span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div className="flex items-center gap-1.5 font-bold text-slate-900">
-                                                <DollarSign size={14} className="text-slate-900" />
-                                                {formatVND(cc.budgetAnnual)}
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div className="space-y-1.5 max-w-50">
-                                                <div className="flex justify-between text-[10px] font-bold">
-                                                    <span className="text-slate-900 uppercase tracking-wider">{formatVND(cc.budgetUsed || 0)}</span>
-                                                    <span className={usagePercent > 90 ? 'text-red-400' : 'text-[#2563EB]'}>
-                                                        {usagePercent.toFixed(1)}%
-                                                    </span>
-                                                </div>
-                                                <div className="budget-meter">
-                                                    <div
-                                                        className={`h-full transition-all duration-700 ${usagePercent > 90 ? 'bg-red-500' :
-                                                                 usagePercent > 70 ? 'bg-amber-400' : 'bg-[#2563EB]'
-                                                            }`}
-                                                        style={{ width: `${Math.min(usagePercent, 100)}%` }}
-                                                    ></div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="text-right pr-6">
-                                            <div className="flex justify-end gap-2">
-                                                <button
-                                                    onClick={() => handleViewDetail(cc.id)}
-                                                    className="p-2 border border-slate-200 rounded-lg hover:bg-[#FFFFFF] transition-colors text-slate-900 hover:text-[#2563EB]"
-                                                    title="Xem chi tiết"
-                                                >
-                                                    <Eye size={14} />
-                                                </button>
-                                                <button
-                                                    onClick={() => handleOpenModal(cc)}
-                                                    className="p-2 border border-slate-200 rounded-lg hover:bg-[#FFFFFF] transition-colors text-slate-900 hover:text-[#2563EB]"
-                                                    title="Sửa"
-                                                >
-                                                    <Edit2 size={14} />
-                                                </button>
-                                                <button
-                                                    onClick={() => setConfirmState({
-                                                        open: true,
-                                                        title: "Xóa trung tâm chi phí",
-                                                        message: "Bạn có chắc chắn muốn xóa trung tâm chi phí này?",
-                                                        onConfirm: () => { removeCostCenter(cc.id); setConfirmState(s => ({ ...s, open: false })); }
-                                                    })}
-                                                    className="p-2 border border-slate-200 rounded-lg hover:bg-red-50 hover:border-red-200 transition-colors text-slate-500 hover:text-red-500"
-                                                    aria-label="Xóa"
-                                                >
-                                                    <Trash2 size={14} />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
-                </div>
+            <div className="erp-card table-card p-4 space-y-4">
+                <TableToolbar
+                    search={searchTerm}
+                    onSearchChange={setSearchTerm}
+                    searchPlaceholder="Tìm kiếm mã hoặc tên..."
+                    filters={
+                        <>
+                            <button
+                                onClick={toggleMyDept}
+                                className={`text-[10px] font-black px-4 h-10 rounded-lg transition-all border ${isMyDept ? 'bg-[#2563EB] text-white border-[#2563EB]' : 'bg-white text-slate-600 border-slate-200 hover:border-[#2563EB]/30'}`}
+                            >
+                                {isMyDept ? "PHÒNG BAN CỦA TÔI" : "TẤT CẢ ĐƠN VỊ"}
+                            </button>
+                            <select
+                                value={selectedDeptId}
+                                onChange={(e) => setSelectedDeptId(e.target.value)}
+                                className="h-10 px-3 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-900 focus:outline-none focus:border-blue-500/50 transition-all cursor-pointer"
+                            >
+                                <option value="">Tất cả phòng ban</option>
+                                {departments?.map(dept => (
+                                    <option key={dept.id} value={dept.id}>{dept.name}</option>
+                                ))}
+                            </select>
+                        </>
+                    }
+                />
+                <DataTable
+                    columns={columns}
+                    data={filteredCostCenters ?? []}
+                    pageSize={12}
+                    getRowKey={(cc) => cc.id}
+                    emptyMessage="Chưa có cost center nào"
+                    emptyDescription="Nhấn 'Thêm Cost Center' để bắt đầu"
+                />
             </div>
 
             {/* Modal */}

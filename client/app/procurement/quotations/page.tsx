@@ -6,6 +6,8 @@ import { Quotation, QuotationItem, RfqStatus, Organization } from "@/app/types/a
 import { ERPTableColumn } from "../../components/shared/ERPTable";
 import { formatVND } from "../../utils/formatUtils";
 import ERPTable from "../../components/shared/ERPTable";
+import StatusBadge from "../../components/shared/StatusBadge";
+import { StatCard, StatGrid } from "../../components/shared/StatCard";
 import {
     Search, ListFilter, ArrowRight, ArrowLeft,
     FileText, CheckCircle, CheckCircle2, Award, Send,
@@ -123,10 +125,10 @@ export default function QuotationManagementPage() {
         const sortedByScore = [...quotations].sort((a, b) => (b.aiScore || 0) - (a.aiScore || 0));
         const bestQuote = sortedByScore[0];
         return [
-            { label: "Tổng báo giá", value: quotations.length, icon: Users, color: "text-black", bg: "bg-slate-50" },
-            { label: "Chưa trao thầu", value: quotations.filter((q: Quotation) => q.status === 'SUBMITTED').length, icon: Send, color: "text-blue-600", bg: "bg-blue-600/10" },
-            { label: "Đã trao thầu", value: quotations.filter((q: Quotation) => q.status === 'ACCEPTED').length, icon: Award, color: "text-emerald-500", bg: "bg-emerald-50" },
-            { label: bestQuote?.aiScore ? "Đề xuất AI" : "Giá thấp nhất", value: formatVND(Math.min(...quotations.map(q => q.totalPrice))), icon: Sparkles, color: "text-purple-500", bg: "bg-purple-50" },
+            { label: "Tổng báo giá", value: quotations.length, icon: Users, tone: "slate" as const },
+            { label: "Chưa trao thầu", value: quotations.filter((q: Quotation) => q.status === 'SUBMITTED').length, icon: Send, tone: "blue" as const },
+            { label: "Đã trao thầu", value: quotations.filter((q: Quotation) => q.status === 'ACCEPTED').length, icon: Award, tone: "emerald" as const },
+            { label: bestQuote?.aiScore ? "Đề xuất AI" : "Giá thấp nhất", value: formatVND(Math.min(...quotations.map(q => q.totalPrice))), icon: Sparkles, tone: "purple" as const },
         ];
     }, [quotations]);
 
@@ -213,7 +215,7 @@ export default function QuotationManagementPage() {
         {
             label: "Trạng thái",
             key: "status",
-            render: (row: RFQ) => <RFQStatusPill status={row.status} />
+            render: (row: RFQ) => <StatusBadge status={row.status} size="sm" />
         },
         {
             label: "Thao tác",
@@ -416,19 +418,11 @@ export default function QuotationManagementPage() {
 
             {/* Stats - Only show when viewing quotations */}
             {selectedRFQ && rfqStats.length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                <StatGrid cols={4}>
                     {rfqStats.map((stat) => (
-                        <div key={stat.label} className="bg-slate-100 p-6 rounded-[40px] border border-slate-200 shadow-xl shadow-blue-600/5 flex items-center gap-4 group hover:border-blue-600/20 transition-all">
-                            <div className={`w-14 h-14 rounded-2xl ${stat.bg} ${stat.color} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
-                                <stat.icon size={24} />
-                            </div>
-                            <div>
-                                <div className="text-[10px] uppercase font-bold tracking-widest text-slate-900 mb-1">{stat.label}</div>
-                                <div className="text-2xl font-bold text-slate-900">{stat.value}</div>
-                            </div>
-                        </div>
+                        <StatCard key={stat.label} label={stat.label} value={stat.value} icon={stat.icon} tone={stat.tone} />
                     ))}
-                </div>
+                </StatGrid>
             )}
 
             {/* Analyzing Indicator */}
@@ -516,7 +510,7 @@ export default function QuotationManagementPage() {
                                 </div>
                             </div>
                             <div className="flex items-center gap-3">
-                                <StatusPill status={viewQuotation.status} />
+                                <StatusBadge status={viewQuotation.status} size="sm" />
                                 <button onClick={() => setViewQuotation(null)} className="h-10 w-10 rounded-xl bg-slate-900 border border-slate-200 flex items-center justify-center hover:bg-slate-100 transition-all">
                                     <X size={18} className="text-slate-900" />
                                 </button>
@@ -699,7 +693,7 @@ export default function QuotationManagementPage() {
                                                     <div key={idx} className="bg-slate-100 p-4 rounded-2xl border border-slate-200">
                                                         <div className="flex justify-between items-center mb-3">
                                                             <div className="text-[10px] uppercase font-bold text-slate-900">BẠN ĐỀ XUẤT</div>
-                                                            <StatusPill status={co.status} />
+                                                            <StatusBadge status={co.status} size="sm" />
                                                         </div>
                                                         <div className="text-2xl font-bold text-black mb-2">{formatVND(co.proposedPrice)} ₫</div>
                                                         {co.buyerNote && <p className="text-xs text-slate-900 italic">&quot;{co.buyerNote}&quot;</p>}
@@ -800,7 +794,7 @@ export default function QuotationManagementPage() {
                                 </div>
                             ) : (
                                 <>
-                                    <ERPTable columns={quotationColumns} data={quotations} />
+                                    <ERPTable columns={quotationColumns} data={quotations} pageSize={10} getRowKey={(r) => r.id} />
                                     {quotations.length === 0 && (
                                         <div className="py-32 text-center">
                                             <div className="inline-flex items-center justify-center w-20 h-20 rounded-xl bg-slate-900 text-slate-100 mb-6">
@@ -816,7 +810,7 @@ export default function QuotationManagementPage() {
                             // Show RFQ list
                             <div>
                                 {Array.isArray(filteredRFQs) ? (
-                                    <ERPTable columns={rfqColumns} data={filteredRFQs} />
+                                    <ERPTable columns={rfqColumns} data={filteredRFQs} pageSize={10} getRowKey={(r) => r.id} />
                                 ) : null}
                                 {(!Array.isArray(filteredRFQs) || filteredRFQs.length === 0) && (
                                     <div className="py-32 text-center">
@@ -835,57 +829,4 @@ export default function QuotationManagementPage() {
     );
 }
 
-function RFQStatusPill({ status }: { status: string }) {
-    const config: Record<string, { bg: string, text: string, border: string }> = {
-        'DRAFT': { bg: 'bg-slate-500/10', text: 'text-black', border: 'border-slate-500/20' },
-        'PUBLISHED': { bg: 'bg-blue-600/10', text: 'text-blue-600', border: 'border-blue-600/20' },
-        'CLOSED': { bg: 'bg-amber-500/10', text: 'text-black', border: 'border-amber-500/20' },
-        'AWARDED': { bg: 'bg-emerald-500/10', text: 'text-black', border: 'border-emerald-500/20' },
-        'CANCELLED': { bg: 'bg-rose-500/10', text: 'text-black', border: 'border-rose-500/20' },
-    };
-
-    const style = config[status] || config['DRAFT'];
-    const label: Record<string, string> = {
-        'DRAFT': 'Nháp',
-        'PUBLISHED': 'Đang mở',
-        'CLOSED': 'Đã đóng',
-        'AWARDED': 'Đã trao thầu',
-        'CANCELLED': 'Đã hủy',
-    };
-
-    return (
-        <div className="min-w-[100px]">
-            <span className={`inline-block px-3 py-1.5 rounded-lg font-bold text-[0.6875rem] uppercase tracking-wider ${style.bg} ${style.text} border ${style.border}`}>
-                {label[status] || status}
-            </span>
-        </div>
-    );
-}
-
-function StatusPill({ status }: { status: string }) {
-    const config: Record<string, { bg: string, text: string }> = {
-        'DRAFT': { bg: 'bg-slate-900', text: 'text-slate-100' },
-        'SUBMITTED': { bg: 'bg-blue-600/10', text: 'text-blue-600' },
-        'UNDER_REVIEW': { bg: 'bg-amber-500/10', text: 'text-black' },
-        'ACCEPTED': { bg: 'bg-emerald-500/10', text: 'text-black' },
-        'REJECTED': { bg: 'bg-rose-500/10', text: 'text-black' },
-        'EXPIRED': { bg: 'bg-slate-900', text: 'text-slate-100' },
-    };
-
-    const style = config[status] || config['DRAFT'];
-    const label: Record<string, string> = {
-        'DRAFT': 'NHÁP',
-        'SUBMITTED': 'ĐÃ GỬI',
-        'UNDER_REVIEW': 'ĐANG XEM XÉT',
-        'ACCEPTED': 'ĐÃ CHẤP NHẬN',
-        'REJECTED': 'BỊ TỪ CHỐI',
-        'EXPIRED': 'HẾT HẠN',
-    };
-
-    return (
-        <span className={`px-3 py-1.5 rounded-lg font-bold text-[0.6875rem] uppercase tracking-widest ${style.bg} ${style.text} border border-slate-200`}>
-            {label[status] || status}
-        </span>
-    );
-}
 

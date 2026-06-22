@@ -368,9 +368,9 @@ export default function ProductAdminPage() {
 
                     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 min-h-100">
                         {activeTab === "Sản phẩm" ? (
-                            <ERPTable columns={productColumns} data={filteredProducts} />
+                            <ERPTable columns={productColumns} data={filteredProducts} pageSize={12} />
                         ) : (
-                            <ERPTable columns={categoryColumns} data={filteredCategories} />
+                            <ERPTable columns={categoryColumns} data={filteredCategories} pageSize={12} />
                         )}
                     </div>
                 </div>

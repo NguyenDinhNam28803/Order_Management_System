@@ -5,9 +5,10 @@ import { useAuditLogs } from "../../hooks/useAuditLogs";
 import { AuditLogDetailModal } from "../../components/AuditLogDetailModal";
 import type { AuditLog } from "../../types/api-types";
 import {
-    History, Search, Filter, Calendar, Shield, ExternalLink, RefreshCw
+    Search, Filter, Calendar, Shield, ExternalLink, RefreshCw
 } from "lucide-react";
 import PageHeader from "../../components/shared/PageHeader";
+import { DataTable, DataTableColumn } from "../../components/shared/DataTable";
 
 export default function AuditLogsPage() {
     const [page, setPage] = useState(1);
@@ -25,7 +26,6 @@ export default function AuditLogsPage() {
         return <main className="p-6 text-slate-900">Đang tải dữ liệu...</main>;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const filteredLogs = auditLogs.filter((log: AuditLog) => {
         const matchSearch = log.action?.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           log.entityId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -42,8 +42,47 @@ export default function AuditLogsPage() {
         return "text-slate-900 bg-[#F1F5F9] border border-slate-200";
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const entityTypes = Array.from(new Set(auditLogs.map((l: AuditLog) => l.entityType)));
+
+    const columns: DataTableColumn<AuditLog>[] = [
+        {
+            label: "Thời gian",
+            render: (log) => (
+                <div className="flex items-center gap-2 text-slate-900 whitespace-nowrap">
+                    <Calendar size={14} />
+                    {log.createdAt && typeof log.createdAt === 'string' ? new Date(log.createdAt).toLocaleString('vi-VN') : 'N/A'}
+                </div>
+            ),
+        },
+        {
+            label: "Người thực hiện",
+            render: (log) => (
+                <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-full bg-[#2563EB]/10 flex items-center justify-center text-[10px] font-bold text-[#2563EB] border border-[#2563EB]/20 shrink-0">
+                        {log.user?.fullName?.charAt(0) || "U"}
+                    </div>
+                    <div>
+                        <p className="font-bold text-slate-900">{log.user?.fullName || "Hệ thống"}</p>
+                        <p className="text-[10px] text-[#64748B] uppercase">{log.user?.role}</p>
+                    </div>
+                </div>
+            ),
+        },
+        {
+            label: "Hành động",
+            render: (log) => <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase ${getActionColor(log.action)}`}>{log.action}</span>,
+        },
+        { label: "Đối tượng", render: (log) => <span className="font-bold text-slate-900">{log.entityType}</span> },
+        { label: "Mã ID", hideOnMobile: true, render: () => <span className="text-xs text-slate-900">***-***-***</span> },
+        {
+            label: "Chi tiết", align: "right",
+            render: (log) => (
+                <button onClick={() => setSelectedLog(log)} className="p-1.5 text-slate-900 hover:text-[#2563EB] hover:bg-[#2563EB]/10 rounded-xl transition-all" title="Xem chi tiết">
+                    <ExternalLink size={16} />
+                </button>
+            ),
+        },
+    ];
 
     return (
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#F8FAFC] text-slate-900">
@@ -90,70 +129,16 @@ export default function AuditLogsPage() {
                 </div>
             </div>
 
-            <div className="bg-[#F1F5F9] rounded-xl shadow-xl shadow-[#2563EB]/5 border border-slate-200 overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="erp-table text-xs">
-                        <thead className="border-b border-slate-200 tracking-wider">
-                            <tr>
-                                <th className="px-6 py-4">Thời gian</th>
-                                <th className="px-6 py-4">Người thực hiện</th>
-                                <th className="px-6 py-4">Hành động</th>
-                                <th className="px-6 py-4">Đối tượng</th>
-                                <th className="px-6 py-4">Mã ID</th>
-                                <th className="px-6 py-4 text-right">Chi tiết</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100 text-sm">
-                            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                            {filteredLogs.length > 0 ? filteredLogs.map((log: AuditLog) => (
-                                <tr key={log.id} className="hover:bg-[#FFFFFF]/30 transition-colors group">
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="flex items-center gap-2 text-slate-900">
-                                            <Calendar size={14} />
-                                            {log.createdAt && typeof log.createdAt === 'string' ? new Date(log.createdAt).toLocaleString('vi-VN') : 'N/A'}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-7 h-7 rounded-full bg-[#2563EB]/10 flex items-center justify-center text-[10px] font-bold text-[#2563EB] border border-[#2563EB]/20">
-                                                {log.user?.fullName?.charAt(0) || "U"}
-                                            </div>
-                                            <div>
-                                                <p className="font-bold text-slate-900">{log.user?.fullName || "Hệ thống"}</p>
-                                                <p className="text-[10px] text-[#64748B] uppercase">{log.user?.role}</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase ${getActionColor(log.action)}`}>
-                                            {log.action}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap font-bold text-slate-900">
-                                        {log.entityType}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-xs text-slate-900">
-                                        ***-***-***
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <button 
-                                            onClick={() => setSelectedLog(log)}
-                                            className="p-1.5 text-slate-900 hover:text-[#2563EB] hover:bg-[#2563EB]/10 rounded-xl transition-all"
-                                        >
-                                            <ExternalLink size={16} />
-                                        </button>
-                                    </td>
-                                </tr>
-                            )) : (
-                                <tr>
-                                    <td colSpan={6} className="px-6 py-12 text-center text-slate-900">
-                                        <History size={48} className="mx-auto mb-3 opacity-20" />
-                                        {isLoading ? "Đang tải dữ liệu..." : "Không tìm thấy nhật ký nào."}
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
+            <div className="erp-card table-card overflow-hidden">
+                <div className="p-4">
+                    <DataTable
+                        columns={columns}
+                        data={filteredLogs}
+                        getRowKey={(log) => log.id}
+                        loading={isLoading && filteredLogs.length === 0}
+                        emptyMessage="Không tìm thấy nhật ký nào"
+                        emptyDescription="Nhật ký hoạt động sẽ xuất hiện tại đây"
+                    />
                 </div>
                 {result && (
                     <div className="flex items-center justify-between p-4 bg-[#FFFFFF] border-t border-slate-200 text-sm">

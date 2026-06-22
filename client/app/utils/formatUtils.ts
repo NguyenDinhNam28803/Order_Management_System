@@ -106,8 +106,9 @@ export const statusMap: Record<string, string> = {
     
     // RFQ Status
     'OPEN': 'Mở',
+    'PUBLISHED': 'Đang mở',
     'CLOSED': 'Đã đóng',
-    'AWARDED': 'Đã trao thưởng',
+    'AWARDED': 'Đã trao thầu',
     'QUOTING': 'Đang báo giá',
     'QUOTED': 'Đã báo giá',
     'ACCEPTED': 'Đã chấp nhận',
@@ -125,6 +126,11 @@ export const statusMap: Record<string, string> = {
     'UNPAID': 'Chưa thanh toán',
     'PARTIAL_PAID': 'Thanh toán một phần',
     'PROCESSING': 'Đang xử lý',
+    'MATCHING': 'Đang đối soát',
+    'MATCHED': 'Đã đối soát',
+    'AUTO_APPROVED': 'Tự động duyệt',
+    'EXCEPTION_REVIEW': 'Lỗi đối soát',
+    'DISPUTED': 'Tranh chấp',
     
     // Approval Flow
     'DEPT_APPROVED': 'Trưởng phòng đã duyệt',
@@ -133,6 +139,9 @@ export const statusMap: Record<string, string> = {
     'CEO_APPROVED': 'CEO đã duyệt',
     
     // Contract Status
+    'PENDING_SIGNATURE': 'Chờ ký',
+    'SUSPENDED': 'Tạm dừng',
+    'IN_PROGRESS': 'Đang thực hiện',
     'EXPIRED': 'Hết hạn',
     'EXPIRING': 'Sắp hết hạn',
     'RENEWED': 'Đã gia hạn',

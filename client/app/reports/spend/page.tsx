@@ -182,6 +182,7 @@ export default function SpendReportPage() {
                 <ERPTable
                     columns={supplierColumns}
                     data={supplierTableData}
+                    pageSize={10}
                     emptyMessage="Chưa có dữ liệu nhà cung cấp"
                     emptyDescription="Dữ liệu sẽ xuất hiện sau khi có giao dịch"
                 />

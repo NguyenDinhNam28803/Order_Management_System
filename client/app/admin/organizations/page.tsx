@@ -1,10 +1,12 @@
 ﻿"use client";
 
 import React, { useState } from "react";
-import { Plus, Edit2, Trash2, Search, MapPin, Hash, Building2 } from "lucide-react";
+import { Plus, Edit2, Trash2, MapPin, Hash, Building2 } from "lucide-react";
 import { useProcurement } from "../../context/ProcurementContext";
 import { Organization, CreateOrganizationPayload, UpdateOrganizationPayload } from "@/app/types/api-types";
 import PageHeader from "../../components/shared/PageHeader";
+import { DataTable, DataTableColumn } from "../../components/shared/DataTable";
+import TableToolbar from "../../components/shared/TableToolbar";
 
 export default function OrganizationsPage() {
     const { organizations, addOrganization, updateOrganization, removeOrganization, refreshData } = useProcurement();
@@ -70,8 +72,56 @@ export default function OrganizationsPage() {
         }
     };
 
+    const columns: DataTableColumn<Organization>[] = [
+        {
+            label: "Mã & Tên Tổ chức", key: "name", sortable: true,
+            render: (org) => (
+                <div className="flex items-center gap-4">
+                    <div className="h-11 w-11 rounded-2xl bg-[#2563EB]/10 border border-[#2563EB]/20 flex items-center justify-center text-[#2563EB] shrink-0">
+                        <Building2 size={18} />
+                    </div>
+                    <div>
+                        <div className="text-sm font-bold text-slate-900 leading-tight">{org.name}</div>
+                        <div className="text-[10px] text-[#2563EB] font-black mt-1 bg-[#2563EB]/10 px-2 py-0.5 rounded w-fit uppercase">CODE: {org.code}</div>
+                    </div>
+                </div>
+            ),
+        },
+        {
+            label: "Địa chỉ trụ sở", hideOnMobile: true,
+            render: (org) => (
+                <div className="flex items-center gap-2 max-w-xs">
+                    <MapPin size={14} className="text-slate-400 shrink-0" />
+                    <span className="font-medium text-slate-900 truncate">{org.address || "N/A"}</span>
+                </div>
+            ),
+        },
+        {
+            label: "Mã số thuế",
+            render: (org) => (
+                <div className="flex items-center gap-2 font-bold text-slate-900 num-display">
+                    <Hash size={14} className="text-[#2563EB]" />
+                    {org.taxCode || "N/A"}
+                </div>
+            ),
+        },
+        {
+            label: "Thao tác", align: "center",
+            render: (org) => (
+                <div className="flex justify-center gap-2">
+                    <button onClick={() => handleOpenModal(org)} className="h-9 w-9 flex items-center justify-center bg-white border border-slate-200 text-slate-900 hover:text-[#2563EB] hover:border-[#2563EB]/30 rounded-xl transition-all" title="Sửa">
+                        <Edit2 size={14} />
+                    </button>
+                    <button onClick={() => removeOrganization(org.id)} className="h-9 w-9 flex items-center justify-center bg-white border border-slate-200 text-slate-900 hover:text-red-500 hover:border-red-500/30 rounded-xl transition-all" title="Xóa">
+                        <Trash2 size={14} />
+                    </button>
+                </div>
+            ),
+        },
+    ];
+
     return (
-        <div className="animate-in fade-in duration-500">
+        <div className="animate-in fade-in duration-500 p-6 space-y-6">
             <PageHeader
                 icon={Building2}
                 iconColor="blue"
@@ -87,83 +137,20 @@ export default function OrganizationsPage() {
                 }
             />
 
-            <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-xl shadow-[#2563EB]/5 overflow-hidden">
-                <div className="p-8 bg-[#FFFFFF] border-b border-slate-200 flex justify-between items-center">
-                    <div className="flex items-center gap-4">
-                        <div className="text-[10px] font-black text-slate-900 uppercase tracking-widest border-r border-slate-200 pr-4">Entity Directory</div>
-                        <div className="text-[10px] font-black text-[#2563EB] bg-[#2563EB]/10 px-3 py-1 rounded-full">{organizations?.length || 0} Entities</div>
-                    </div>
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]" size={14} />
-                        <input
-                            type="text"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            placeholder="Tìm kiếm mã hoặc tên..."
-                            className="pl-10 pr-4 py-2 bg-[#FFFFFF] border border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-[#2563EB]/20 w-64 outline-none text-slate-900 placeholder:text-slate-400"
-                        />
-                    </div>
-                </div>
-
-                <div className="overflow-x-auto">
-                    <table className="erp-table text-xs">
-                        <thead>
-                            <tr>
-                                <th>Mã & Tên Tổ chức</th>
-                                <th>Địa chỉ trụ sở</th>
-                                <th>Mã số thuế</th>
-                                <th className="text-center">Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filteredOrganizations?.map((org: Organization) => (
-                                <tr key={org.id} className="hover:bg-[#FFFFFF]/50 transition-colors border-b border-slate-200">
-                                    <td className="p-5">
-                                        <div className="flex items-center gap-4">
-                                            <div className="h-12 w-12 rounded-2xl bg-[#FFFFFF] flex items-center justify-center font-black text-[#2563EB] shadow-sm transition-transform hover:rotate-12">
-                                                <Building2 size={20} />
-                                            </div>
-                                            <div>
-                                                <div className="text-sm font-black text-slate-900 leading-tight">{org.name}</div>
-                                                <div className="text-[10px] text-[#2563EB] font-black mt-1 bg-[#2563EB]/10 px-2 py-0.5 rounded w-fit uppercase">
-                                                    CODE: {org.code}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div className="flex items-center gap-2 max-w-xs">
-                                            <MapPin size={14} className="text-slate-900 shrink-0" />
-                                            <span className="font-bold text-slate-900 truncate">{org.address || "N/A"}</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div className="flex items-center gap-2 font-black text-slate-900">
-                                            <Hash size={14} className="text-[#2563EB]" />
-                                            {org.taxCode || "N/A"}
-                                        </div>
-                                    </td>
-                                    <td className="text-center">
-                                        <div className="flex justify-center gap-3">
-                                            <button
-                                                onClick={() => handleOpenModal(org)}
-                                                className="h-9 w-9 flex items-center justify-center bg-[#F1F5F9] border border-slate-200 text-slate-900 hover:text-[#2563EB] hover:border-[#2563EB]/30 rounded-xl transition-all shadow-sm"
-                                            >
-                                                <Edit2 size={14} />
-                                            </button>
-                                            <button
-                                                onClick={() => removeOrganization(org.id)}
-                                                className="h-9 w-9 flex items-center justify-center bg-[#F1F5F9] border border-slate-200 text-slate-900 hover:text-red-500 hover:border-red-500/30 rounded-xl transition-all shadow-sm"
-                                            >
-                                                <Trash2 size={14} />
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+            <div className="erp-card table-card p-4 space-y-4">
+                <TableToolbar
+                    search={searchTerm}
+                    onSearchChange={setSearchTerm}
+                    searchPlaceholder="Tìm kiếm mã hoặc tên..."
+                />
+                <DataTable
+                    columns={columns}
+                    data={filteredOrganizations ?? []}
+                    pageSize={12}
+                    getRowKey={(org) => org.id}
+                    emptyMessage="Không có tổ chức nào"
+                    emptyDescription="Nhấn 'Thêm Tổ chức' để bắt đầu"
+                />
             </div>
 
             {/* Modal */}

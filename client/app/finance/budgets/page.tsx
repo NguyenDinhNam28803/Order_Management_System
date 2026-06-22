@@ -18,6 +18,8 @@ import PageHeader from "../../components/shared/PageHeader";
 import { useProcurement, BudgetAllocation } from "../../context/ProcurementContext";
 import { CostCenter } from "@/app/types/api-types";
 import { formatVND, parseMoney } from "../../utils/formatUtils";
+import { DataTable, DataTableColumn } from "../../components/shared/DataTable";
+import StatusBadge from "../../components/shared/StatusBadge";
 
 export default function FinanceBudgetsPage() {
     const { 
@@ -157,6 +159,42 @@ export default function FinanceBudgetsPage() {
 
     const getBucketPercentage = (val: number) => totalAnnualBudget === 0 ? 0 : (val / totalAnnualBudget) * 100;
 
+    type BudgetGroup = (typeof dashGroupedByCC)[number];
+    const monitorColumns: DataTableColumn<BudgetGroup>[] = [
+        {
+            label: "Đơn vị / Cost Center",
+            render: (g) => (
+                <div>
+                    <div className="font-bold text-slate-900 text-sm">{g.deptName}</div>
+                    <div className="text-[10px] font-bold text-slate-500 mt-0.5 num-display">{g.ccCode} - {g.ccName}</div>
+                </div>
+            ),
+        },
+        { label: "Định mức", align: "right", render: (g) => <span className="font-bold text-slate-600 num-display">{formatVND(g.allocatedAmount, true)}</span> },
+        {
+            label: "Tiến độ sử dụng", align: "center",
+            render: (g) => {
+                const p = g.allocatedAmount > 0 ? (g.spentAmount / g.allocatedAmount) * 100 : 0;
+                return (
+                    <div className="flex items-center gap-4 min-w-[140px]">
+                        <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+                            <div className={`h-full ${p > 90 ? 'bg-rose-500' : p > 70 ? 'bg-amber-500' : 'bg-[#2563EB]'} transition-all duration-1000`} style={{ width: `${Math.min(p, 100)}%` }} />
+                        </div>
+                        <span className="text-[10px] font-black text-slate-900 num-display">{p.toFixed(0)}%</span>
+                    </div>
+                );
+            },
+        },
+        { label: "Còn lại", align: "right", render: (g) => <span className="font-black text-slate-900 num-display">{formatVND(g.allocatedAmount - g.spentAmount, true)}</span> },
+        {
+            label: "Trạng thái",
+            render: (g) => {
+                const p = g.allocatedAmount > 0 ? (g.spentAmount / g.allocatedAmount) * 100 : 0;
+                return <StatusBadge tone={p > 100 ? "rose" : "emerald"} label={p > 100 ? "Vượt định mức" : "An toàn"} withDot={false} size="sm" />;
+            },
+        },
+    ];
+
     return (
         <div className="budget-page-container p-8 bg-[#F8FAFC] min-h-screen animate-in fade-in duration-700 relative">
             {/* Success Toast */}
@@ -275,57 +313,15 @@ export default function FinanceBudgetsPage() {
                                 <Filter size={18} className="text-erp-blue" /> Giám sát sử dụng Ngân sách
                             </h2>
                         </div>
-                        <div className="overflow-x-auto">
-                            <table className="erp-table text-xs">
-                                <thead>
-                                    <tr>
-                                        <th className="px-8 py-5">Đơn vị / Cost Center</th>
-                                        <th className="px-8 py-5">Định mức</th>
-                                        <th className="px-8 py-5 text-center">Tiến độ sử dụng</th>
-                                        <th className="px-8 py-5">Còn lại</th>
-                                        <th className="px-8 py-5">Trạng thái</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-slate-50">
-                                    {dashGroupedByCC.length > 0 ? dashGroupedByCC.map((g) => {
-                                        const p = (g.spentAmount / g.allocatedAmount) * 100;
-                                        return (
-                                            <tr key={g.costCenterId} className="hover:bg-slate-50/50 transition-colors">
-                                                <td className="px-8 py-6">
-                                                    <div className="font-black text-brand-primary text-sm">{g.deptName}</div>
-                                                    <div className="text-[10px] font-bold text-black mt-0.5">{g.ccCode} - {g.ccName}</div>
-                                                </td>
-                                                <td className="px-8 py-6 font-black text-slate-600">{formatVND(g.allocatedAmount, true)}</td>
-                                                <td className="px-8 py-6">
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
-                                                            <div className={`h-full ${p > 90 ? 'bg-red-500' : p > 70 ? 'bg-amber-500' : 'bg-erp-blue'} transition-all duration-1000`} style={{ width: `${Math.min(p, 100)}%` }}></div>
-                                                        </div>
-                                                        <span className="text-[10px] font-black text-brand-primary">{p.toFixed(0)}%</span>
-                                                    </div>
-                                                </td>
-                                                <td className="px-8 py-6 font-black text-brand-primary">{formatVND(g.allocatedAmount - g.spentAmount, true)}</td>
-                                                <td className="px-8 py-6">
-                                                    <span className={`px-3 py-1 rounded-full text-[0.6875rem] font-black uppercase tracking-widest ${
-                                                        p > 100 ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-green-50 text-green-600 border border-green-100'
-                                                    }`}>
-                                                        {p > 100 ? 'Vượt định mức' : 'An toàn'}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        );
-                                    }) : (
-                                        <tr>
-                                            <td colSpan={5} className="px-8 py-20 text-center">
-                                                <div className="flex flex-col items-center gap-3 opacity-30">
-                                                    <AlertCircle size={48} />
-                                                    <p className="text-xs font-black uppercase tracking-widest">Chưa có dữ liệu phân bổ</p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
+                        <div className="p-4">
+                            <DataTable
+                                columns={monitorColumns}
+                                data={dashGroupedByCC}
+                                pageSize={10}
+                                getRowKey={(g) => g.costCenterId}
+                                emptyMessage="Chưa có dữ liệu phân bổ"
+                                emptyDescription="Dữ liệu giám sát ngân sách sẽ hiển thị tại đây"
+                            />
                         </div>
                     </div>
                 </div>

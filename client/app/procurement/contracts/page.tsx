@@ -3,36 +3,21 @@
 import React, { useState, useMemo } from "react";
 import { useProcurement } from "../../context/ProcurementContext";
 import {
-    FileText, Eye, CheckCircle2, Clock, Search, Plus, AlertCircle,
+    FileText, Eye, CheckCircle2, Clock, Plus, AlertCircle,
     Calendar, Building2, PenTool, Trash2, Pencil, Send, X,
     ShieldCheck, TrendingUp, RotateCcw, ChevronRight, Ban,
 } from "lucide-react";
 import PageHeader from "../../components/shared/PageHeader";
 import Link from "next/link";
-import { ContractStatus, CurrencyCode, Contract } from "../../types/api-types";
+import { CurrencyCode, Contract } from "../../types/api-types";
 import { Organization } from "../../context/ProcurementContext";
 import { convertPrismaDecimal } from "../../utils/formatUtils";
 import ContractSignModal from "../../components/ContractSignModal";
 import DateInput from "../../components/shared/DateInput";
-
-// ── Status config ─────────────────────────────────────────────────────────────
-const STATUS_CFG: Record<string, { label: string; bg: string; text: string; border: string; dot: string }> = {
-    ACTIVE: { label: "Đang hiệu lực", bg: "bg-emerald-500/10", text: "text-emerald-700", border: "border-emerald-500/25", dot: "bg-emerald-400" },
-    PENDING_APPROVAL: { label: "Chờ duyệt", bg: "bg-amber-500/10", text: "text-amber-700", border: "border-amber-500/25", dot: "bg-amber-400" },
-    DRAFT: { label: "Bản nháp", bg: "bg-slate-500/10", text: "text-black", border: "border-slate-500/25", dot: "bg-slate-400" },
-    EXPIRED: { label: "Hết hạn", bg: "bg-orange-500/10", text: "text-black", border: "border-orange-500/25", dot: "bg-orange-400" },
-    TERMINATED: { label: "Đã chấm dứt", bg: "bg-rose-500/10", text: "text-rose-700", border: "border-rose-500/25", dot: "bg-rose-400" },
-};
-
-function StatusBadge({ status }: { status: string }) {
-    const c = STATUS_CFG[status] || STATUS_CFG.DRAFT;
-    return (
-        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[0.6875rem] font-bold uppercase tracking-wider border ${c.bg} ${c.text} ${c.border}`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${c.dot}`} />
-            {c.label}
-        </span>
-    );
-}
+import { DataTable, DataTableColumn } from "../../components/shared/DataTable";
+import { StatCard, StatGrid } from "../../components/shared/StatCard";
+import TableToolbar from "../../components/shared/TableToolbar";
+import StatusBadge from "../../components/shared/StatusBadge";
 
 // ── Empty form ────────────────────────────────────────────────────────────────
 const EMPTY: Partial<Contract> = {
@@ -137,6 +122,97 @@ export default function ContractsPage() {
 
     const formValid = !!(form.title && form.supplierId && form.startDate && form.endDate);
 
+    // ── Table config ────────────────────────────────────────────────────────────
+    const statusTabs = [
+        { value: "ALL", label: "Tất cả" },
+        { value: "DRAFT", label: "Nháp" },
+        { value: "PENDING_APPROVAL", label: "Chờ duyệt" },
+        { value: "ACTIVE", label: "Hiệu lực" },
+        { value: "EXPIRED", label: "Hết hạn" },
+    ];
+
+    const columns: DataTableColumn<Contract>[] = [
+        {
+            label: "Số hợp đồng", key: "contractNumber", sortable: true,
+            render: (c) => (
+                <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-blue-600/10 border border-blue-600/20 flex items-center justify-center flex-shrink-0">
+                        <FileText size={14} className="text-blue-600" />
+                    </div>
+                    <span className="font-bold text-blue-600 num-display text-xs">#{c.contractNumber}</span>
+                </div>
+            ),
+        },
+        {
+            label: "Tiêu đề / Đối tác",
+            render: (c) => (
+                <div className="max-w-[220px]">
+                    <p className="font-bold text-slate-900 truncate">{c.title}</p>
+                    <div className="flex items-center gap-1 text-[11px] text-slate-500 mt-0.5">
+                        <Building2 size={11} />
+                        <span className="truncate">{c.supplier?.name || "—"}</span>
+                    </div>
+                </div>
+            ),
+        },
+        {
+            label: "Giá trị", align: "right",
+            render: (c) => (
+                <div>
+                    <p className="font-bold text-slate-900 num-display">{convertPrismaDecimal(c.totalValue).toLocaleString("vi-VN")}</p>
+                    <p className="text-[0.6875rem] text-slate-500">{c.currency}</p>
+                </div>
+            ),
+        },
+        {
+            label: "Thời hạn", hideOnMobile: true,
+            render: (c) => c.startDate ? (
+                <div className="flex items-center gap-2 text-[11px]">
+                    <Calendar size={12} className="text-slate-400 flex-shrink-0" />
+                    <div>
+                        <p className="text-slate-900 font-bold num-display">{new Date(c.startDate).toLocaleDateString("vi-VN")}</p>
+                        <p className="text-slate-500 flex items-center gap-1 num-display"><ChevronRight size={10} />{c.endDate ? new Date(c.endDate).toLocaleDateString("vi-VN") : "—"}</p>
+                    </div>
+                </div>
+            ) : <span className="text-slate-400 italic text-xs">Chưa xác định</span>,
+        },
+        {
+            label: "Trạng thái",
+            render: (c) => {
+                const isActive = c.status === "ACTIVE";
+                return (
+                    <div>
+                        <StatusBadge status={c.status} size="sm" />
+                        {isActive && c.endDate && (() => {
+                            const days = Math.ceil((new Date(c.endDate as string).getTime() - Date.now()) / 86400000);
+                            return days <= 30 && days > 0 ? (<p className="text-[0.6875rem] text-amber-600 font-bold mt-1">⚠ Còn {days} ngày</p>) : null;
+                        })()}
+                    </div>
+                );
+            },
+        },
+        {
+            label: "", align: "right",
+            render: (c) => {
+                const isActive = c.status === "ACTIVE";
+                const isDraft = c.status === "DRAFT";
+                const isPending = c.status === "PENDING_APPROVAL";
+                const canSign = isPending && currentUser?.role !== "SUPPLIER" ? !c.buyerSignedAt : isPending && currentUser?.role === "SUPPLIER" ? !c.supplierSignedAt : false;
+                return (
+                    <div className="flex items-center justify-end gap-1">
+                        <Link href={`/procurement/contracts/${c.id}`} className="p-2 rounded-lg text-slate-500 hover:text-blue-600 hover:bg-blue-600/10 transition-all" title="Xem chi tiết"><Eye size={15} /></Link>
+                        {canSign && (<button onClick={() => setSignTarget(c)} className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[0.6875rem] font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition-all" title="Ký hợp đồng"><PenTool size={12} /> Ký</button>)}
+                        {isDraft && (<button onClick={() => openApprove(c)} className="p-2 rounded-lg text-slate-500 hover:text-amber-600 hover:bg-amber-500/10 transition-all" title="Gửi phê duyệt"><Send size={15} /></button>)}
+                        {isDraft && (<button onClick={() => openEdit(c)} className="p-2 rounded-lg text-slate-500 hover:text-amber-600 hover:bg-amber-500/10 transition-all" title="Chỉnh sửa"><Pencil size={15} /></button>)}
+                        {isDraft && (<button onClick={() => openDelete(c.id)} className="p-2 rounded-lg text-slate-500 hover:text-rose-600 hover:bg-rose-500/10 transition-all" title="Xóa hợp đồng"><Trash2 size={15} /></button>)}
+                        {isActive && (<button onClick={() => { setTerminate(c); setModal("terminate"); }} className="p-2 rounded-lg text-slate-500 hover:text-rose-600 hover:bg-rose-500/10 transition-all" title="Chấm dứt hợp đồng"><Ban size={15} /></button>)}
+                        {c.status === "EXPIRED" && (<button onClick={() => openEdit(c)} className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[0.6875rem] font-bold text-orange-600 bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/20 transition-all" title="Gia hạn hợp đồng"><RotateCcw size={12} /> Gia hạn</button>)}
+                    </div>
+                );
+            },
+        },
+    ];
+
     // ── Render ────────────────────────────────────────────────────────────────
     return (
         <main className="p-6 space-y-6">
@@ -158,250 +234,33 @@ export default function ContractsPage() {
             />
 
             {/* ── Stats ── */}
-            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-                {[
-                    { label: "Tổng hợp đồng", value: stats.total, icon: FileText, color: "bg-blue-600/10 text-blue-600" },
-                    { label: "Đang hiệu lực", value: stats.active, icon: CheckCircle2, color: "bg-emerald-500/10 text-emerald-700" },
-                    { label: "Chờ duyệt", value: stats.pending, icon: Clock, color: "bg-amber-500/10 text-amber-700" },
-                    { label: "Hết hạn", value: stats.expired, icon: AlertCircle, color: "bg-orange-500/10 text-orange-700" },
-                    { label: "Tổng giá trị HĐ", value: `${(stats.totalValue / 1e6).toFixed(1)}M ₫`, icon: TrendingUp, color: "bg-purple-500/10 text-purple-700" },
-                ].map(({ label, value, icon: Icon, color }) => (
-                    <div key={label} className="bg-slate-100 rounded-xl p-4 border border-slate-200 flex items-center gap-3">
-                        <div className={`h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0 ${color}`}>
-                            <Icon size={18} />
-                        </div>
-                        <div className="min-w-0">
-                            <p className="text-[0.6875rem] font-bold uppercase tracking-widest text-slate-900 truncate">{label}</p>
-                            <p className="text-lg font-bold text-slate-900 truncate">{value}</p>
-                        </div>
-                    </div>
-                ))}
-            </div>
+            <StatGrid cols={5} className="mb-6">
+                <StatCard label="Tổng hợp đồng" value={stats.total} icon={FileText} tone="blue" />
+                <StatCard label="Đang hiệu lực" value={stats.active} icon={CheckCircle2} tone="emerald" />
+                <StatCard label="Chờ duyệt" value={stats.pending} icon={Clock} tone="amber" />
+                <StatCard label="Hết hạn" value={stats.expired} icon={AlertCircle} tone="rose" />
+                <StatCard label="Tổng giá trị HĐ" value={`${(stats.totalValue / 1e6).toFixed(1)}M ₫`} icon={TrendingUp} tone="purple" />
+            </StatGrid>
 
-            {/* ── Toolbar ── */}
-            <div className="bg-slate-100 rounded-xl border border-slate-200 p-4 flex flex-col md:flex-row gap-3">
-                <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]" size={16} />
-                    <input
-                        type="text"
-                        placeholder="Tìm số hợp đồng, tiêu đề, nhà cung cấp..."
-                        className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600/50 transition-all"
-                        value={search}
-                        onChange={e => setSearch(e.target.value)}
-                    />
-                </div>
-                <div className="flex gap-1 bg-white border border-slate-200 rounded-xl p-1">
-                    {[
-                        { k: "ALL", l: "Tất cả" },
-                        { k: "DRAFT", l: "Nháp" },
-                        { k: "PENDING_APPROVAL", l: "Chờ duyệt" },
-                        { k: "ACTIVE", l: "Hiệu lực" },
-                        { k: "EXPIRED", l: "Hết hạn" },
-                    ].map(({ k, l }) => (
-                        <button
-                            key={k}
-                            onClick={() => setStatus(k)}
-                            className={`px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider whitespace-nowrap transition-all ${statusFilter === k
-                                ? "bg-blue-600 text-white shadow"
-                                : "text-slate-500 hover:text-slate-900"
-                                }`}
-                        >
-                            {l}
-                        </button>
-                    ))}
-                </div>
-            </div>
-
-            {/* ── Table ── */}
-            <div className="erp-card table-card">
-                {filtered.length === 0 ? (
-                    <div className="py-24 flex flex-col items-center gap-4 text-slate-900">
-                        <FileText size={40} className="opacity-20" />
-                        <div className="text-center">
-                            <p className="font-bold text-slate-900 text-sm">Không có hợp đồng nào</p>
-                            <p className="text-xs mt-1">
-                                {search || statusFilter !== "ALL"
-                                    ? "Thử điều chỉnh bộ lọc hoặc từ khóa tìm kiếm"
-                                    : "Nhấn 'Tạo hợp đồng mới' để bắt đầu"}
-                            </p>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="overflow-x-auto">
-                        <table className="erp-table text-xs">
-                            <thead>
-                                <tr className="border-b border-slate-200">
-                                    {["Số hợp đồng", "Tiêu đề / Đối tác", "Giá trị", "Thời hạn", "Trạng thái", ""].map((h, i) => (
-                                        <th key={i} className={`px-5 py-4 ${i >= 5 ? "text-right" : "text-left"}`}>
-                                            {h}
-                                        </th>
-                                    ))}
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-100">
-                                {filtered.map(c => {
-                                    const isActive = c.status === "ACTIVE";
-                                    const isDraft = c.status === "DRAFT";
-                                    const isPending = c.status === "PENDING_APPROVAL";
-                                    const canSign = isPending && currentUser?.role !== "SUPPLIER"
-                                        ? !c.buyerSignedAt
-                                        : isPending && currentUser?.role === "SUPPLIER"
-                                            ? !c.supplierSignedAt
-                                            : false;
-
-                                    return (
-                                        <tr key={c.id} className="group hover:bg-white/60 transition-colors">
-                                            {/* Số HĐ */}
-                                            <td className="px-5 py-4">
-                                                <div className="flex items-center gap-2">
-                                                    <div className="w-8 h-8 rounded-lg bg-blue-600/10 border border-blue-600/20 flex items-center justify-center flex-shrink-0">
-                                                        <FileText size={14} className="text-blue-600" />
-                                                    </div>
-                                                    <span className="font-bold text-blue-600 font-mono text-xs">
-                                                        #{c.contractNumber}
-                                                    </span>
-                                                </div>
-                                            </td>
-
-                                            {/* Tiêu đề */}
-                                            <td className="px-5 py-4 max-w-[220px]">
-                                                <p className="font-bold text-slate-900 truncate">{c.title}</p>
-                                                <div className="flex items-center gap-1 text-[11px] text-slate-900 mt-0.5">
-                                                    <Building2 size={11} />
-                                                    <span className="truncate">{c.supplier?.name || "—"}</span>
-                                                </div>
-                                            </td>
-
-                                            {/* Giá trị */}
-                                            <td className="px-5 py-4">
-                                                <p className="font-bold text-slate-900 tabular-nums">
-                                                    {convertPrismaDecimal(c.totalValue).toLocaleString("vi-VN")}
-                                                </p>
-                                                <p className="text-[0.6875rem] text-slate-900">{c.currency}</p>
-                                            </td>
-
-                                            {/* Thời hạn */}
-                                            <td className="px-5 py-4">
-                                                {c.startDate ? (
-                                                    <div className="flex items-center gap-2 text-[11px]">
-                                                        <Calendar size={12} className="text-slate-900 flex-shrink-0" />
-                                                        <div>
-                                                            <p className="text-slate-900 font-bold">
-                                                                {new Date(c.startDate).toLocaleDateString("vi-VN")}
-                                                            </p>
-                                                            <p className="text-slate-900 flex items-center gap-1">
-                                                                <ChevronRight size={10} />
-                                                                {c.endDate ? new Date(c.endDate).toLocaleDateString("vi-VN") : "—"}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                ) : <span className="text-slate-900 italic text-xs">Chưa xác định</span>}
-                                            </td>
-
-                                            {/* Trạng thái */}
-                                            <td className="px-5 py-4">
-                                                <StatusBadge status={c.status} />
-                                                {isActive && c.endDate && (() => {
-                                                    const days = Math.ceil((new Date(c.endDate).getTime() - Date.now()) / 86400000);
-                                                    return days <= 30 && days > 0 ? (
-                                                        <p className="text-[0.6875rem] text-black font-bold mt-1">⚠ Còn {days} ngày</p>
-                                                    ) : null;
-                                                })()}
-                                            </td>
-
-                                            {/* Actions */}
-                                            <td className="px-5 py-4">
-                                                <div className="flex items-center justify-end gap-1">
-                                                    {/* View */}
-                                                    <Link
-                                                        href={`/procurement/contracts/${c.id}`}
-                                                        className="p-2 rounded-lg text-slate-900 hover:text-blue-600 hover:bg-blue-600/10 transition-all"
-                                                        title="Xem chi tiết"
-                                                    >
-                                                        <Eye size={15} />
-                                                    </Link>
-
-                                                    {/* Ký hợp đồng */}
-                                                    {canSign && (
-                                                        <button
-                                                            onClick={() => setSignTarget(c)}
-                                                            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[0.6875rem] font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition-all"
-                                                            title="Ký hợp đồng"
-                                                        >
-                                                            <PenTool size={12} /> Ký
-                                                        </button>
-                                                    )}
-
-                                                    {/* Gửi duyệt (DRAFT only) */}
-                                                    {isDraft && (
-                                                        <button
-                                                            onClick={() => openApprove(c)}
-                                                            className="p-2 rounded-lg text-slate-900 hover:text-black hover:bg-amber-500/10 transition-all"
-                                                            title="Gửi phê duyệt"
-                                                        >
-                                                            <Send size={15} />
-                                                        </button>
-                                                    )}
-
-                                                    {/* Edit (DRAFT only) */}
-                                                    {isDraft && (
-                                                        <button
-                                                            onClick={() => openEdit(c)}
-                                                            className="p-2 rounded-lg text-slate-900 hover:text-black hover:bg-amber-500/10 transition-all"
-                                                            title="Chỉnh sửa"
-                                                        >
-                                                            <Pencil size={15} />
-                                                        </button>
-                                                    )}
-
-                                                    {/* Delete (DRAFT only) */}
-                                                    {isDraft && (
-                                                        <button
-                                                            onClick={() => openDelete(c.id)}
-                                                            className="p-2 rounded-lg text-slate-900 hover:text-black hover:bg-rose-500/10 transition-all"
-                                                            title="Xóa hợp đồng"
-                                                        >
-                                                            <Trash2 size={15} />
-                                                        </button>
-                                                    )}
-
-                                                    {/* Chấm dứt (ACTIVE only) */}
-                                                    {isActive && (
-                                                        <button
-                                                            onClick={() => { setTerminate(c); setModal("terminate"); }}
-                                                            className="p-2 rounded-lg text-slate-900 hover:text-black hover:bg-rose-500/10 transition-all"
-                                                            title="Chấm dứt hợp đồng"
-                                                        >
-                                                            <Ban size={15} />
-                                                        </button>
-                                                    )}
-
-                                                    {/* Gia hạn (EXPIRED) */}
-                                                    {c.status === "EXPIRED" && (
-                                                        <button
-                                                            onClick={() => openEdit(c)}
-                                                            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[0.6875rem] font-bold text-black bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/20 transition-all"
-                                                            title="Gia hạn hợp đồng"
-                                                        >
-                                                            <RotateCcw size={12} /> Gia hạn
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
-                {filtered.length > 0 && (
-                    <div className="px-5 py-3 border-t border-slate-200 flex justify-between items-center">
-                        <p className="text-[11px] text-slate-900">
-                            Hiển thị <span className="text-slate-900 font-bold">{filtered.length}</span> / {contracts.length} hợp đồng
-                        </p>
-                    </div>
-                )}
+            {/* ── Toolbar + Table ── */}
+            <div className="erp-card table-card p-4 space-y-4">
+                <TableToolbar
+                    search={search}
+                    onSearchChange={setSearch}
+                    searchPlaceholder="Tìm số hợp đồng, tiêu đề, nhà cung cấp..."
+                    tabs={statusTabs}
+                    tabValue={statusFilter}
+                    onTabChange={setStatus}
+                />
+                <DataTable
+                    columns={columns}
+                    data={filtered}
+                    density="compact"
+                    pageSize={10}
+                    getRowKey={(c) => c.id}
+                    emptyMessage="Không có hợp đồng nào"
+                    emptyDescription={search || statusFilter !== "ALL" ? "Thử điều chỉnh bộ lọc hoặc từ khóa tìm kiếm" : "Nhấn 'Tạo hợp đồng mới' để bắt đầu"}
+                />
             </div>
 
             {/* ── Modals ── */}

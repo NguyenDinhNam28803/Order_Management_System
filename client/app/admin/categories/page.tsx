@@ -235,7 +235,7 @@ export default function CategoriesPage() {
                     </div>
                 </div>
 
-                <ERPTable columns={columns} data={filteredCategories} />
+                <ERPTable columns={columns} data={filteredCategories} pageSize={12} />
             </div>
 
             {/* Modal */}

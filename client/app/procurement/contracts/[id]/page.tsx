@@ -11,35 +11,8 @@ import {
 import { Contract } from "../../../types/api-types";
 import { convertPrismaDecimal } from "../../../utils/formatUtils";
 import ContractSignModal from "../../../components/ContractSignModal";
-
-// ── Status config ─────────────────────────────────────────────────────────────
-const STATUS_CFG: Record<string, { label: string; bg: string; text: string; border: string; dot: string }> = {
-    ACTIVE:           { label: "Đang hiệu lực", bg: "bg-emerald-500/10", text: "text-emerald-700", border: "border-emerald-500/25", dot: "bg-emerald-400" },
-    PENDING_SIGNATURE:{ label: "Chờ ký",         bg: "bg-amber-500/10",   text: "text-black",   border: "border-amber-500/25",   dot: "bg-amber-400"   },
-    DRAFT:            { label: "Bản nháp",        bg: "bg-slate-500/10",   text: "text-black",   border: "border-slate-500/25",   dot: "bg-slate-400"   },
-    EXPIRED:          { label: "Hết hạn",         bg: "bg-orange-500/10",  text: "text-black",  border: "border-orange-500/25",  dot: "bg-orange-400"  },
-    TERMINATED:       { label: "Đã chấm dứt",     bg: "bg-rose-500/10",    text: "text-black",    border: "border-rose-500/25",    dot: "bg-rose-400"    },
-    SUSPENDED:        { label: "Tạm dừng",        bg: "bg-purple-500/10",  text: "text-black",  border: "border-purple-500/25",  dot: "bg-purple-400"  },
-};
-
-function StatusBadge({ status }: { status: string }) {
-    const c = STATUS_CFG[status] || STATUS_CFG.DRAFT;
-    return (
-        <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider border ${c.bg} ${c.text} ${c.border}`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${c.dot}`} />
-            {c.label}
-        </span>
-    );
-}
-
-function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
-    return (
-        <div className="flex items-center justify-between py-2.5 border-b border-slate-200 last:border-0">
-            <span className="text-[11px] font-bold uppercase tracking-widest text-slate-900">{label}</span>
-            <span className="text-sm font-bold text-slate-900 text-right">{value}</span>
-        </div>
-    );
-}
+import StatusBadge from "../../../components/shared/StatusBadge";
+import { Section, InfoRow } from "../../../components/shared/DetailPrimitives";
 
 export default function ContractDetailPage() {
     const params   = useParams();
@@ -186,17 +159,14 @@ export default function ContractDetailPage() {
                 <div className="lg:col-span-2 space-y-6">
 
                     {/* General info */}
-                    <div className="erp-card p-6">
-                        <h2 className="text-xs font-bold uppercase tracking-widest text-slate-900 mb-4 flex items-center gap-2">
-                            <Building2 size={13} /> Thông tin chung
-                        </h2>
+                    <Section title="Thông tin chung" icon={Building2}>
                         <InfoRow label="Nhà cung cấp"    value={contract.supplier?.name || "—"} />
                         <InfoRow label="Loại hợp đồng"   value={contract.contractType ?? "PURCHASE"} />
                         <InfoRow label="Tiền tệ"         value={contract.currency} />
                         <InfoRow label="Ngày bắt đầu"    value={contract.startDate ? new Date(contract.startDate).toLocaleDateString("vi-VN") : "—"} />
                         <InfoRow label="Ngày kết thúc"   value={contract.endDate ? new Date(contract.endDate).toLocaleDateString("vi-VN") : "—"} />
                         <InfoRow label="Tự động gia hạn" value={contract.autoRenew ? "Có" : "Không"} />
-                    </div>
+                    </Section>
 
                     {/* Milestones */}
                     <div className="erp-card overflow-hidden">

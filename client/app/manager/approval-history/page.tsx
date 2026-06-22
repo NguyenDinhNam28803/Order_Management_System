@@ -1,14 +1,32 @@
 ﻿"use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { useProcurement } from "@/app/context/ProcurementContext";
-import { Search, Filter, History, ShoppingCart, FolderTree, CheckCircle, XCircle, ChevronLeft, ChevronRight, Clock } from "lucide-react";
+import { History, FolderTree, CheckCircle } from "lucide-react";
 import PageHeader from "../../components/shared/PageHeader";
-import { formatVND, formatDateTime } from "../../utils/formatUtils";
+import { formatDateTime } from "../../utils/formatUtils";
+import { DataTable, DataTableColumn } from "../../components/shared/DataTable";
+import StatusBadge from "../../components/shared/StatusBadge";
 
 export default function ApprovalHistoryPage() {
-    const [filter, setFilter] = useState({ type: "ALL", status: "ALL", date: "" });
     const { approvals } = useProcurement();
+    type ApprovalRecord = (typeof approvals)[number];
+
+    const columns: DataTableColumn<ApprovalRecord>[] = [
+        {
+            label: "Loại",
+            render: (item) => (
+                <span className={`px-2 py-1 rounded-md text-[10px] font-black tracking-widest uppercase border ${item.documentType === "PURCHASE_REQUISITION" ? 'bg-amber-500/10 text-amber-700 border-amber-500/20' : 'bg-[#2563EB]/10 text-[#2563EB] border-[#2563EB]/20'}`}>
+                    {item.documentType === "PURCHASE_REQUISITION" ? 'Yêu cầu mua hàng' : 'Đơn đặt hàng'}
+                </span>
+            ),
+        },
+        { label: "Mã chứng từ", render: (item) => <span className="font-bold text-slate-900">{item.id}</span> },
+        { label: "Tiêu đề", hideOnMobile: true, render: (item) => <span className="font-medium text-slate-900">{item.documentType}</span> },
+        { label: "Quyết định", render: (item) => <StatusBadge status={item.status} size="sm" /> },
+        { label: "Ngày duyệt", align: "center", hideOnMobile: true, render: (item) => <span className="text-[11px] font-bold text-slate-900 num-display">{formatDateTime(item.createdAt)}</span> },
+        { label: "Ghi chú", hideOnMobile: true, render: (item) => <span className="text-xs text-slate-500 italic">{item.status === 'APPROVED' ? 'Hồ sơ đã được phê duyệt thành công' : item.status === 'REJECTED' ? 'Hồ sơ đã bị từ chối' : 'Đang chờ xử lý'}</span> },
+    ];
     return (
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#F8FAFC] text-slate-900">
             <header>
@@ -59,74 +77,15 @@ export default function ApprovalHistoryPage() {
             </div>
 
             {/* History Table */}
-            <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 overflow-hidden shadow-xl shadow-[#2563EB]/5 mb-8">
-                <table className="erp-table text-xs">
-                    <thead>
-                        <tr className="border-b border-slate-200">
-                            <th className="px-6 py-4">Loại</th>
-                            <th className="px-6 py-4">Mã chứng từ</th>
-                            <th className="px-6 py-4">Tiêu đề</th>
-                            <th className="px-6 py-4">Quyết định</th>
-                            <th className="px-6 py-4 text-center">Ngày duyệt</th>
-                            <th className="px-6 py-4">Ghi chú</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                        {approvals.map((item) => (
-                            <tr key={item.id} className="hover:bg-[#FFFFFF]/30 transition-colors">
-                                <td className="px-6 py-5">
-                                    <span className={`px-2 py-1 rounded-md text-[10px] font-black tracking-widest uppercase border ${item.documentType === "PURCHASE_REQUISITION" ? 'bg-amber-500/10 text-amber-700 border-amber-500/20' : 'bg-[#2563EB]/10 text-[#2563EB] border-[#2563EB]/20'}`}>
-                                        {item.documentType === "PURCHASE_REQUISITION" ? 'Yêu cầu mua hàng' : 'Đơn đặt hàng'}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-5">
-                                    <span className="font-bold text-slate-900">{item.id}</span>
-                                </td>
-                                <td className="px-6 py-5 font-bold text-slate-900">{item.documentType}</td>
-                                <td className="px-6 py-5">
-                                    <div className="flex items-center gap-2">
-                                        {item.status === 'APPROVED' ? (
-                                            <>
-                                                <div className="h-5 w-5 rounded-full bg-emerald-500 text-white flex items-center justify-center">
-                                                    <CheckCircle size={12} />
-                                                </div>
-                                                <span className="text-xs font-black text-black uppercase tracking-tight">Đã duyệt</span>
-                                            </>
-                                        ) : item.status === "PENDING" ? (
-                                            <>
-                                                <div className="h-5 w-5 rounded-full bg-amber-500 text-white flex items-center justify-center">
-                                                    <Clock size={12} />
-                                                </div>
-                                                <span className="text-xs font-black text-black uppercase tracking-tight">Đang chờ duyệt</span>
-                                            </>
-                                        ) : (
-                                            <span className="text-xs font-black text-slate-900 uppercase tracking-tight">Đang chờ</span>
-                                        )}
-                                    </div>
-                                </td>
-                                <td className="px-6 py-5 text-[11px] font-bold text-slate-900 text-center whitespace-nowrap">
-                                    {formatDateTime(item.createdAt)}
-                                </td>
-                                <td className="px-6 py-5 text-xs text-slate-900 font-medium italic">
-                                    {item.status === 'APPROVED' ? 'Hồ sơ đã được phê duyệt thành công' : 'Hồ sơ đã bị từ chối'}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-
-            {/* Pagination Placeholder */}
-            <div className="flex items-center justify-between px-6">
-                <span className="text-xs font-black text-slate-900 uppercase tracking-widest">Trang 1 / 1</span>
-                <div className="flex gap-2 text-slate-900">
-                    <button className="h-10 w-10 flex items-center justify-center rounded-xl bg-[#F1F5F9] border border-slate-200 hover:bg-[#FFFFFF] transition-colors">
-                        <ChevronLeft size={18} />
-                    </button>
-                    <button className="h-10 w-10 flex items-center justify-center rounded-xl bg-[#F1F5F9] border border-slate-200 hover:bg-[#FFFFFF] transition-colors">
-                        <ChevronRight size={18} />
-                    </button>
-                </div>
+            <div className="erp-card table-card p-4">
+                <DataTable
+                    columns={columns}
+                    data={approvals ?? []}
+                    pageSize={12}
+                    getRowKey={(item) => item.id}
+                    emptyMessage="Chưa có lịch sử phê duyệt"
+                    emptyDescription="Các quyết định phê duyệt sẽ xuất hiện tại đây"
+                />
             </div>
         </main>
     );

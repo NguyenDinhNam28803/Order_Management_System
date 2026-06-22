@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
 import Select from "react-select";
 import { useProcurement, Product, CostCenter, CurrencyCode, BudgetAllocation } from "../../context/ProcurementContext";
-import { Trash2, Save, FileText, ShoppingBag, AlertCircle, Info, Plus, Sparkles, Loader2, CheckCircle2, XCircle, ArrowLeft, Send, Bot, PenTool, Wand2, ArrowRight, MessageSquare, Wallet, Zap, Activity, ChevronDown, ShoppingCart, AlertTriangle, Calendar } from "lucide-react";
+import { Trash2, FileText, Sparkles, Loader2, CheckCircle2, XCircle, ArrowLeft, Send, Bot, PenTool, Wand2, ArrowRight, MessageSquare, Wallet, Zap, ChevronDown, ShoppingCart, AlertTriangle, Calendar } from "lucide-react";
 import { CreatePrDto } from "../../types/api-types";
 import { convertPrismaDecimal, formatVND } from "../../utils/formatUtils";
-import SupplierSuggestionWidget from "../../components/SupplierSuggestionWidget";
+import PageHeader from "../../components/shared/PageHeader";
 
 
 interface PrDraftResponse {
@@ -305,26 +305,24 @@ export default function CreatePRPage() {
     };
 
     return (
-        <div className="animate-in fade-in duration-700 space-y-12">
-            {/* PAGE HEADER SECTION */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-[rgba(148,163,184,0.1)] pb-10">
-                <div>
-                   <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-2">Tạo Phiếu Yêu Cầu (PR)</h1>
-                   <p className="text-sm font-bold text-slate-900 tracking-tight uppercase">
-                      Xin chào, <span className="text-[#2563EB]">{currentUser?.name || currentUser?.fullName}</span> – Hệ thống AI Procurement đang hỗ trợ bạn lập kế hoạch.
-                   </p>
-                </div>
-                <div className="flex gap-4">
-                    <button className="px-5 py-2 bg-[#F1F5F9] border border-[rgba(148,163,184,0.1)] text-slate-900 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-100 transition-all" onClick={() => router.push("/pr")}>Hủy bỏ</button>
-                    <button
-                        className="px-6 py-2.5 bg-[#2563EB] text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-[#2563EB]/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
-                        onClick={handleSubmit}
-                        disabled={isSubmitting}
-                    >
-                        <Send size={18} />
-                    </button>
-                </div>
-            </div>
+        <main className="p-6 space-y-6 animate-in fade-in duration-500">
+            {/* PAGE HEADER */}
+            <PageHeader
+                icon={FileText}
+                iconColor="blue"
+                title="Tạo Phiếu Yêu Cầu (PR)"
+                subtitle={`Xin chào ${currentUser?.name || currentUser?.fullName || ""} — Trợ lý AI Procurement hỗ trợ bạn lập kế hoạch mua sắm.`}
+                actions={
+                    <>
+                        <button className="btn-secondary" onClick={() => router.push("/pr")}>
+                            <ArrowLeft size={16} /> Hủy bỏ
+                        </button>
+                        <button className="btn-primary" onClick={handleSubmit} disabled={isSubmitting}>
+                            <Send size={16} /> Gửi phê duyệt
+                        </button>
+                    </>
+                }
+            />
 
             {/* MODE TABS */}
             <div className="filter-tabs">
@@ -542,12 +540,12 @@ export default function CreatePRPage() {
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-slate-900 uppercase tracking-widest ml-1">Trung tâm chi phí</label>
+                                    <label className="erp-label">Trung tâm chi phí</label>
                                     <div className="relative">
                                         <select
                                             value={form.costCenterId}
                                             onChange={e => setForm({ ...form, costCenterId: e.target.value })}
-                                            className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.15)] rounded-2xl px-6 py-4 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 appearance-none transition-all"
+                                            className="erp-input appearance-none"
                                         >
                                             <option value="" className="bg-[#F1F5F9]">-- Chọn trung tâm chi phí --</option>
                                             {filteredCostCenters.map((cc: CostCenter) => (
@@ -560,12 +558,12 @@ export default function CreatePRPage() {
                                 </div>
 
                                 <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-slate-900 uppercase tracking-widest ml-1">Độ ưu tiên</label>
+                                    <label className="erp-label">Độ ưu tiên</label>
                                     <div className="relative">
                                         <select
                                             value={form.priority}
                                             onChange={e => setForm({ ...form, priority: Number(e.target.value) })}
-                                            className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.15)] rounded-2xl px-6 py-4 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 appearance-none transition-all"
+                                            className="erp-input appearance-none"
                                         >
                                             <option value={1}>Thấp</option>
                                             <option value={2}>Bình thường</option>
@@ -577,51 +575,52 @@ export default function CreatePRPage() {
                                 </div>
 
                                 <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-slate-900 uppercase tracking-widest ml-1 flex items-center gap-1">
+                                    <label className="erp-label flex items-center gap-1">
                                         <Calendar size={10} /> Ngày cần hàng
                                     </label>
                                     <input
                                         type="date"
                                         value={form.requiredDate}
                                         onChange={e => setForm({ ...form, requiredDate: e.target.value })}
-                                        className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.15)] rounded-2xl px-6 py-4 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 transition-all"
+                                        className="erp-input"
                                     />
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-slate-900 uppercase tracking-widest ml-1">Mô tả</label>
+                                    <label className="erp-label">Mô tả</label>
                                     <textarea
                                         placeholder="Mô tả chi tiết yêu cầu..."
                                         value={form.description}
                                         onChange={e => setForm({ ...form, description: e.target.value })}
                                         rows={3}
-                                        className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.15)] rounded-2xl px-6 py-4 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 transition-all resize-none placeholder:text-slate-900/50"
+                                        className="erp-input resize-none"
                                     />
                                 </div>
                                 <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-slate-900 uppercase tracking-widest ml-1">Lý do / Justification</label>
+                                    <label className="erp-label">Lý do / Justification</label>
                                     <textarea
                                         placeholder="Mục đích, lý do cần thiết..."
                                         value={form.justification}
                                         onChange={e => setForm({ ...form, justification: e.target.value })}
                                         rows={3}
-                                        className="w-full bg-[#FFFFFF] border border-[rgba(148,163,184,0.15)] rounded-2xl px-6 py-4 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 transition-all resize-none placeholder:text-slate-900/50"
+                                        className="erp-input resize-none"
                                     />
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* FORM SECTION 3 — DANH MỤC HÀNG HÓA */}
-                    <div className="bg-[#F1F5F9] rounded-[40px] border border-[rgba(148,163,184,0.1)] shadow-2xl shadow-[#2563EB]/5 overflow-hidden">
-                        <div className="p-8 border-b border-[rgba(148,163,184,0.1)] bg-[#FFFFFF]/50 flex justify-between items-center">
-                             <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900 flex items-center gap-3">
-                                 <ShoppingCart size={16} className="text-[#2563EB]" /> Danh mục hàng hóa đề xuất
+                    {/* Step 2 — Danh mục hàng hóa */}
+                    <div className="erp-card overflow-hidden">
+                        <div className="p-6 border-b border-slate-200 flex justify-between items-center">
+                             <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                                 <span className="step-badge">2</span>
+                                 Danh mục hàng hóa đề xuất
                              </h3>
                         </div>
-                        <div className="p-10">
+                        <div className="p-6">
                             <div className="mb-8 space-y-3">
                                 <label className="text-[10px] font-black text-slate-900 uppercase tracking-widest ml-1">Tìm kiếm & Thêm sản phẩm</label>
                                 <Select
@@ -864,6 +863,6 @@ export default function CreatePRPage() {
                     </div>
                 </div>
             )}
-        </div>
+        </main>
     );
 }

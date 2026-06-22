@@ -10,6 +10,9 @@ import {
     Send, Download, MoreVertical, CircleDot
 } from "lucide-react";
 import PageHeader from "../../components/shared/PageHeader";
+import StatusBadge from "../../components/shared/StatusBadge";
+import { StatCard, StatGrid } from "../../components/shared/StatCard";
+import FilterTabs from "../../components/shared/FilterTabs";
 import { useProcurement, PoStatus, Organization, PR, RFQ, PO, POItem } from "../../context/ProcurementContext";
 
 interface POMockData extends PO {
@@ -20,43 +23,6 @@ interface POMockData extends PO {
     escrowLocked?: boolean;
 }
 
-const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; border: string; dot: string }> = {
-    DRAFT:        { label: "Nháp",        bg: "bg-slate-500/10",   text: "text-slate-600",   border: "border-slate-500/20",   dot: "bg-slate-400" },
-    ISSUED:       { label: "Đã phát hành", bg: "bg-blue-600/10",    text: "text-blue-600",    border: "border-blue-600/20",    dot: "bg-blue-600" },
-    SUBMITTED:    { label: "Đã gửi",       bg: "bg-indigo-500/10",  text: "text-indigo-700",  border: "border-indigo-500/20",  dot: "bg-indigo-400" },
-    ACKNOWLEDGED: { label: "Đã xác nhận",  bg: "bg-emerald-500/10", text: "text-emerald-700", border: "border-emerald-500/20", dot: "bg-emerald-400" },
-    COMPLETED:    { label: "Hoàn tất",     bg: "bg-purple-500/10",  text: "text-purple-700",  border: "border-purple-500/20",  dot: "bg-purple-400" },
-    CANCELLED:    { label: "Đã hủy",       bg: "bg-rose-500/10",    text: "text-rose-700",    border: "border-rose-500/20",    dot: "bg-rose-400" },
-    SHIPPED:      { label: "Đang giao",    bg: "bg-amber-500/10",   text: "text-amber-700",   border: "border-amber-500/20",   dot: "bg-amber-400" },
-    PAID:         { label: "Đã thanh toán", bg: "bg-teal-500/10",   text: "text-teal-700",    border: "border-teal-500/20",    dot: "bg-teal-400" },
-};
-
-function StatusBadge({ status }: { status: string }) {
-    const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.DRAFT;
-    return (
-        <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider border ${cfg.bg} ${cfg.text} ${cfg.border}`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
-            {cfg.label}
-        </span>
-    );
-}
-
-function StatCard({ icon: Icon, label, value, sub, color }: {
-    icon: React.ElementType; label: string; value: string | number; sub?: string; color: string;
-}) {
-    return (
-        <div className="erp-card p-5 flex items-center gap-4">
-            <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${color}`}>
-                <Icon size={20} />
-            </div>
-            <div className="min-w-0">
-                <p className="text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B] mb-0.5">{label}</p>
-                <p className="text-xl font-bold text-slate-900 truncate">{value}</p>
-                {sub && <p className="text-[0.6875rem] text-[#64748B] font-medium mt-0.5">{sub}</p>}
-            </div>
-        </div>
-    );
-}
 
 export default function POManagementPage() {
     const { organizations, pos } = useProcurement();
@@ -125,12 +91,12 @@ export default function POManagementPage() {
                 />
 
                 {/* ── Stats ── */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                    <StatCard icon={Package}       label="Tổng đơn hàng"  value={allPOs.length}                        color="bg-blue-600/10 text-blue-600" />
-                    <StatCard icon={Banknote}       label="Tổng giá trị"   value={`${(totalValue / 1e6).toFixed(1)}M ₫`} sub="tổng ngân sách cam kết" color="bg-emerald-500/10 text-emerald-600" />
-                    <StatCard icon={Clock}          label="Đang xử lý"     value={pendingCount}                         sub="chờ xác nhận / giao hàng" color="bg-amber-500/10 text-amber-600" />
-                    <StatCard icon={TrendingUp}     label="Hoàn tất"       value={doneCount}                            sub="đã xác nhận & thanh toán" color="bg-purple-500/10 text-purple-600" />
-                </div>
+                <StatGrid cols={4}>
+                    <StatCard icon={Package}    label="Tổng đơn hàng" value={allPOs.length} tone="blue" />
+                    <StatCard icon={Banknote}   label="Tổng giá trị"  value={`${(totalValue / 1e6).toFixed(1)}M ₫`} sub="tổng ngân sách cam kết" tone="emerald" />
+                    <StatCard icon={Clock}      label="Đang xử lý"    value={pendingCount} sub="chờ xác nhận / giao hàng" tone="amber" />
+                    <StatCard icon={TrendingUp} label="Hoàn tất"      value={doneCount} sub="đã xác nhận & thanh toán" tone="purple" />
+                </StatGrid>
 
                 {/* ── Toolbar ── */}
                 <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
@@ -146,34 +112,17 @@ export default function POManagementPage() {
                     </div>
 
                     {/* Status Tabs */}
-                    <div className="flex gap-1 bg-slate-100 border border-slate-200 rounded-xl p-1 overflow-x-auto">
-                        {[
-                            { key: "ALL", label: "Tất cả" },
-                            { key: "DRAFT", label: "Nháp" },
-                            { key: "ISSUED", label: "Đã phát hành" },
-                            { key: "ACKNOWLEDGED", label: "Đã xác nhận" },
-                            { key: "COMPLETED", label: "Hoàn tất" },
-                        ].map(tab => (
-                            <button
-                                key={tab.key}
-                                onClick={() => setActiveStatus(tab.key)}
-                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider whitespace-nowrap transition-all ${
-                                    activeStatus === tab.key
-                                        ? "bg-blue-600 text-white shadow-md shadow-blue-600/20"
-                                        : "text-slate-600 hover:text-slate-900"
-                                }`}
-                            >
-                                {tab.label}
-                                {statusTabs[tab.key] !== undefined && (
-                                    <span className={`text-[0.6875rem] px-1.5 py-0.5 rounded-md font-bold ${
-                                        activeStatus === tab.key ? "bg-white/20" : "bg-white"
-                                    }`}>
-                                        {statusTabs[tab.key]}
-                                    </span>
-                                )}
-                            </button>
-                        ))}
-                    </div>
+                    <FilterTabs
+                        tabs={[
+                            { value: "ALL", label: "Tất cả", count: statusTabs.ALL ?? 0 },
+                            { value: "DRAFT", label: "Nháp", count: statusTabs.DRAFT ?? 0 },
+                            { value: "ISSUED", label: "Đã phát hành", count: statusTabs.ISSUED ?? 0 },
+                            { value: "ACKNOWLEDGED", label: "Đã xác nhận", count: statusTabs.ACKNOWLEDGED ?? 0 },
+                            { value: "COMPLETED", label: "Hoàn tất", count: statusTabs.COMPLETED ?? 0 },
+                        ]}
+                        value={activeStatus}
+                        onChange={setActiveStatus}
+                    />
 
                     <button className="btn-secondary flex items-center gap-2">
                         <Download size={14} /> Xuất

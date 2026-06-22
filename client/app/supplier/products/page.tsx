@@ -269,7 +269,7 @@ export default function SupplierProductsPage() {
                     </div>
 
                     <div className="min-h-[400px]">
-                        <ERPTable columns={columns} data={filteredData} />
+                        <ERPTable columns={columns} data={filteredData} pageSize={12} />
                         {filteredData.length === 0 && !loading && (
                             <div className="py-20 text-center">
                                 <div className="h-20 w-20 bg-[#F1F5F9] rounded-full flex items-center justify-center mx-auto mb-4 text-slate-900 border border-slate-200">

@@ -7,6 +7,7 @@ import { useProcurement } from "../context/ProcurementContext";
 import { Payment } from "../types/api-types";
 import { formatVND, formatDate } from "../utils/formatUtils";
 import ERPTable, { ERPTableColumn } from "../components/shared/ERPTable";
+import StatusBadge from "../components/shared/StatusBadge";
 
 // Extended Payment with API extra fields
 interface PaymentWithDetails extends Payment {
@@ -97,10 +98,7 @@ export default function PaymentsPage() {
                                     label: "Trạng thái",
                                     key: "status",
                                     sortable: true,
-                                    render: (p) => {
-                                        const sd = getStatusDisplay(p.status);
-                                        return <span className={`status-pill ${sd.class}`}>{sd.label}</span>;
-                                    },
+                                    render: (p) => <StatusBadge status={p.status} label={getStatusDisplay(p.status).label} size="sm" />,
                                 },
                                 {
                                     label: "Hành động",
@@ -126,6 +124,8 @@ export default function PaymentsPage() {
                                 <ERPTable
                                     columns={paymentColumns}
                                     data={payments}
+                                    pageSize={10}
+                                    getRowKey={(p) => p.id}
                                     emptyMessage="Không có thanh toán nào"
                                     emptyDescription="Các giao dịch thanh toán sẽ xuất hiện tại đây"
                                 />

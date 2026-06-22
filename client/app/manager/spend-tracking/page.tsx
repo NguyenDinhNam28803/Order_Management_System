@@ -1,11 +1,12 @@
 ﻿"use client";
 
 import React, { useState, useMemo } from "react";
-import { TrendingUp, PieChart, Wallet, ArrowRight, Calendar, Building, Filter, Download, ChevronDown } from "lucide-react";
+import { TrendingUp, PieChart, Wallet, ArrowRight, Building, Download, ChevronDown } from "lucide-react";
 import PageHeader from "../../components/shared/PageHeader";
 import { useProcurement } from "../../context/ProcurementContext";
 import { formatVND } from "../../utils/formatUtils";
 import { SimpleBarChart, DonutChart, StatsCard } from "../../components/charts";
+import { DataTable, DataTableColumn } from "../../components/shared/DataTable";
 
 export default function SpendTrackingPage() {
     const { budgetAllocations, costCenters, currentUser } = useProcurement();
@@ -43,11 +44,51 @@ export default function SpendTrackingPage() {
         return costCenters;
     }, [costCenters, currentUser]);
 
-    // Pagination for allocation table
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 5;
-    const totalPages = Math.ceil(filteredAllocations.length / itemsPerPage);
-    const paginatedAllocations = filteredAllocations.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+    type Allocation = (typeof filteredAllocations)[number];
+    const allocColumns: DataTableColumn<Allocation>[] = [
+        {
+            label: "Cost Center", key: "costCenterId", sortable: true,
+            render: (alloc) => {
+                const cc = costCenters.find(c => c.id === alloc.costCenterId);
+                return (
+                    <div className="flex items-center gap-3">
+                        <div className="h-8 w-8 rounded-lg bg-[#0F172A] flex items-center justify-center text-white shrink-0">
+                            <Building size={14} />
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-[11px] font-bold text-slate-900 leading-tight">{cc?.name || "N/A"}</span>
+                            <span className="text-[0.6875rem] font-bold text-slate-500 uppercase num-display">{cc?.code || "N/A"}</span>
+                        </div>
+                    </div>
+                );
+            },
+        },
+        { label: "Phân bổ", align: "right", render: (alloc) => <span className="font-bold text-slate-900 num-display">{formatVND(Number(alloc.allocatedAmount))}</span> },
+        { label: "Cam kết", align: "right", render: (alloc) => <span className="text-[#2563EB] font-bold num-display">{formatVND(Number(alloc.committedAmount))}</span> },
+        { label: "Thực chi", align: "right", render: (alloc) => <span className="font-bold text-slate-900 num-display">{formatVND(Number(alloc.spentAmount))}</span> },
+        {
+            label: "Tiến độ", align: "center",
+            render: (alloc) => {
+                const used = Number(alloc.spentAmount) + Number(alloc.committedAmount);
+                const pct = Number(alloc.allocatedAmount) > 0 ? (used / Number(alloc.allocatedAmount)) * 100 : 0;
+                return (
+                    <div className="flex items-center gap-2 min-w-[120px]">
+                        <div className="h-1.5 flex-1 bg-white rounded-full overflow-hidden">
+                            <div className={`h-full rounded-full ${pct > 90 ? 'bg-rose-400' : 'bg-[#2563EB]'}`} style={{ width: `${Math.min(pct, 100)}%` }} />
+                        </div>
+                        <span className="text-[10px] font-black text-slate-900 num-display">{pct.toFixed(0)}%</span>
+                    </div>
+                );
+            },
+        },
+        {
+            label: "Còn lại", align: "right",
+            render: (alloc) => {
+                const rem = Number(alloc.allocatedAmount) - (Number(alloc.spentAmount) + Number(alloc.committedAmount));
+                return <span className={`font-black num-display ${rem < 0 ? 'text-rose-600' : 'text-slate-900'}`}>{formatVND(rem)}</span>;
+            },
+        },
+    ];
 
     return (
         <main className="animate-in fade-in duration-500 p-6 min-h-screen bg-[#F8FAFC] text-slate-900">
@@ -61,10 +102,7 @@ export default function SpendTrackingPage() {
                         <div className="relative group">
                             <select
                                 value={selectedCC}
-                                onChange={(e) => {
-                                    setSelectedCC(e.target.value);
-                                    setCurrentPage(1);
-                                }}
+                                onChange={(e) => setSelectedCC(e.target.value)}
                                 className="bg-[#F1F5F9] border border-slate-200 hover:border-[#2563EB]/50 rounded-lg text-[0.6875rem] font-bold uppercase tracking-widest text-[#64748B] px-4 py-3 pr-10 outline-none appearance-none cursor-pointer transition-all min-w-[200px] focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]/20"
                             >
                                 <option value="ALL" className="bg-[#F1F5F9] text-slate-900">Tất cả Trung tâm chi phí</option>
@@ -195,101 +233,16 @@ export default function SpendTrackingPage() {
                         <span className="text-[10px] font-black uppercase tracking-widest">Xuất báo cáo</span>
                     </button>
                 </div>
-                <div className="overflow-x-auto">
-                    <table className="erp-table text-xs whitespace-nowrap">
-                        <thead>
-                            <tr>
-                                <th className="py-4 px-6">Cost Center</th>
-                                <th className="py-4 px-6">Phân bổ</th>
-                                <th className="py-4 px-6 text-right">Cam kết</th>
-                                <th className="py-4 px-6 text-right">Thực chi</th>
-                                <th className="py-4 px-6 text-center">Tiến độ</th>
-                                <th className="py-4 px-6 text-right">Còn lại</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100">
-                            {paginatedAllocations.length > 0 ? paginatedAllocations.map((alloc) => {
-                                const cc = costCenters.find(c => c.id === alloc.costCenterId);
-                                const used = Number(alloc.spentAmount) + Number(alloc.committedAmount);
-                                const pct = Number(alloc.allocatedAmount) > 0 ? (used / Number(alloc.allocatedAmount)) * 100 : 0;
-                                const rem = Number(alloc.allocatedAmount) - used;
-
-                                return (
-                                    <tr key={alloc.id} className="hover:bg-[#FFFFFF]/50 transition-colors group">
-                                        <td className="py-5 px-6">
-                                            <div className="flex items-center gap-3">
-                                                <div className="h-8 w-8 rounded-lg bg-[#0F172A] flex items-center justify-center text-white group-hover:scale-110 transition-transform">
-                                                    <Building size={14} />
-                                                </div>
-                                                <div className="flex flex-col">
-                                                    <span className="text-[11px] font-black text-slate-900 leading-tight">{cc?.name || "N/A"}</span>
-                                                    <span className="text-[0.6875rem] font-bold text-slate-900 uppercase tracking-tight">{cc?.code || "N/A"}</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="py-5 px-6 font-bold text-slate-900">{formatVND(Number(alloc.allocatedAmount))}</td>
-                                        <td className="py-5 px-6 text-right text-[#2563EB] font-bold">{formatVND(Number(alloc.committedAmount))}</td>
-                                        <td className="py-5 px-6 text-right font-bold text-slate-900">{formatVND(Number(alloc.spentAmount))}</td>
-                                        <td className="py-5 px-6 text-center min-w-[120px]">
-                                            <div className="flex items-center gap-2">
-                                                <div className="h-1.5 flex-1 bg-[#FFFFFF] rounded-full overflow-hidden">
-                                                    <div className={`h-full rounded-full ${pct > 90 ? 'bg-rose-400' : 'bg-[#2563EB]'}`} style={{width: `${Math.min(pct, 100)}%`}} />
-                                                </div>
-                                                <span className="text-[10px] font-black text-slate-900">{pct.toFixed(0)}%</span>
-                                            </div>
-                                        </td>
-                                        <td className="py-5 px-6 text-right">
-                                            <span className={`font-black ${rem < 0 ? 'text-black' : 'text-black'}`}>
-                                                {formatVND(rem)}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                );
-                            }) : (
-                                <tr><td colSpan={6} className="py-12 text-center text-slate-900 font-black uppercase text-[10px]">Không có dữ liệu phân bổ</td></tr>
-                            )}
-                        </tbody>
-                    </table>
+                <div className="p-4">
+                    <DataTable
+                        columns={allocColumns}
+                        data={filteredAllocations}
+                        pageSize={8}
+                        getRowKey={(alloc) => alloc.id}
+                        emptyMessage="Không có dữ liệu phân bổ"
+                        emptyDescription="Dữ liệu phân bổ ngân sách sẽ hiển thị tại đây"
+                    />
                 </div>
-                {/* Pagination Navigation */}
-                {totalPages > 1 && (
-                    <div className="flex items-center justify-between px-6 py-4 bg-[#FFFFFF] border-t border-slate-200">
-                        <div className="text-[10px] text-slate-900">
-                            Hiển thị <span className="font-bold text-slate-900">{paginatedAllocations.length}</span> / <span className="font-bold text-slate-900">{filteredAllocations.length}</span> phân bổ
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <button
-                                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                                disabled={currentPage === 1}
-                                className="px-3 py-1.5 bg-[#F1F5F9] border border-slate-200 rounded-lg text-[10px] font-bold text-slate-900 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1"
-                            >
-                                <ChevronDown size={12} className="rotate-90" /> Trước
-                            </button>
-                            <div className="flex items-center gap-1">
-                                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                                    <button
-                                        key={page}
-                                        onClick={() => setCurrentPage(page)}
-                                        className={`w-8 h-8 rounded-lg text-[10px] font-bold transition-all ${
-                                            currentPage === page
-                                                ? 'bg-[#2563EB] text-white'
-                                                : 'bg-[#F1F5F9] text-white hover:text-white hover:bg-slate-100'
-                                        }`}
-                                    >
-                                        {page}
-                                    </button>
-                                ))}
-                            </div>
-                            <button
-                                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                                disabled={currentPage === totalPages}
-                                className="px-3 py-1.5 bg-[#F1F5F9] border border-slate-200 rounded-lg text-[10px] font-bold text-slate-900 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1"
-                            >
-                                Sau <ChevronDown size={12} className="-rotate-90" />
-                            </button>
-                        </div>
-                    </div>
-                )}
             </div>
         </main>
     );
