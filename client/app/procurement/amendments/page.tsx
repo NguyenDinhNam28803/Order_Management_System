@@ -8,6 +8,7 @@ import {
     ArrowLeft, Split, MessageSquare, Save, Ship, FileText, Edit
 } from "lucide-react";
 import PageHeader from "../../components/shared/PageHeader";
+import { DataTable, DataTableColumn } from "../../components/shared/DataTable";
 
 // --- Mock Data ---
 interface AmendmentMock {
@@ -50,6 +51,37 @@ export default function AmendmentsPage() {
         }
     };
 
+    const columns: DataTableColumn<AmendmentMock>[] = [
+        { label: "Mã PO", render: () => <span className="font-bold text-slate-900">Đơn hàng</span> },
+        {
+            label: "Amendment #", align: "center",
+            render: (am) => <span className="inline-flex w-8 h-8 rounded-full bg-white border border-slate-200 items-center justify-center text-[0.6875rem] font-bold text-slate-900 num-display">{am.amendmentNumber}</span>,
+        },
+        {
+            label: "Loại thay đổi",
+            render: (am) => <span className={`px-3 py-1.5 rounded-lg text-[0.6875rem] font-bold uppercase tracking-widest border ${getBadgeColor(am.changeType)}`}>{am.changeType}</span>,
+        },
+        {
+            label: "Giá trị cũ/mới",
+            render: (am) => (
+                <div className="flex items-center gap-3 text-xs font-bold">
+                    <span className="text-slate-500 line-through num-display">{am.originalValue}</span>
+                    <ArrowRight size={14} className="text-blue-600 shrink-0" />
+                    <span className="text-emerald-700 bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/20 num-display">{am.newValue}</span>
+                </div>
+            ),
+        },
+        { label: "Ngày tạo", hideOnMobile: true, render: (am) => <span className="text-[11px] font-bold text-slate-900 num-display">{am.createdAt ? new Date(am.createdAt).toLocaleString('vi-VN') : '—'}</span> },
+        {
+            label: "Thao tác", align: "right",
+            render: (am) => (
+                <button onClick={() => setSelectedPOHistory(am.poNumber)} className="p-2.5 text-slate-900 hover:text-blue-600 hover:bg-blue-600/10 rounded-xl transition-all border border-slate-200" title="Xem lịch sử">
+                    <History size={16} />
+                </button>
+            ),
+        },
+    ];
+
     return (
         <div className="space-y-6">
             <div className="max-w-[1600px] mx-auto space-y-6">
@@ -70,57 +102,15 @@ export default function AmendmentsPage() {
                             }
                         />
 
-                        <div className="erp-card table-card">
-                            <div className="overflow-x-auto">
-                                <table className="erp-table text-xs">
-                                    <thead>
-                                        <tr className="border-b border-slate-200">
-                                            <th className="px-8 py-5">Mã PO</th>
-                                            <th className="px-8 py-5">Amendment #</th>
-                                            <th className="px-8 py-5">Loại thay đổi</th>
-                                            <th className="px-8 py-5">Giá trị cũ/mới</th>
-                                            <th className="px-8 py-5">Ngày tạo</th>
-                                            <th className="px-8 py-5 text-right">Thao tác</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-slate-100">
-                                        {amendments.map((am) => (
-                                            <tr key={am.id} className="hover:bg-white/30 transition-all group">
-                                                <td className="px-8 py-8 font-bold text-slate-900">Đơn hàng</td>
-                                                <td className="px-8 py-8">
-                                                    <span className="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-[0.6875rem] font-bold text-slate-900">
-                                                        {am.amendmentNumber}
-                                                    </span>
-                                                </td>
-                                                <td className="px-8 py-8">
-                                                    <span className={`px-4 py-2 rounded-xl text-[0.6875rem] font-bold uppercase tracking-widest border ${getBadgeColor(am.changeType)}`}>
-                                                        {am.changeType}
-                                                    </span>
-                                                </td>
-                                                <td className="px-8 py-8">
-                                                    <div className="flex items-center gap-3 text-xs font-bold">
-                                                        <span className="text-slate-900 line-through">{am.originalValue}</span>
-                                                        <ArrowRight size={14} className="text-blue-600" />
-                                                        <span className="text-black bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/20">{am.newValue}</span>
-                                                    </div>
-                                                </td>
-                                                <td className="px-8 py-8 text-[11px] font-bold text-slate-900">
-                                                    {am.createdAt ? new Date(am.createdAt).toLocaleString('vi-VN') : '—'}
-                                                </td>
-                                                <td className="px-8 py-8 text-right">
-                                                    <button 
-                                                        onClick={() => setSelectedPOHistory(am.poNumber)}
-                                                        className="p-3 text-slate-900 hover:text-blue-600 hover:bg-blue-600/10 rounded-xl transition-all border border-slate-200"
-                                                        title="Xem lịch sử"
-                                                    >
-                                                        <History size={18} />
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                        <div className="erp-card table-card p-4">
+                            <DataTable
+                                columns={columns}
+                                data={amendments}
+                                pageSize={12}
+                                getRowKey={(am) => am.id}
+                                emptyMessage="Chưa có điều chỉnh nào"
+                                emptyDescription="Các điều chỉnh đơn hàng sẽ xuất hiện tại đây"
+                            />
                         </div>
 
                         {selectedPOHistory && (

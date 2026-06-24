@@ -7,6 +7,8 @@ import PageHeader from "../../components/shared/PageHeader";
 import { useProcurement, PO, POItem } from "../../context/ProcurementContext";
 import ConfirmDialog from "../../components/shared/ConfirmDialog";
 import { getStatusLabel } from "../../utils/formatUtils";
+import { DataTable, DataTableColumn } from "../../components/shared/DataTable";
+import StatusBadge from "../../components/shared/StatusBadge";
 import { Organization } from "../../types/api-types";
 
 // Extended PO with API-specific fields
@@ -280,6 +282,69 @@ export default function SupplierPO() {
         )
     }
 
+    const poColumns: DataTableColumn<(typeof displayPOs)[number]>[] = [
+        {
+            label: "Số PO", key: "poNumber", sortable: true,
+            render: (p) => (
+                <div>
+                    <div className="font-bold text-slate-900 text-xs mb-1 truncate">{p.poNumber || `PO-${p.id?.slice(0, 8).toUpperCase()}`}</div>
+                    <div className="text-[0.6875rem] font-bold text-slate-500 uppercase tracking-wider truncate">{p.vendor || "ProcurePro"}</div>
+                </div>
+            ),
+        },
+        {
+            label: "Sản phẩm / Mô tả",
+            render: (p) => {
+                const items = p.items || [];
+                const firstItem = items[0];
+                const itemName = firstItem?.description || 'Sản phẩm';
+                const moreItems = items.length > 1 ? `+${items.length - 1} sản phẩm khác` : '';
+                return (
+                    <div>
+                        <div className="font-bold text-slate-900 text-xs uppercase tracking-tight truncate" title={itemName}>{itemName}</div>
+                        {moreItems && <div className="text-[0.6875rem] text-[#2563EB] mt-1 font-bold">{moreItems}</div>}
+                    </div>
+                );
+            },
+        },
+        {
+            label: "SL / Tổng tiền", align: "center",
+            render: (p) => {
+                const items = p.items || [];
+                const totalQty = items.reduce((sum: number, item: { qty?: number }) => sum + (item.qty || 0), 0);
+                const totalAmount = p.total || items.reduce((sum: number, item: { qty?: number; unitPrice?: number }) => sum + ((item.qty || 0) * (item.unitPrice || 0)), 0);
+                return (
+                    <div>
+                        <div className="text-xs font-bold text-slate-900 num-display">{totalQty} <span className="text-slate-500 font-normal">SP</span></div>
+                        <div className="text-[0.6875rem] font-black text-[#2563EB] mt-1 num-display">{new Intl.NumberFormat('vi-VN').format(Number(totalAmount))} ₫</div>
+                    </div>
+                );
+            },
+        },
+        { label: "Ngày tạo", align: "center", hideOnMobile: true, render: (p) => <span className="text-xs text-slate-900 num-display">{p.createdAt ? new Date(p.createdAt).toLocaleDateString("vi-VN") : "N/A"}</span> },
+        { label: "Tình trạng", align: "center", render: (p) => <StatusBadge status={p.status} size="sm" /> },
+        {
+            label: "Thao tác", align: "right",
+            render: (p) => (
+                <div className="flex items-center gap-1 justify-end">
+                    {(p.status === "ISSUED" || p.status === "PENDING") && (
+                        <button onClick={async () => { await ackPO(p.id); notify("Đã xác nhận đơn hàng (ACK)", "success"); }} className="p-2 rounded-lg hover:bg-emerald-500/10 text-emerald-700 transition-colors" title="Xác nhận PO">
+                            <CheckCircle size={16} />
+                        </button>
+                    )}
+                    {(p.status === "ACKNOWLEDGED" || p.status === "CONFIRMED") && (
+                        <button onClick={async () => { await shipPO(p.id); notify("Đã cập nhật vận đơn (ASN/DO)", "success"); }} className="p-2 rounded-lg hover:bg-[#2563EB]/10 text-[#2563EB] transition-colors" title="Báo giao hàng">
+                            <Truck size={16} />
+                        </button>
+                    )}
+                    <button onClick={() => openModal(p)} className="p-2 rounded-lg hover:bg-white text-slate-900 transition-colors" title="Xem chi tiết">
+                        <Eye size={16} />
+                    </button>
+                </div>
+            ),
+        },
+    ];
+
     return (
         <main className="pt-16 px-8 pb-12 bg-[#F8FAFC] min-h-screen text-slate-900">
             <ConfirmDialog
@@ -340,131 +405,15 @@ export default function SupplierPO() {
                 )}
             </div>
 
-            <div className="bg-[#F1F5F9] rounded-xl overflow-hidden shadow-xl shadow-[#2563EB]/5 border border-slate-200">
-                <table className="erp-table text-xs w-full" style={{ tableLayout: 'fixed' }}>
-                    <thead className="border-b border-slate-200">
-                        <tr>
-                            <th className="py-4 px-4 text-left w-[18%]">Số PO</th>
-                            <th className="py-4 px-4 text-left w-[35%]">Sản phẩm / Mô tả</th>
-                            <th className="py-4 px-4 text-center w-[12%]">SL / Tổng tiền</th>
-                            <th className="py-4 px-4 text-center w-[12%]">Ngày tạo</th>
-                            <th className="py-4 px-4 text-center w-[12%]">Tình trạng</th>
-                            <th className="py-4 px-4 text-right w-[11%]">Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                        {displayPOs.map((p) => {
-                            const items = p.items || [];
-                            const totalQty = items.reduce((sum: number, item: { qty?: number }) => sum + (item.qty || 0), 0);
-                            const totalAmount = p.total || items.reduce((sum: number, item: { qty?: number; unitPrice?: number }) => sum + ((item.qty || 0) * (item.unitPrice || 0)), 0);
-                            const firstItem = items[0];
-                            const itemName = firstItem?.description || 'Sản phẩm';
-                            const itemCode = firstItem?.id ? "***" : "N/A";
-                            const moreItems = items.length > 1 ? `+${items.length - 1} sản phẩm khác` : '';
-
-                            return (
-                                <tr key={p.id} className={`group hover:bg-slate-100 transition-colors border-b border-slate-200 ${p.supplierId === supplierId ? 'bg-[#2563EB]/5' : ''}`}>
-                                    {/* PO Number */}
-                                    <td className="py-4 px-4">
-                                        <div className="font-bold text-slate-900 text-xs mb-1 truncate group-hover:text-[#F8FAFC] transition-colors">
-                                            {p.poNumber || `PO-${p.id?.slice(0, 8).toUpperCase()}`}
-                                        </div>
-                                        <div className="text-[0.6875rem] font-bold text-slate-900 uppercase tracking-wider truncate group-hover:text-[#2563EB] transition-colors">
-                                            {p.vendor || "ProcurePro"}
-                                        </div>
-                                    </td>
-
-                                    {/* Product Info */}
-                                    <td className="py-4 px-4">
-                                        <div className="font-black text-slate-900 text-xs mb-1 uppercase tracking-tight truncate group-hover:text-[#F8FAFC] transition-colors" title={itemName}>
-                                            {itemName}
-                                        </div>
-                                        {itemCode && (
-                                            <div className="text-[0.6875rem] font-bold text-slate-900 uppercase tracking-widest group-hover:text-[#F8FAFC]/40 transition-colors">
-                                                SKU: <span className="text-slate-900 group-hover:text-[#F8FAFC]/60 transition-colors">{itemCode}</span>
-                                            </div>
-                                        )}
-                                        {moreItems && (
-                                            <div className="text-[0.6875rem] text-[#2563EB] mt-1 font-bold group-hover:text-[#2563EB] transition-colors">
-                                                {moreItems}
-                                            </div>
-                                        )}
-                                    </td>
-
-                                    {/* Qty / Total */}
-                                    <td className="py-4 px-4 text-center">
-                                        <div className="text-xs font-bold text-slate-900 group-hover:text-[#F8FAFC] transition-colors">
-                                            {totalQty} <span className="text-slate-900 font-normal group-hover:text-[#F8FAFC]/60">SP</span>
-                                        </div>
-                                        <div className="text-[0.6875rem] font-black text-black mt-1 group-hover:text-[#2563EB] transition-colors">
-                                            {new Intl.NumberFormat('vi-VN').format(totalAmount)} ₫
-                                        </div>
-                                    </td>
-
-                                    {/* Date */}
-                                    <td className="py-4 px-4 text-center">
-                                        <div className="text-xs text-slate-900 group-hover:text-[#F8FAFC] transition-colors">
-                                            {p.createdAt ? new Date(p.createdAt).toLocaleDateString("vi-VN") : "N/A"}
-                                        </div>
-                                    </td>
-
-                                    {/* Status */}
-                                    <td className="py-4 px-4 text-center">
-                                        <span className={`${p.status === "ISSUED" || p.status === "PENDING" ? "bg-rose-500/10 text-rose-700 border border-rose-500/20 group-hover:bg-rose-500 group-hover:text-white" : p.status === "REJECTED" ? "bg-rose-500/20 text-rose-700 border border-rose-500/30 group-hover:bg-rose-700 group-hover:text-white" : p.status === "ACKNOWLEDGED" || p.status === "CONFIRMED" ? "bg-[#2563EB]/10 text-[#3B82F6] border border-[#2563EB]/20 group-hover:bg-[#2563EB] group-hover:text-white" : "bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 group-hover:bg-emerald-500 group-hover:text-white"} font-black uppercase px-2 py-1 rounded text-[0.6875rem] tracking-widest whitespace-nowrap transition-all`}>
-                                            {getStatusLabel(p.status)}
-                                        </span>
-                                    </td>
-
-                                    {/* Actions */}
-                                    <td className="py-4 px-4 text-right">
-                                        <div className="flex items-center gap-1 justify-end">
-                                            {/* Quick Confirm - Only show for ISSUED/PENDING status */}
-                                            {(p.status === "ISSUED" || p.status === "PENDING") && (
-                                                <button
-                                                    onClick={async () => {
-                                                        await ackPO(p.id);
-                                                        notify("Đã xác nhận đơn hàng (ACK)", "success");
-                                                    }}
-                                                    className="p-2 rounded-lg hover:bg-emerald-500/10 text-emerald-700 transition-colors group-hover:text-emerald-500"
-                                                    title="Xác nhận PO"
-                                                >
-                                                    <CheckCircle size={16}/>
-                                                </button>
-                                            )}
-                                            {/* Quick Ship - Only show for ACKNOWLEDGED/CONFIRMED status */}
-                                            {(p.status === "ACKNOWLEDGED" || p.status === "CONFIRMED") && (
-                                                <button
-                                                    onClick={async () => {
-                                                        await shipPO(p.id);
-                                                        notify("Đã cập nhật vận đơn (ASN/DO)", "success");
-                                                    }}
-                                                    className="p-2 rounded-lg hover:bg-[#2563EB]/10 text-[#2563EB] transition-colors group-hover:bg-[#2563EB] group-hover:text-black"
-                                                    title="Báo giao hàng"
-                                                >
-                                                    <Truck size={16}/>
-                                                </button>
-                                            )}
-                                            <button 
-                                                onClick={() => openModal(p)}
-                                                className="p-2 rounded-lg hover:bg-[#FFFFFF] text-slate-900 transition-colors group-hover:bg-[#FFFFFF]/10 group-hover:text-[#F8FAFC]"
-                                                title="Xem chi tiết"
-                                            >
-                                                <Eye size={16}/>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            );
-                        })}
-                        {displayPOs.length === 0 && (
-                            <tr>
-                                <td colSpan={6} className="text-center py-12 text-slate-900 font-bold uppercase tracking-widest">
-                                    Chưa có đơn hàng nào.
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
+            <div className="erp-card table-card p-4">
+                <DataTable
+                    columns={poColumns}
+                    data={displayPOs}
+                    pageSize={12}
+                    getRowKey={(p) => p.id}
+                    emptyMessage="Chưa có đơn hàng nào"
+                    emptyDescription="Đơn hàng từ khách hàng sẽ xuất hiện tại đây"
+                />
             </div>
 
             {/* Modal Chi tiết PO */}

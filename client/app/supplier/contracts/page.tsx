@@ -9,63 +9,24 @@ import {
     CheckCircle2,
     Clock,
     XCircle,
-    Search,
-    Filter,
-    ShieldCheck,
     AlertCircle,
     Calendar,
-    DollarSign,
     Building2,
     Bell,
     PenTool,
-    X,
-    CheckCircle,
     Signature,
     RefreshCw,
-    Scroll
+    Scroll,
+    X
 } from "lucide-react";
 import PageHeader from "../../components/shared/PageHeader";
 import { ContractStatus } from "../../types/api-types";
 import { convertPrismaDecimal } from "../../utils/formatUtils";
 import ContractSignModal from "../../components/ContractSignModal";
-
-const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; border: string; icon: React.ReactNode }> = {
-    ACTIVE: {
-        label: "Đang hiệu lực",
-        bg: "bg-emerald-500/10",
-        text: "text-emerald-700",
-        border: "border-emerald-500/30",
-        icon: <CheckCircle2 size={12}/>
-    },
-    PENDING_APPROVAL: {
-        label: "Chờ duyệt",
-        bg: "bg-[#2563EB]/10",
-        text: "text-[#3B82F6]",
-        border: "border-[#2563EB]/30",
-        icon: <Signature size={12}/>
-    },
-    DRAFT: {
-        label: "Bản nháp",
-        bg: "bg-slate-500/10",
-        text: "text-slate-700",
-        border: "border-slate-500/30",
-        icon: <FileText size={12}/>
-    },
-    EXPIRED: {
-        label: "Hết hạn",
-        bg: "bg-orange-500/10",
-        text: "text-orange-700",
-        border: "border-orange-500/30",
-        icon: <AlertCircle size={12}/>
-    },
-    TERMINATED: {
-        label: "Đã chấm dứt",
-        bg: "bg-rose-500/10",
-        text: "text-rose-700",
-        border: "border-rose-500/30",
-        icon: <XCircle size={12}/>
-    }
-};
+import { DataTable, DataTableColumn } from "../../components/shared/DataTable";
+import TableToolbar from "../../components/shared/TableToolbar";
+import { StatCard, StatGrid } from "../../components/shared/StatCard";
+import StatusBadge from "../../components/shared/StatusBadge";
 
 // Notification type
 interface ContractNotification {
@@ -127,15 +88,53 @@ export default function SupplierContractsPage() {
         return matchSearch && matchStatus;
     });
 
-    const getStatusBadge = (status: ContractStatus) => {
-        const config = STATUS_CONFIG[status] || STATUS_CONFIG.DRAFT;
-        return (
-            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold border ${config.bg} ${config.text} ${config.border}`}>
-                {config.icon}
-                {config.label}
-            </span>
-        );
-    };
+    const columns: DataTableColumn<Contract>[] = [
+        {
+            label: "Số hợp đồng", key: "contractNumber", sortable: true,
+            render: (c) => <span className="font-bold text-[#2563EB] num-display">#{c.contractNumber}</span>,
+        },
+        {
+            label: "Tiêu đề / Khách hàng",
+            render: (c) => (
+                <div>
+                    <div className="font-bold text-slate-900">{c.title}</div>
+                    <div className="flex items-center gap-1 text-xs text-slate-500 mt-1"><Building2 size={12} />{c.organization?.name || "N/A"}</div>
+                </div>
+            ),
+        },
+        {
+            label: "Giá trị", align: "right",
+            render: (c) => <span className="font-bold text-slate-900 num-display">{new Intl.NumberFormat('vi-VN').format(convertPrismaDecimal(c.totalValue))} {c.currency || 'VND'}</span>,
+        },
+        {
+            label: "Thời hạn", hideOnMobile: true,
+            render: (c) => (
+                <div className="flex items-center gap-2 text-sm">
+                    <Calendar size={14} className="text-slate-400 shrink-0" />
+                    <div className="num-display">
+                        <div className="text-slate-900">{c.startDate ? new Date(c.startDate).toLocaleDateString('vi-VN') : "—"}</div>
+                        <div className="text-slate-500 text-xs">- {c.endDate ? new Date(c.endDate).toLocaleDateString('vi-VN') : "—"}</div>
+                    </div>
+                </div>
+            ),
+        },
+        { label: "Trạng thái", render: (c) => <StatusBadge status={c.status} size="sm" /> },
+        {
+            label: "Thao tác", align: "right",
+            render: (c) => (
+                <div className="flex items-center justify-end gap-2">
+                    <button onClick={() => openDetailModal(c)} className="inline-flex items-center justify-center h-9 w-9 rounded-lg bg-white text-slate-900 hover:text-[#2563EB] hover:bg-[#2563EB]/10 border border-slate-200 hover:border-[#2563EB]/30 transition-all" title="Xem chi tiết">
+                        <Eye size={16} />
+                    </button>
+                    {c.status === ContractStatus.PENDING_APPROVAL && (
+                        <button onClick={() => openSignModal(c)} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-xs transition-all" title="Phê duyệt hợp đồng">
+                            <PenTool size={14} /> Phê duyệt
+                        </button>
+                    )}
+                </div>
+            ),
+        },
+    ];
 
     const openSignModal = (contract: Contract) => {
         setSignTarget(contract);
@@ -204,149 +203,42 @@ export default function SupplierContractsPage() {
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                {[
-                    { label: "Tổng hợp đồng", value: supplierContracts.length, icon: FileText, color: "text-[#3B82F6]", bg: "bg-[#2563EB]/10" },
-                    { label: "Đang hiệu lực", value: supplierContracts.filter(c => c.status === "ACTIVE").length, icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-500/10" },
-                    { label: "Chờ duyệt", value: supplierContracts.filter(c => c.status === "PENDING_APPROVAL").length, icon: Signature, color: "text-[#3B82F6]", bg: "bg-[#2563EB]/10" },
-                    { label: "Sắp hết hạn", value: supplierContracts.filter(c => c.status === "EXPIRED").length, icon: AlertCircle, color: "text-orange-600", bg: "bg-orange-500/10" }
-                ].map((stat, idx) => (
-                    <div key={idx} className="bg-[#F1F5F9] rounded-xl p-4 border border-slate-200">
-                        <div className="flex items-center gap-3">
-                            <div className={`h-10 w-10 rounded-lg ${stat.bg} flex items-center justify-center`}>
-                                <stat.icon className={stat.color} size={20} />
-                            </div>
-                            <div>
-                                <p className="text-[0.6875rem] font-black uppercase tracking-wider text-slate-900">{stat.label}</p>
-                                <p className="text-xl font-black text-slate-900">{stat.value}</p>
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
+            <StatGrid cols={4} className="mb-6">
+                <StatCard label="Tổng hợp đồng" value={supplierContracts.length} icon={FileText} tone="blue" />
+                <StatCard label="Đang hiệu lực" value={supplierContracts.filter(c => c.status === "ACTIVE").length} icon={CheckCircle2} tone="emerald" />
+                <StatCard label="Chờ duyệt" value={supplierContracts.filter(c => c.status === "PENDING_APPROVAL").length} icon={Signature} tone="indigo" />
+                <StatCard label="Sắp hết hạn" value={supplierContracts.filter(c => c.status === "EXPIRED").length} icon={AlertCircle} tone="amber" />
+            </StatGrid>
 
-            {/* Filters */}
-            <div className="bg-[#F1F5F9] p-4 rounded-xl border border-slate-200 shadow-2xl shadow-[#2563EB]/5 mb-6">
-                <div className="flex flex-col md:flex-row gap-4">
-                    <div className="flex-1 flex gap-3">
-                        <div className="h-14 w-14 bg-[#FFFFFF] border border-slate-200 rounded-xl flex items-center justify-center text-slate-900 shadow-sm shrink-0">
-                            <Search size={20} className="text-[#2563EB]" />
-                        </div>
-                        <div className="relative flex-1">
-                            <input
-                                type="text"
-                                placeholder="Tìm theo số hợp đồng, tiêu đề, khách hàng..."
-                                className="w-full h-14 pl-6 pr-4 bg-[#FFFFFF] border border-slate-200 rounded-xl text-sm font-bold text-slate-900 placeholder:text-slate-400/40 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                        </div>
-                    </div>
-                    <div className="flex gap-3">
-                        <div className="relative">
-                            <Filter size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#2563EB]" />
-                            <select
-                                className="h-14 pl-12 pr-10 bg-[#FFFFFF] border border-slate-200 rounded-xl text-sm font-bold text-slate-900 focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all appearance-none cursor-pointer min-w-[200px]"
-                                value={statusFilter}
-                                onChange={(e) => setStatusFilter(e.target.value)}
-                            >
-                                <option value="ALL">Tất cả trạng thái</option>
-                                <option value="ACTIVE">Đang hiệu lực</option>
-                                <option value="DRAFT">Bản nháp</option>
-                                <option value="EXPIRED">Đã hết hạn</option>
-                                <option value="TERMINATED">Đã chấm dứt</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Table */}
-            <div className="bg-[#F1F5F9] rounded-xl border border-slate-200 shadow-xl shadow-[#2563EB]/5 overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="erp-table text-xs">
-                        <thead className="border-b border-slate-200">
-                            <tr>
-                                <th className="px-6 py-4">Số hợp đồng</th>
-                                <th className="px-6 py-4">Tiêu đề / Khách hàng</th>
-                                <th className="px-6 py-4 text-center">Giá trị</th>
-                                <th className="px-6 py-4">Thời hạn</th>
-                                <th className="px-6 py-4">Trạng thái</th>
-                                <th className="px-6 py-4 text-right">Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100">
-                            {filteredContracts.length > 0 ? filteredContracts.map((c) => (
-                                <tr key={c.id} className="hover:bg-slate-100 transition-colors border-b border-slate-200 group">
-                                    <td className="px-6 py-4">
-                                        <span className="font-bold text-[#2563EB] group-hover:scale-105 transition-transform inline-block">#{c.contractNumber}</span>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="font-bold text-slate-900 group-hover:text-[#F8FAFC] transition-colors">{c.title}</div>
-                                        <div className="flex items-center gap-1 text-xs text-slate-900 mt-1 group-hover:text-[#F8FAFC]/60 transition-colors">
-                                            <Building2 size={12} />
-                                            {c.organization?.name || "N/A"}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 text-center">
-                                        <div className="font-bold text-slate-900 group-hover:text-[#F8FAFC] transition-colors">
-                                            {new Intl.NumberFormat('vi-VN').format(convertPrismaDecimal(c.totalValue))} {c.currency || 'VND'}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-2 text-sm text-slate-900 group-hover:text-[#F8FAFC] transition-colors">
-                                            <Calendar size={14} className="text-slate-900 group-hover:text-[#2563EB]" />
-                                            <div>
-                                                <div className="text-slate-900 group-hover:text-[#F8FAFC] transition-colors">{new Date(c.startDate).toLocaleDateString('vi-VN')}</div>
-                                                <div className="text-slate-900 text-xs group-hover:text-[#F8FAFC]/40 transition-colors">- {new Date(c.endDate).toLocaleDateString('vi-VN')}</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">{getStatusBadge(c.status)}</td>
-                                    <td className="px-6 py-4 text-right">
-                                        <div className="flex items-center justify-end gap-2">
-                                            <button
-                                                onClick={() => openDetailModal(c)}
-                                                className="inline-flex items-center justify-center h-9 w-9 rounded-lg bg-[#FFFFFF] text-slate-900 hover:text-[#2563EB] hover:bg-[#2563EB]/10 border border-slate-200 hover:border-[#2563EB]/30 transition-all"
-                                                title="Xem chi tiết"
-                                            >
-                                                <Eye size={18} />
-                                            </button>
-
-                                            {c.status === ContractStatus.PENDING_APPROVAL && (
-                                                <button
-                                                    onClick={() => openSignModal(c)}
-                                                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-xs border border-[#2563EB]/30 transition-all shadow-lg shadow-[#2563EB]/20"
-                                                    title="Phê duyệt hợp đồng"
-                                                >
-                                                    <PenTool size={14} />
-                                                    Phê duyệt
-                                                </button>
-                                            )}
-                                        </div>
-                                    </td>
-                                </tr>
-                            )) : (
-                                <tr>
-                                    <td colSpan={6} className="px-6 py-16 text-center">
-                                        {loadingMyPrs ? (
-                                            <div className="flex items-center justify-center gap-2 text-slate-900">
-                                                <Clock size={18} className="animate-spin" />
-                                                <span>Đang tải dữ liệu...</span>
-                                            </div>
-                                        ) : (
-                                            <div className="text-slate-900">
-                                                <FileText className="mx-auto h-12 w-12 mb-3 opacity-30" />
-                                                <p className="font-medium">Không tìm thấy hợp đồng nào</p>
-                                                <p className="text-sm mt-1">Thử điều chỉnh bộ lọc hoặc tìm kiếm với từ khóa khác</p>
-                                            </div>
-                                        )}
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
+            {/* Toolbar + Table */}
+            <div className="erp-card table-card p-4 space-y-4">
+                <TableToolbar
+                    search={searchTerm}
+                    onSearchChange={setSearchTerm}
+                    searchPlaceholder="Tìm theo số hợp đồng, tiêu đề, khách hàng..."
+                    filters={
+                        <select
+                            className="h-10 px-3 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-900 focus:outline-none focus:border-blue-500/50 transition-all cursor-pointer"
+                            value={statusFilter}
+                            onChange={(e) => setStatusFilter(e.target.value)}
+                        >
+                            <option value="ALL">Tất cả trạng thái</option>
+                            <option value="ACTIVE">Đang hiệu lực</option>
+                            <option value="DRAFT">Bản nháp</option>
+                            <option value="EXPIRED">Đã hết hạn</option>
+                            <option value="TERMINATED">Đã chấm dứt</option>
+                        </select>
+                    }
+                />
+                <DataTable
+                    columns={columns}
+                    data={filteredContracts}
+                    pageSize={12}
+                    loading={loadingMyPrs && filteredContracts.length === 0}
+                    getRowKey={(c) => c.id}
+                    emptyMessage="Không tìm thấy hợp đồng nào"
+                    emptyDescription="Thử điều chỉnh bộ lọc hoặc tìm kiếm với từ khóa khác"
+                />
             </div>
 
             {/* Digital Signing Modal */}
@@ -397,7 +289,7 @@ export default function SupplierContractsPage() {
                             {/* Status */}
                             <div className="flex items-center justify-between p-4 rounded-xl bg-[#FFFFFF] border border-slate-200">
                                 <span className="text-sm font-bold text-slate-900">Trạng thái</span>
-                                {getStatusBadge(selectedContract.status)}
+                                <StatusBadge status={selectedContract.status} size="sm" />
                             </div>
 
                             {/* Info Grid */}
