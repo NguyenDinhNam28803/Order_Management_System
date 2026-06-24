@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import React, { useState } from "react";
-import { useProcurement, Organization } from "../../context/ProcurementContext";
+import { useProcurement } from "../../context/ProcurementContext";
 import { CreateOrganizationPayload } from "@/app/types/api-types";
 import ConfirmDialog from "../../components/shared/ConfirmDialog";
 import {

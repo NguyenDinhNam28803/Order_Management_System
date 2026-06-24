@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import React, { useState } from "react";
-import { TrendingUp, ArrowLeft, Info, ShieldAlert } from "lucide-react";
+import { ArrowLeft, Info, ShieldAlert } from "lucide-react";
 import { useRouter } from "next/navigation";
 import DefectRateChart from "../../components/DefectRateChart";
 import SupplierSelector from "../../components/SupplierSelector";

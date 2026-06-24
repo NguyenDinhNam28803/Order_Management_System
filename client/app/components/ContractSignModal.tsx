@@ -66,7 +66,7 @@ export default function ContractSignModal({
     // Reset when contract changes (new modal opened)
     useEffect(() => {
         if (contract) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
+             
             setStep("review");
             setAgreed(false);
             setCode(generateCode());

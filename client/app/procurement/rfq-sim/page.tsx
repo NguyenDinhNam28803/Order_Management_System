@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 
 // 1. Khởi tạo Mock Data
 const mockProducts = [

@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { useProcurement, Product, ProductCategory } from "../../context/ProcurementContext";
+import { useProcurement, Product } from "../../context/ProcurementContext";
 import { CreateProductDtoShort, CurrencyCode, ProductType } from "../../types/api-types";
 import ERPTable, { ERPTableColumn } from "../../components/shared/ERPTable";
 import {

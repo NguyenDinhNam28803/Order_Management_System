@@ -3,8 +3,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import {
   CheckCircle, AlertCircle, Clock, FileText, Building2,
-  Mail, Phone, CalendarDays, Package, Send, Loader2, ChevronRight,
-  Bell
+  Mail, CalendarDays, Package, Send, Loader2, ChevronRight
 } from "lucide-react";
 import { ToastProvider, ToastContainer, useToast } from "../../components/Toast";
 import { convertPrismaDecimal } from "../../utils/formatUtils";
@@ -136,7 +135,7 @@ function RfqQuotePageContent() {
       if (rfqData.paymentTerms) setPaymentTerms(rfqData.paymentTerms);
       if (rfqData.deliveryTerms) setDeliveryTerms(rfqData.deliveryTerms);
       setPageState("form");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     } catch (e) {
       setErrorMsg(e instanceof Error ? e.message : "Có lỗi xảy ra");
       setPageState("error");
@@ -195,7 +194,7 @@ function RfqQuotePageContent() {
 
       notify("Báo giá của bạn đã được gửi thành công!", "success");
       setPageState("submitted");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     } catch (e) {
       alert(`Lỗi: ${e instanceof Error ? e.message : String(e)}`);
     } finally {

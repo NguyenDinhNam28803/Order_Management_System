@@ -1,7 +1,6 @@
 ﻿"use client";
 
 import React from "react";
-import { formatVND } from "../../utils/formatUtils";
 
 interface DonutSegment {
   label: string;

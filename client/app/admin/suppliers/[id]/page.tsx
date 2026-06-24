@@ -6,8 +6,7 @@ import { useProcurement, Organization } from "../../../context/ProcurementContex
 import { 
     ArrowLeft, Building2, Star, TrendingUp, Award, 
     Package, CheckCircle, AlertTriangle, FileText,
-    Calendar, Phone, Mail, MapPin, RefreshCw, Loader2,
-    ChevronRight, BarChart3, ThumbsUp, ThumbsDown
+    Calendar, Phone, RefreshCw, Loader2, BarChart3, ThumbsUp
 } from "lucide-react";
 
 interface KPIMetrics {

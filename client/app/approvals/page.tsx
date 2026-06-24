@@ -1,11 +1,9 @@
 ﻿"use client";
 
 import React, { useState, useEffect } from "react";
-import { 
-    CheckSquare, XCircle, CheckCircle2, Eye, FileText, AlertTriangle, 
-    History, ArrowLeft, MessageSquareWarning, Paperclip, Check, Loader2,
+import { XCircle, CheckCircle2, FileText, Check, Loader2,
     Inbox, Star, Archive, Search, MoreVertical, Paperclip as AttachmentIcon,
-    Calendar, TrendingDown, TrendingUp, AlertCircle
+    Calendar, TrendingDown, AlertCircle
 } from "lucide-react";
 import { useProcurement, PR } from "../context/ProcurementContext";
 import { formatVND } from "../utils/formatUtils";

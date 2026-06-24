@@ -4,8 +4,8 @@ import React, { useState, useEffect } from "react";
 import { Inbox, FileText, UploadCloud, Send, ChevronDown, CheckCircle, AlertCircle } from "lucide-react";
 
 import { useProcurement, RFQ, PR, PRItem } from "../../context/ProcurementContext";
-import type { CreateQuoteDto } from "../../types/api-types";
 import PageHeader from "../../components/shared/PageHeader";
+import { DataTable, DataTableColumn } from "../../components/shared/DataTable";
 
 export default function SupplierRFQ() {
     const { currentUser, prs, createQuote, notify, fetchMySupplierRFQs, submitQuotation } = useProcurement();
@@ -36,7 +36,45 @@ export default function SupplierRFQ() {
     const openRfqs = myRfqs.filter((r: RFQ) =>
         r.status == "SENT" || r.status == "OPEN" || r.status == "PENDING"
     );
-    
+
+    const rfqColumns: DataTableColumn<RFQ>[] = [
+        { label: "Số RFQ", key: "id", sortable: true, render: (r) => <span className="font-black text-slate-900 uppercase num-display">{r.id}</span> },
+        {
+            label: "Khách hàng",
+            render: (r) => {
+                const prDetail = prs.find((p: PR) => p.id === r.prId);
+                const customerName = prDetail ? (typeof prDetail.department === 'string' ? prDetail.department : prDetail.department?.name) : "ProcurePro Network";
+                return <span className="font-bold text-slate-700">{customerName}</span>;
+            },
+        },
+        {
+            label: "Hạng mục tóm tắt", hideOnMobile: true,
+            render: (r) => {
+                const prDetail = prs.find((p: PR) => p.id === r.prId);
+                return (
+                    <div className="flex flex-wrap gap-1">
+                        {prDetail?.items && prDetail.items.length > 0 ? (
+                            prDetail.items.slice(0, 3).map((item: PRItem, i: number) => (
+                                <span key={i} className="bg-slate-100 text-[0.6875rem] px-2 py-0.5 rounded border border-slate-200">{item.item_name || item.description} x{item.quantity || item.qty}</span>
+                            ))
+                        ) : <span className="italic text-slate-400">Không có hạng mục</span>}
+                        {prDetail?.items && prDetail.items.length > 3 && <span className="text-[0.6875rem] text-slate-400 pt-1">+{prDetail.items.length - 3} khác</span>}
+                    </div>
+                );
+            },
+        },
+        { label: "Hạn nộp", hideOnMobile: true, render: (r) => <span className="num-display text-slate-500 text-[0.6875rem]">{new Date(r.createdAt || 0).toLocaleString('vi-VN')}</span> },
+        { label: "Countdown", align: "center", render: () => <span className="bg-rose-50 text-rose-600 border border-rose-100 font-black uppercase text-[0.6875rem] px-2 py-1 rounded-lg tracking-widest">20h 15m</span> },
+        {
+            label: "Hành động", align: "right",
+            render: () => (
+                <button className="text-[0.6875rem] font-black uppercase tracking-widest text-[#2563EB] flex items-center gap-1 ml-auto">
+                    Xem chi tiết & Báo giá <ChevronDown size={14} className="-rotate-90" />
+                </button>
+            ),
+        },
+    ];
+
     const activeRFQRaw = selectedRfqId ? myRfqs.find((r: RFQ) => r.id === selectedRfqId) : (openRfqs.length > 0 ? openRfqs[0] : null);
     const relatedPR = activeRFQRaw ? prs.find((p: PR) => p.id === activeRFQRaw.prId || p.prNumber === activeRFQRaw.prId) : null;
     const activeRFQ = activeRFQRaw ? { 
@@ -330,58 +368,17 @@ export default function SupplierRFQ() {
                 </div>
             </div>
 
-            <div className="erp-card !p-0 overflow-hidden shadow-sm border border-slate-200">
-                <table className="erp-table text-xs m-0">
-                    <thead className="bg-slate-50">
-                        <tr>
-                            <th>Số RFQ</th>
-                            <th>Khách hàng</th>
-                            <th>Hạng mục tóm tắt</th>
-                            <th>Hạn nộp</th>
-                            <th className="text-center">Countdown</th>
-                            <th className="text-right">Hành động</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {openRfqs.map((r: RFQ) => {
-                            const prDetail = prs.find((p: PR) => p.id === r.prId);
-                            const customerName = prDetail ? (typeof prDetail.department === 'string' ? prDetail.department : prDetail.department?.name) : "ProcurePro Network";
-                            
-                            return (
-                                <tr key={r.id} className="hover:bg-slate-50 border-b border-slate-100 cursor-pointer group" onClick={() => { setSelectedRfqId(r.id); setViewState("DETAIL"); }}>
-                                    <td className="font-black text-erp-navy px-6 py-6 uppercase tracking-tight">{r.id}</td>
-                                    <td className="font-bold text-slate-700">{customerName}</td>
-                                    <td className="text-slate-500 font-medium">
-                                        <div className="flex flex-wrap gap-1">
-                                            {prDetail?.items && prDetail.items.length > 0 ? (
-                                                prDetail.items.slice(0, 3).map((item: PRItem, i: number) => (
-                                                    <span key={i} className="bg-slate-100 text-[0.6875rem] px-2 py-0.5 rounded border border-slate-200">
-                                                        {item.item_name || item.description} x{item.quantity || item.qty}
-                                                    </span>
-                                                ))
-                                            ) : (
-                                                <span className="italic text-slate-300">Không có hạng mục</span>
-                                            )}
-                                            {prDetail?.items && prDetail.items.length > 3 && (
-                                                <span className="text-[0.6875rem] text-slate-400 pt-1">+{prDetail.items.length - 3} khác</span>
-                                            )}
-                                        </div>
-                                    </td>
-                                    <td className="font-mono text-slate-400 text-[0.6875rem]">{new Date(r.createdAt || 0).toLocaleString()}</td>
-                                    <td className="text-center">
-                                        <span className="bg-red-50 text-red-600 border border-red-100 font-black uppercase text-[0.6875rem] px-2 py-1 rounded-lg tracking-widest animate-pulse">20h 15m</span>
-                                    </td>
-                                    <td className="text-right px-6">
-                                        <button className="text-[0.6875rem] font-black uppercase tracking-widest text-erp-blue flex items-center gap-1 ml-auto group-hover:gap-2 transition-all">
-                                            Xem chi tiết & Báo giá <ChevronDown size={14} className="-rotate-90"/>
-                                        </button>
-                                    </td>
-                                </tr>
-                            )
-                        })}
-                        </tbody>
-                    </table>
-                </div>
+            <div className="erp-card table-card p-4">
+                <DataTable
+                    columns={rfqColumns}
+                    data={openRfqs}
+                    pageSize={10}
+                    getRowKey={(r) => r.id}
+                    onRowClick={(r) => { setSelectedRfqId(r.id); setViewState("DETAIL"); }}
+                    emptyMessage="Không có RFQ nào chờ báo giá"
+                    emptyDescription="Các yêu cầu báo giá mới sẽ xuất hiện tại đây"
+                />
+            </div>
         </main>
     );
 }

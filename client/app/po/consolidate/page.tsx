@@ -2,8 +2,7 @@
 
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import {
-  useProcurement, PR, PRItem,
-  ConsolidationSummary, ConsolidatePRsResult,
+  useProcurement, PR, PRItem, ConsolidatePRsResult,
 } from "../../context/ProcurementContext";
 import { Organization } from "@/app/types/api-types";
 import {

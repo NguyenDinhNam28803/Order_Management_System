@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import React, { useState, useEffect } from "react";
-import { FileText, Calculator, FileCheck, Search, Info, Send, UploadCloud } from "lucide-react";
+import { Calculator, FileCheck, Search, Info, Send, UploadCloud } from "lucide-react";
 
 import { useProcurement, PO, GRN } from "../../context/ProcurementContext";
 import { useRouter } from "next/navigation";

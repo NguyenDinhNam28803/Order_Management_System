@@ -1,10 +1,8 @@
 ﻿"use client";
 
 import React, { useState } from "react";
-import { Lock, Mail, ArrowRight, ShieldCheck, Zap, ChevronLeft, ChevronRight, PanelRightOpen, PanelRightClose, X } from "lucide-react";
 import { useProcurement } from "../context/ProcurementContext";
 import { useRouter } from "next/navigation";
-import Link from 'next/link';
 import Cookies from 'js-cookie';
 
 export default function LoginPage() {

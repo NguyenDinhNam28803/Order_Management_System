@@ -1,22 +1,16 @@
 ﻿"use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { z } from "zod";
 import {
   Building,
   DollarSign,
-  Plus,
-  Filter,
-  Search,
   TrendingUp,
-  History,
-  CheckCircle2,
   AlertCircle,
   Clock,
   LayoutGrid,
   ChevronRight,
   PieChart,
-  Calendar,
   X,
   Zap,
   Loader2,
@@ -24,7 +18,9 @@ import {
 } from "lucide-react";
 import PageHeader from "../../components/shared/PageHeader";
 import { useProcurement } from "../../context/ProcurementContext";
-import { formatVND } from "../../utils/formatUtils";
+import { DataTable, DataTableColumn } from "../../components/shared/DataTable";
+import TableToolbar from "../../components/shared/TableToolbar";
+import StatusBadge from "../../components/shared/StatusBadge";
 
 const distributeSchema = z.object({
   costCenterId: z.string().min(1, "Vui lòng chọn trung tâm chi phí"),
@@ -95,6 +91,66 @@ export default function BudgetAllocationPage() {
     setShowDistributeModal(false);
     setLoading(false);
   };
+
+  const allocColumns: DataTableColumn<(typeof activeAllocations)[number]>[] = [
+    {
+      label: "Trung tâm chi phí (CC)", key: "deptName", sortable: true,
+      render: (item) => (
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-[#2563EB] flex items-center justify-center text-white shrink-0"><Building size={20} /></div>
+          <div>
+            <p className="font-bold text-slate-900 leading-none mb-1">{item.deptName}</p>
+            <p className="text-xs font-bold text-slate-500 tracking-wider uppercase num-display">{item.costCenterCode}</p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      label: "Hạn mức Quý", align: "right",
+      render: (item) => (
+        <div>
+          <p className="font-black text-slate-900 num-display">{item.quota.toLocaleString("vi-VN")}</p>
+          <p className="text-[0.6875rem] font-bold text-[#64748B] uppercase">{item.currency} / Q{selectedQuarter}</p>
+        </div>
+      ),
+    },
+    {
+      label: "Tiến độ sử dụng", align: "center",
+      render: (item) => {
+        const used = item.spent + item.committed;
+        const percent = item.quota > 0 ? (used / item.quota) * 100 : 0;
+        return (
+          <div className="min-w-[180px]">
+            <div className="flex items-center gap-3">
+              <div className="flex-1 bg-slate-200 h-2 rounded-full overflow-hidden">
+                <div className={`h-full rounded-full transition-all duration-1000 ${percent > 90 ? 'bg-rose-500' : 'bg-[#2563EB]'}`} style={{ width: `${Math.min(percent, 100)}%` }} />
+              </div>
+              <span className="text-xs font-black text-[#2563EB] whitespace-nowrap num-display">{percent.toFixed(0)}%</span>
+            </div>
+            <div className="flex justify-between mt-1.5 px-0.5">
+              <span className="text-[0.6875rem] font-bold text-[#64748B] uppercase num-display">Đã dùng: {used.toLocaleString("vi-VN")}</span>
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      label: "Còn lại", align: "right",
+      render: (item) => {
+        const remaining = item.quota - (item.spent + item.committed);
+        return (
+          <div>
+            <p className={`font-black num-display ${remaining < 0 ? 'text-rose-500' : 'text-[#2563EB]'}`}>{remaining.toLocaleString("vi-VN")}</p>
+            <p className="text-[0.6875rem] font-bold text-[#64748B] uppercase">Khả dụng</p>
+          </div>
+        );
+      },
+    },
+    {
+      label: "Trạng thái", align: "right",
+      render: (item) => <StatusBadge status={item.status} size="sm" />,
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] p-8 text-slate-900">
@@ -181,110 +237,27 @@ export default function BudgetAllocationPage() {
 
       {/* Main Table Section */}
       <div className="bg-[#F1F5F9] rounded-xl shadow-xl shadow-[#2563EB]/5 border border-slate-200 overflow-hidden">
-        <div className="p-6 border-b border-slate-200 flex items-center justify-between bg-[#FFFFFF]">
-          <div className="flex items-center gap-4">
-            <div className="bg-[#F1F5F9] p-2 rounded-xl shadow-sm border border-slate-200">
-              <LayoutGrid size={20} className="text-[#2563EB]" />
-            </div>
-            <h2 className="font-black text-slate-900 tracking-tight">Dữ liệu phân bổ ngân sách {selectedYear}</h2>
+        <div className="p-6 border-b border-slate-200 flex items-center gap-4 bg-[#FFFFFF]">
+          <div className="bg-[#F1F5F9] p-2 rounded-xl shadow-sm border border-slate-200">
+            <LayoutGrid size={20} className="text-[#2563EB]" />
           </div>
-          <div className="flex items-center gap-2">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]" size={16} />
-              <input 
-                type="text" 
-                placeholder="Tìm phòng ban..." 
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 bg-[#F1F5F9] border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 text-slate-900 placeholder:text-[#94A3B8]"
-              />
-            </div>
-            <button className="p-2 bg-[#F1F5F9] border border-slate-200 rounded-xl text-slate-900 hover:bg-slate-100 transition-colors">
-              <Filter size={18} />
-            </button>
-          </div>
+          <h2 className="font-black text-slate-900 tracking-tight">Dữ liệu phân bổ ngân sách {selectedYear}</h2>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="erp-table text-xs">
-            <thead>
-              <tr>
-                <th className="px-6 py-4">Trung tâm chi phí (CC)</th>
-                <th className="px-6 py-4">Hạn mức Quý</th>
-                <th className="px-6 py-4 text-center">Tiến độ sử dụng</th>
-                <th className="px-6 py-4">Còn lại</th>
-                <th className="px-6 py-4 text-right">Trạng thái</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-200">
-              {activeAllocations.length > 0 ? activeAllocations.map((item) => {
-                const used = item.spent + item.committed;
-                const percent = item.quota > 0 ? (used / item.quota) * 100 : 0;
-                const remaining = item.quota - used;
-
-                return (
-                  <tr key={item.id} className="group hover:bg-[#FFFFFF]/50 transition-colors cursor-pointer">
-                    <td className="px-6 py-5">
-                      <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-xl bg-[#2563EB] flex items-center justify-center text-white transition-all">
-                          <Building size={20} />
-                        </div>
-                        <div>
-                          <p className="font-bold text-slate-900 leading-none mb-1">{item.deptName}</p>
-                          <p className="text-xs font-bold text-slate-900 tracking-wider uppercase">{item.costCenterCode}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5">
-                      <p className="font-black text-slate-900">{item.quota.toLocaleString()}</p>
-                      <p className="text-[0.6875rem] font-bold text-[#64748B] uppercase">{item.currency} / Q{selectedQuarter}</p>
-                    </td>
-                    <td className="px-6 py-5 min-w-[200px]">
-                      <div className="flex items-center gap-3">
-                        <div className="flex-1 bg-[#0F172A] h-2 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full rounded-full transition-all duration-1000 bg-[#2563EB]"
-                            style={{ width: `${percent}%` }}
-                          />
-                        </div>
-                        <span className="text-xs font-black text-[#2563EB] whitespace-nowrap">
-                          {percent.toFixed(0)}%
-                        </span>
-                      </div>
-                      <div className="flex justify-between mt-1.5 px-0.5">
-                        <span className="text-[0.6875rem] font-black text-[#64748B] uppercase">Đã dùng: {used.toLocaleString()}</span>
-                        <span className="text-[0.6875rem] font-black text-[#64748B] uppercase">Cam kết: {item.committed.toLocaleString()}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5">
-                      <p className={`font-black ${remaining < 0 ? 'text-red-500' : 'text-[#2563EB]'}`}>{remaining.toLocaleString()}</p>
-                      <p className="text-[0.6875rem] font-extrabold text-[#64748B] uppercase">Khả dụng</p>
-                    </td>
-                    <td className="px-6 py-5 text-right">
-                      <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border ${
-                        item.status === "APPROVED"
-                          ? "bg-emerald-500/10 text-emerald-700 border-emerald-500/20"
-                          : "bg-amber-500/10 text-amber-700 border-amber-500/20"
-                      }`}>
-                        <CheckCircle2 size={12} />
-                        <span className="text-[10px] font-black uppercase tracking-wider">{item.status}</span>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              }) : (
-                <tr>
-                  <td colSpan={5} className="py-20 text-center">
-                    <div className="flex flex-col items-center gap-2 opacity-30">
-                      <LayoutGrid size={48} className="text-slate-900" />
-                      <p className="font-bold text-slate-900">Chưa có dữ liệu phân bổ cho Quý {selectedQuarter}</p>
-                      <p className="text-xs text-slate-900">Sử dụng tính năng &quot;Phân bổ 20/80&quot; để khởi tạo ngân sách năm</p>
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+        <div className="p-4 space-y-4">
+          <TableToolbar
+            search={searchTerm}
+            onSearchChange={setSearchTerm}
+            searchPlaceholder="Tìm phòng ban, cost center..."
+          />
+          <DataTable
+            columns={allocColumns}
+            data={activeAllocations}
+            pageSize={10}
+            getRowKey={(item) => item.id}
+            emptyMessage={`Chưa có dữ liệu phân bổ cho Quý ${selectedQuarter}`}
+            emptyDescription="Sử dụng tính năng 'Phân bổ 20/80' để khởi tạo ngân sách năm"
+          />
         </div>
         
         {/* Pagination/Footer */}

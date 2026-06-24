@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useEffect, useState } from "react";
-import { Sparkles, Star, AlertCircle, Info } from "lucide-react";
+import { Sparkles, Star } from "lucide-react";
 import { useProcurement, PRItem } from "../context/ProcurementContext";
 
 interface Suggestion {

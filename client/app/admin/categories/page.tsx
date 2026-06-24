@@ -1,10 +1,10 @@
 ﻿"use client";
 
 import React, { useState, useEffect } from "react";
-import { Plus, Edit2, Trash2, Search, Layers, Building2, ChevronRight, Hash, Globe, CheckCircle2, AlertCircle } from "lucide-react";
+import { Plus, Edit2, Trash2, Search, Layers, Building2, Globe, CheckCircle2, AlertCircle } from "lucide-react";
 import PageHeader from "../../components/shared/PageHeader";
 import { useProcurement, ProductCategory } from "../../context/ProcurementContext";
-import { Organization, CreateCategoryDto, UpdateCategoryDto } from "../../types/api-types";
+import { CreateCategoryDto, UpdateCategoryDto } from "../../types/api-types";
 import ERPTable, { ERPTableColumn } from "../../components/shared/ERPTable";
 import ConfirmDialog from "../../components/shared/ConfirmDialog";
 

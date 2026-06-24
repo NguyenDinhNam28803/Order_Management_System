@@ -23,7 +23,6 @@ import {
   Truck, 
   Receipt, 
   CreditCard,
-  X,
   ChevronDown,
   ChevronUp,
   Loader2

@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { 
     FileCheck, ShieldAlert, CalendarClock, TrendingDown, Search, 
-    CheckCircle2, ArrowRight, BarChart3, PieChart, Activity,
+    CheckCircle2, ArrowRight, BarChart3, Activity,
     Filter, Download, MoreHorizontal
 } from "lucide-react";
 import { useRouter } from "next/navigation";

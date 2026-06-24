@@ -2,19 +2,18 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useProcurement, RFQ } from "../../context/ProcurementContext";
-import { Quotation, QuotationItem, RfqStatus, Organization } from "@/app/types/api-types";
+import { Quotation, RfqStatus, Organization } from "@/app/types/api-types";
 import { ERPTableColumn } from "../../components/shared/ERPTable";
 import { formatVND } from "../../utils/formatUtils";
 import ERPTable from "../../components/shared/ERPTable";
 import StatusBadge from "../../components/shared/StatusBadge";
 import { StatCard, StatGrid } from "../../components/shared/StatCard";
 import {
-    Search, ListFilter, ArrowRight, ArrowLeft,
+    Search, ListFilter, ArrowLeft,
     FileText, CheckCircle, CheckCircle2, Award, Send,
-    ShieldAlert, AlertCircle, TrendingUp,
-    Star, Clock, DollarSign, Sparkles, Users, Calendar,
-    Eye, X, RotateCcw, Building2, Mail, Phone, ShieldCheck,
-    ThumbsUp, ThumbsDown, MessageSquare, Bot, Target
+    ShieldAlert, AlertCircle, TrendingUp, Clock, Sparkles, Users, Calendar,
+    Eye, X, Building2, Mail,
+    ThumbsUp, ThumbsDown, MessageSquare, Bot
 } from "lucide-react";
 import ConfirmDialog from "../../components/shared/ConfirmDialog";
 

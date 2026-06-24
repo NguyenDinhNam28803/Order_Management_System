@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import React, { useState } from "react";
-import { ShieldAlert, CheckCircle, ArrowRight, DollarSign, List, Calculator, AlertTriangle, AlertCircle, Loader2 } from "lucide-react";
+import { ShieldAlert, CheckCircle, DollarSign, Calculator, AlertTriangle, Loader2 } from "lucide-react";
 import PageHeader from "../../components/shared/PageHeader";
 import { useProcurement } from "../../context/ProcurementContext";
 import { formatVND } from "../../utils/formatUtils";

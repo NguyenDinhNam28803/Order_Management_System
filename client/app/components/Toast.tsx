@@ -129,7 +129,7 @@ export const ToastContainer: React.FC = () => {
 
     let currentUser: { role?: string } | null = null;
     try {
-        // eslint-disable-next-line react-hooks/rules-of-hooks
+         
         const proc = useProcurement();
         currentUser = proc.currentUser;
     } catch { /* ok */ }

@@ -5,8 +5,7 @@ import {
     LayoutDashboard, ShoppingCart, CheckSquare, Truck,
     FileCheck, ShieldAlert, Users, Settings, LogOut,
     FolderTree, Search, ChevronRight, ClipboardCheck, ShoppingBag, Building, DollarSign, Layers,
-    ShieldCheck, MessageSquare, History, FileText,
-    Bell, Command, Star, Zap, Brain, PlusCircle, GitMerge, Sparkles, UserCheck, X
+    ShieldCheck, MessageSquare, History, FileText, Star, Brain, PlusCircle, GitMerge, Sparkles, UserCheck, X
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";

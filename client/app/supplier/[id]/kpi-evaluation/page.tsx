@@ -3,7 +3,7 @@
 import { useEffect, useState, ReactNode } from 'react';
 import { useParams } from 'next/navigation';
 import { useProcurement } from '@/app/context/ProcurementContext';
-import { Award, BarChart3, RefreshCcw, TrendingUp, AlertCircle, ArrowLeft, Target, Clock, CheckCircle, DollarSign, Package, MessageSquare, FileCheck, Calendar, FileText, Lightbulb, ThumbsUp, ThumbsDown, Zap } from 'lucide-react';
+import { Award, BarChart3, RefreshCcw, TrendingUp, AlertCircle, ArrowLeft, Target, Clock, CheckCircle, DollarSign, Package, MessageSquare, FileCheck, FileText, Lightbulb, ThumbsUp, ThumbsDown, Zap } from 'lucide-react';
 import Link from 'next/link';
 
 interface KPIScore {

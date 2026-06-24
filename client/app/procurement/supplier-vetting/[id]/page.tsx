@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import {
   CheckCircle2, XCircle, Clock, SkipForward, ChevronLeft,
   Loader2, AlertCircle, FileText, ExternalLink, UserCheck,
-  Building2, Send, ThumbsUp, ThumbsDown, X,
+  Building2, Send, ThumbsUp, ThumbsDown,
 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";

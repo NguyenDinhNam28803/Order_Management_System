@@ -7,7 +7,7 @@ import {
     XCircle, Search, Filter, ArrowUpRight
 } from "lucide-react";
 import PageHeader from "../../components/shared/PageHeader";
-import { DisputeStatus, DocumentType } from "../../types/api-types";
+import { DisputeStatus } from "../../types/api-types";
 
 export default function DisputesPage() {
     const { disputes, loadingMyPrs } = useProcurement();

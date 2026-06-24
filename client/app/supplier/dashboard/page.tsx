@@ -1,8 +1,7 @@
 ﻿"use client";
 
 import React, { useState, useMemo, useEffect } from "react";
-import { useProcurement, RFQ as ContextRFQ, Organization as ContextOrg, QuoteRequestStatus } from "@/app/context/ProcurementContext";
-import { formatVND, getStatusLabel } from "@/app/utils/formatUtils";
+import { useProcurement, RFQ as ContextRFQ, Organization as ContextOrg } from "@/app/context/ProcurementContext";
 import {
   Inbox,
   FileText,
@@ -14,7 +13,6 @@ import {
   History,
   AlertCircle,
   Building2,
-  DollarSign,
   Package,
   Calendar,
   ArrowLeft,

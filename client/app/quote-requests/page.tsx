@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import {
-    Plus, Search, Filter, ArrowRight, ClipboardList,
+    Plus, Search, ArrowRight, ClipboardList,
     Clock, BadgeCheck, FileText, ChevronRight, MoreVertical, Calendar, MessageSquare
 } from "lucide-react";
 import PageHeader from "../components/shared/PageHeader";
