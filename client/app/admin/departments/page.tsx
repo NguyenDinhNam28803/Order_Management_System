@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Building2, Plus, Edit2, Trash2, Users } from "lucide-react";
 import PageHeader from "../../components/shared/PageHeader";
 import { useProcurement, Department, User } from "../../context/ProcurementContext";
-import { Organization, CreateDepartmentPayload, UpdateDepartmentPayload } from "@/app/types/api-types";
+import { Organization, CreateDepartmentPayload } from "@/app/types/api-types";
 import ConfirmDialog from "../../components/shared/ConfirmDialog";
 import { DataTable, DataTableColumn } from "../../components/shared/DataTable";
 import TableToolbar from "../../components/shared/TableToolbar";

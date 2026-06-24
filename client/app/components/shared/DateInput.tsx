@@ -1,7 +1,6 @@
 ﻿"use client";
 
 import React from "react";
-import { Calendar } from "lucide-react";
 
 interface DateInputProps {
   value: string;

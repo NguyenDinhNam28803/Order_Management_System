@@ -85,7 +85,7 @@ export default function PoConfirmPage() {
       setPo(poData);
       setTokenInfo(tokenData);
       setPageState("form");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     } catch (e) {
       setErrorMsg(e instanceof Error ? e.message : "Có lỗi xảy ra");
       setPageState("error");
@@ -115,7 +115,7 @@ export default function PoConfirmPage() {
       }
 
       setPageState("confirmed");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     } catch (e) {
       alert(`Lỗi: ${e instanceof Error ? e.message : String(e)}`);
     } finally {

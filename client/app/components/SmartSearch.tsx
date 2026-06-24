@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
-  Search, FileText, ShoppingCart, DollarSign,
-  Clock, User, Building, X, Sparkles, ArrowRight,
+  Search, FileText, ShoppingCart, DollarSign, Building, X, Sparkles, ArrowRight,
   Command, TrendingUp, Loader2, AlertCircle,
 } from "lucide-react";
 import { useProcurement, PR, PO } from "../context/ProcurementContext";

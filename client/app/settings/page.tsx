@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import React from "react";
-import { Settings, Shield, Bell, Database, Save } from "lucide-react";
+import { Shield, Bell, Database, Save } from "lucide-react";
 
 export default function SettingsPage() {
     return (

@@ -4,16 +4,16 @@ import React, { useState, useEffect, useMemo } from "react";
 import {
     Plus, Search, FileText, ShoppingBag,
     ChevronRight, ArrowLeft, Eye, ShieldCheck,
-    X, AlertCircle, ShoppingCart, Package,
-    TrendingUp, Clock, CheckCircle2, XCircle,
+    X, ShoppingCart, Package,
+    TrendingUp, Clock,
     PlusCircle, MinusCircle, Building2, Banknote,
-    Send, Download, MoreVertical, CircleDot
+    Send, Download, MoreVertical
 } from "lucide-react";
 import PageHeader from "../../components/shared/PageHeader";
 import StatusBadge from "../../components/shared/StatusBadge";
 import { StatCard, StatGrid } from "../../components/shared/StatCard";
 import FilterTabs from "../../components/shared/FilterTabs";
-import { useProcurement, PoStatus, Organization, PR, RFQ, PO, POItem } from "../../context/ProcurementContext";
+import { useProcurement, Organization, PR, RFQ, PO, POItem } from "../../context/ProcurementContext";
 
 interface POMockData extends PO {
     vendorId?: string;

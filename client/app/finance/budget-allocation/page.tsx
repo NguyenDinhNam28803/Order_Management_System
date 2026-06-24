@@ -1,22 +1,16 @@
 ﻿"use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { z } from "zod";
 import {
   Building,
   DollarSign,
-  Plus,
-  Filter,
-  Search,
   TrendingUp,
-  History,
-  CheckCircle2,
   AlertCircle,
   Clock,
   LayoutGrid,
   ChevronRight,
   PieChart,
-  Calendar,
   X,
   Zap,
   Loader2,
@@ -24,7 +18,6 @@ import {
 } from "lucide-react";
 import PageHeader from "../../components/shared/PageHeader";
 import { useProcurement } from "../../context/ProcurementContext";
-import { formatVND } from "../../utils/formatUtils";
 import { DataTable, DataTableColumn } from "../../components/shared/DataTable";
 import TableToolbar from "../../components/shared/TableToolbar";
 import StatusBadge from "../../components/shared/StatusBadge";

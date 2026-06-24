@@ -6,7 +6,7 @@ import {
     Filter, ArrowRight,
     FileText, ShoppingBag,
     Zap, TrendingUp,
-    Package, Send, CheckCircle, X, ChevronRight, Bot, Search
+    Package, Send, ChevronRight, Search
 } from "lucide-react";
 import PageHeader from "../components/shared/PageHeader";
 import Link from "next/link";
@@ -17,7 +17,7 @@ export default function SourcingPage() {
     const { prs, rfqs, pos, currentUser, refreshData, notify, createRFQ, createPOFromPR, organizations, quoteRequests, updateQuoteRequest, submitQuoteRequest, sendQuoteRequestToSupplier, processPOAutomation } = useProcurement();
     const [activeTab, setActiveTab] = useState("quote-requests");
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     const [selectedItems, setSelectedItems] = useState<string[]>([]);
     const [isProcessing, setIsProcessing] = useState(false);
 

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useProcurement } from "../context/ProcurementContext";
-import { Zap, ChevronRight, RefreshCw, Play, Circle, PlayCircle, StopCircle } from "lucide-react";
+import { Zap, ChevronRight, StopCircle } from "lucide-react";
 
 export default function SimulationPanel() {
     const { simulation, startSimulation, nextSimulationStep, stopSimulation } = useProcurement();

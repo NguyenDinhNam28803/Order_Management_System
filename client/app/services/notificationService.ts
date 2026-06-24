@@ -3,7 +3,7 @@
  * Handles email templates and notification rendering
  */
 
-import { EmailEventType, NotificationTemplate, NotificationPayload, TemplateData } from "../types/notification-types";
+import { EmailEventType, NotificationTemplate, TemplateData } from "../types/notification-types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 

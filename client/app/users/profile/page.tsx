@@ -14,8 +14,6 @@ import {
     Edit,
     Lock,
     Loader2,
-    Save,
-    X,
     CheckCircle2
 } from "lucide-react";
 

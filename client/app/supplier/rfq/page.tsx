@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import { Inbox, FileText, UploadCloud, Send, ChevronDown, CheckCircle, AlertCircle } from "lucide-react";
 
 import { useProcurement, RFQ, PR, PRItem } from "../../context/ProcurementContext";
-import type { CreateQuoteDto } from "../../types/api-types";
 import PageHeader from "../../components/shared/PageHeader";
 import { DataTable, DataTableColumn } from "../../components/shared/DataTable";
 

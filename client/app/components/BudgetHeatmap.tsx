@@ -3,7 +3,7 @@
 import React from "react";
 import { useProcurement } from "../context/ProcurementContext";
 import { formatVND } from "../utils/formatUtils";
-import { TrendingUp, TrendingDown, LayoutGrid, Info, ArrowUpRight } from "lucide-react";
+import { LayoutGrid, Info, ArrowUpRight } from "lucide-react";
 
 export default function BudgetHeatmap() {
     const { costCenters, budgetAllocations } = useProcurement();

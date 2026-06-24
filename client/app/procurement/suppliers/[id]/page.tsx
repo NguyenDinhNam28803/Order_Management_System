@@ -5,11 +5,9 @@ import { useParams, useRouter } from "next/navigation";
 import { useProcurement, Organization, PO } from "../../../context/ProcurementContext";
 import { 
     ArrowLeft, Building2, Star, TrendingUp, Award, 
-    Package, CheckCircle, AlertTriangle, FileText,
-    Calendar, Phone, Mail, MapPin, RefreshCw, Loader2,
-    ChevronRight, BarChart3, ThumbsUp, ShoppingBag,
+    Package, CheckCircle, AlertTriangle, FileText, RefreshCw, Loader2, BarChart3, ShoppingBag,
     Sparkles, Clock, Target, Zap, Shield, MessageSquare,
-    HelpCircle, FileCheck, Scale
+    HelpCircle, Scale
 } from "lucide-react";
 import StatusBadge from "../../../components/shared/StatusBadge";
 

@@ -10,7 +10,6 @@ import {
   DollarSign,
   Calendar,
   LayoutDashboard,
-  ShieldCheck,
   Search,
   Check,
   X,
@@ -18,7 +17,6 @@ import {
 } from "lucide-react";
 import PageHeader from "../../components/shared/PageHeader";
 import { useProcurement, BudgetAllocation } from "../../context/ProcurementContext";
-import { CostCenter, Department } from "@/app/types/api-types";
 import { formatVND } from "../../utils/formatUtils";
 
 export default function FinanceBudgetApprovalPage() {

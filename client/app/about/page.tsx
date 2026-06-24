@@ -6,9 +6,8 @@ import {
     Building2, Database, Layers, Server, Globe, Shield,
     Cpu, Zap, Package, FileText, CreditCard, Scale,
     Users, Award, Bot, Mail, Bell, Search,
-    ChevronRight, ExternalLink, CheckCircle,
-    Monitor, HardDrive, Wifi, Lock,
-    BarChart3, ShoppingBag, Truck, Wallet,
+    ChevronRight, CheckCircle,
+    Monitor, HardDrive, Wifi, Lock, ShoppingBag, Truck, Wallet,
     GitBranch, ArrowRight, Star, Code2, Boxes
 } from "lucide-react";
 

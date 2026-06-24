@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { AlertCircle, Loader2, FileText, TrendingUp, CheckCircle2 } from "lucide-react";
+import { Loader2, FileText, TrendingUp } from "lucide-react";
 import Cookies from "js-cookie";
 
 export const QualityRiskPanel = ({ supplierId }: { supplierId: string }) => {

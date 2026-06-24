@@ -6,7 +6,7 @@ import { CreateProductDtoShort, CreateCategoryDto, CurrencyCode, ProductType } f
 import ERPTable, { ERPTableColumn } from "../../components/shared/ERPTable";
 import {
     Plus, Search, Edit2, Trash2,
-    Layers, ChevronDown, Loader2 } from "lucide-react";
+    Layers } from "lucide-react";
 import ConfirmDialog from "../../components/shared/ConfirmDialog";
 import PageHeader from "../../components/shared/PageHeader";
 

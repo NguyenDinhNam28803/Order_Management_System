@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import React, { useState } from "react";
-import { Zap, AlertTriangle, CheckCircle2, Shield, Info, ArrowRight, ArrowLeft, Send, FileText } from "lucide-react";
+import { Zap, AlertTriangle, CheckCircle2, Shield, Info, ArrowLeft, Send, FileText } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 

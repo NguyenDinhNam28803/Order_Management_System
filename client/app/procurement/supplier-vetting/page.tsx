@@ -98,7 +98,7 @@ function CreateModal({
       });
       onCreated();
       onClose();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -170,7 +170,7 @@ export default function SupplierVettingListPage() {
     try {
       const data = await apiFetch("/supplier-vetting");
       setVettings(Array.isArray(data) ? data : []);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {

@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import React from "react";
-import { Package, Truck, AlertTriangle, CheckCircle2, RotateCcw, Info, Box } from "lucide-react";
+import { Package, Truck, CheckCircle2, RotateCcw, Info, Box } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { StatsCard } from "../../components/charts";
 import PageHeader from "../../components/shared/PageHeader";

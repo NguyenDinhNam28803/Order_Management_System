@@ -4,7 +4,7 @@ import React, { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 // imports
-import { Grid, List, ChevronDown, Star, ShoppingCart, Eye, Heart, LayoutGrid } from "lucide-react";
+import { List, ChevronDown, Star, ShoppingCart, Eye, Heart, LayoutGrid } from "lucide-react";
 
 const categories = [
     "Computer & Laptop",

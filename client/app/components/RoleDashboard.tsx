@@ -4,7 +4,7 @@ import React from "react";
 import { 
   TrendingUp, DollarSign, Users, Package, CheckCircle, 
   Clock, AlertTriangle, BarChart3, PieChart, Activity,
-  Target, Zap, TrendingDown, Calendar, ArrowUpRight
+  Target, Zap, Calendar
 } from "lucide-react";
 import { useProcurement } from "../context/ProcurementContext";
 import { StatsCard } from "./charts";
