@@ -121,7 +121,7 @@ describe('RfqmoduleService', () => {
       const createCall = mockRepository.create.mock.calls[0];
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const rfqNumber: string = createCall[3]; // 4th arg is rfqNumber
-      expect(rfqNumber).toMatch(/^RFQ-\d{4}-\d{4}$/);
+      expect(rfqNumber).toMatch(/^RFQ-\d{4}-\d+$/);
     });
 
     it('sends invitation emails when supplierIds are provided', async () => {

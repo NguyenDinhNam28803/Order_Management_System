@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OMS — Luồng nghiệp vụ Procure-to-Pay</title>
+<script>
+  (function () {
+    const saved = localStorage.getItem('theme');
+    const dark = saved ? saved === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.classList.toggle('dark', dark);
+  })();
+</script>
+<style>
+  :root {
+    --bg: #F8FAFC; --surface: #FFFFFF; --surface2: #F1F5F9;
+    --ink: #0F172A; --body: #334155; --muted: #64748B;
+    --line: #CBD5E1; --line-soft: #E2E8F0;
+    --accent: #2563EB; --accent-soft: rgba(37,99,235,0.10);
+    --ok: #059669; --ok-soft: rgba(5,150,105,0.10);
+    --warn: #D97706; --warn-soft: rgba(217,119,6,0.12);
+    --bad: #DC2626;  --bad-soft: rgba(220,38,38,0.10);
+    --ai: #7C3AED;   --ai-soft: rgba(124,58,237,0.10);
+    --zone: rgba(15,23,42,0.025); --zone-line: #CBD5E1;
+    --serif: ui-serif, Georgia, "Times New Roman", serif;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  html.dark {
+    --bg: #0F172A; --surface: #1E293B; --surface2: #273449;
+    --ink: #F1F5F9; --body: #CBD5E1; --muted: #94A3B8;
+    --line: #334155; --line-soft: #273449;
+    --accent: #60A5FA; --accent-soft: rgba(96,165,250,0.14);
+    --ok: #34D399; --ok-soft: rgba(52,211,153,0.14);
+    --warn: #FBBF24; --warn-soft: rgba(251,191,36,0.14);
+    --bad: #F87171;  --bad-soft: rgba(248,113,113,0.14);
+    --ai: #A78BFA;   --ai-soft: rgba(167,139,250,0.14);
+    --zone: rgba(241,245,249,0.03); --zone-line: #334155;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg); color: var(--body); font-family: var(--sans);
+    -webkit-font-smoothing: antialiased; display: flex; flex-direction: column; overflow: hidden;
+  }
+
+  /* ── top bar ─────────────────────────────── */
+  .bar {
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    padding: 12px 20px; border-bottom: 1px solid var(--line-soft); flex: none;
+  }
+  .bar h1 { font-family: var(--serif); font-weight: 500; font-size: 19px; color: var(--ink); letter-spacing: -0.01em; }
+  .bar .sub { font-family: var(--mono); font-size: 10.5px; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+  .spacer { flex: 1; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.03em;
+    padding: 5px 11px; border: 1px solid var(--line); border-radius: 999px;
+    background: transparent; color: var(--muted); cursor: pointer; transition: all .15s ease;
+  }
+  .chip:hover { color: var(--ink); border-color: var(--muted); }
+  .chip.on { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+  #themeToggle {
+    font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.08em;
+    padding: 5px 10px; border: 1px solid var(--line); border-radius: 6px;
+    background: transparent; color: var(--muted); cursor: pointer;
+  }
+  #themeToggle:hover { color: var(--ink); border-color: var(--muted); }
+
+  /* ── layout: stage + side panel (không overlay lên sơ đồ) ── */
+  .main { flex: 1; display: flex; min-height: 0; }
+  .stage { flex: 1; position: relative; min-height: 0; }
+  .stage svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .panel {
+    width: 380px; flex: none; overflow-y: auto;
+    border-left: 1px solid var(--line-soft); background: var(--surface);
+    padding: 16px; display: flex; flex-direction: column; gap: 14px;
+  }
+
+  /* zones (swimlanes) */
+  .zone rect { fill: var(--zone); stroke: var(--zone-line); stroke-width: 1; stroke-dasharray: 5 5; rx: 16; }
+  .zone .ztitle { font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; fill: var(--muted); }
+  .zone .zsub { font-family: var(--mono); font-size: 10.5px; fill: var(--muted); opacity: 0.75; }
+
+  /* nodes */
+  .node { cursor: pointer; }
+  .node rect { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; rx: 10; transition: stroke .15s ease; }
+  .node:hover rect { stroke: var(--muted); }
+  .node.sel rect { stroke: var(--accent) !important; stroke-width: 2.4; }
+  .node .t { font-family: var(--sans); font-size: 14.5px; font-weight: 600; fill: var(--ink); pointer-events: none; }
+  .node .m { font-family: var(--mono); font-size: 10.5px; fill: var(--muted); pointer-events: none; }
+  .node .k { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; fill: var(--accent); pointer-events: none; }
+  .node.gate rect  { fill: var(--accent-soft); stroke: var(--accent); }
+  .node.store rect { fill: var(--surface2); }
+  .node.ext rect   { stroke-dasharray: 6 3; }
+  .node.ai rect    { fill: var(--ai-soft); stroke: var(--ai); stroke-dasharray: 6 3; }
+  .node.ai .k      { fill: var(--ai); }
+  .node.bad rect   { fill: var(--bad-soft); stroke: var(--bad); }
+  .node.bad .k     { fill: var(--bad); }
+  .node.ok rect    { fill: var(--ok-soft); stroke: var(--ok); }
+  .node.ok .k      { fill: var(--ok); }
+
+  /* edges */
+  .edge { stroke: var(--muted); stroke-width: 1.6; fill: none; marker-end: url(#a-mut); transition: opacity .2s ease, stroke .2s ease; }
+  .edge.dash { stroke-dasharray: 5 4; }
+  .elbl { font-family: var(--mono); font-size: 10.5px; fill: var(--muted); transition: opacity .2s ease; }
+
+  /* flow highlighting */
+  .stage.flowing .edge { opacity: 0.12; }
+  .stage.flowing .elbl { opacity: 0.12; }
+  .stage.flowing .node { opacity: 0.28; }
+  .stage.flowing .zone { opacity: 0.45; }
+  .stage.flowing .edge.lit {
+    opacity: 1; stroke: var(--accent); marker-end: url(#a-acc);
+    stroke-dasharray: 7 5; animation: march 0.9s linear infinite;
+  }
+  .stage.flowing .elbl.lit { opacity: 1; fill: var(--accent); }
+  .stage.flowing .node.lit { opacity: 1; }
+  .stage.flowing .node.lit rect { stroke: var(--accent); }
+  @keyframes march { to { stroke-dashoffset: -12; } }
+  @media (prefers-reduced-motion: reduce) { .stage.flowing .edge.lit { animation: none; } }
+
+  /* ── cards trong panel (tĩnh, không che sơ đồ) ── */
+  .card {
+    background: var(--bg); border: 1px solid var(--line-soft); border-radius: 12px;
+    padding: 14px 16px;
+  }
+  #detail h3 { font-family: var(--serif); font-weight: 500; font-size: 17px; color: var(--ink); margin-bottom: 2px; }
+  #detail .meta { font-family: var(--mono); font-size: 10.5px; color: var(--muted); margin-bottom: 8px; }
+  #detail p { font-size: 12.5px; line-height: 1.6; }
+  #detail p code, #flowcap code { font-family: var(--mono); font-size: 11px; color: var(--accent); }
+  #flowcap { display: none; border-color: var(--accent); background: var(--accent-soft); }
+  #flowcap.show { display: block; }
+  #flowcap .fname { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+  #flowcap ol { margin-left: 18px; }
+  #flowcap li { font-size: 12.5px; line-height: 1.6; }
+  .src { margin-top: auto; padding-top: 10px; border-top: 1px solid var(--line-soft); font-family: var(--mono); font-size: 10px; color: var(--muted); }
+  @media (max-width: 1080px) {
+    body { overflow: auto; }
+    .main { flex-direction: column; }
+    .stage { min-height: 72vh; }
+    .panel { width: auto; border-left: none; border-top: 1px solid var(--line-soft); }
+    .src { margin-top: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div>
+    <h1>OMS — luồng nghiệp vụ</h1>
+    <div class="sub">procure-to-pay · 6 vai trò · một vòng ngân sách khép kín</div>
+  </div>
+  <div class="spacer"></div>
+  <div class="chips" id="chips">
+    <button class="chip on" data-flow="all">Toàn cảnh</button>
+    <button class="chip" data-flow="p2p">Luồng chuẩn P2P</button>
+    <button class="chip" data-flow="approve">Phê duyệt &amp; ngân sách</button>
+    <button class="chip" data-flow="sourcing">Tìm nguồn &amp; trao thầu</button>
+    <button class="chip" data-flow="receive">Giao nhận &amp; đối soát</button>
+    <button class="chip" data-flow="exception">Ngoại lệ: lệch đối soát</button>
+    <button class="chip" data-flow="ai">AI / RAG</button>
+  </div>
+  <button id="themeToggle">Theme</button>
+</div>
+
+<div class="main">
+<div class="stage" id="stage">
+<svg viewBox="0 0 1800 1180" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Sơ đồ luồng nghiệp vụ Procure-to-Pay của hệ thống OMS">
+  <defs>
+    <marker id="a-mut" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" style="fill: var(--muted)"/>
+    </marker>
+    <marker id="a-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" style="fill: var(--accent)"/>
+    </marker>
+  </defs>
+
+  <!-- ── swimlanes ─────────────────────────── -->
+  <g class="zone">
+    <rect x="40" y="95" width="1720" height="130"/>
+    <text class="ztitle" x="60" y="125">Người yêu cầu</text>
+    <text class="zsub" x="60" y="143">phòng ban · requester</text>
+  </g>
+  <g class="zone">
+    <rect x="40" y="245" width="1720" height="160"/>
+    <text class="ztitle" x="60" y="275">Phê duyệt &amp; Ngân sách</text>
+    <text class="zsub" x="60" y="293">approval-module · budget-module</text>
+  </g>
+  <g class="zone">
+    <rect x="40" y="425" width="1720" height="165"/>
+    <text class="ztitle" x="60" y="455">Thu mua</text>
+    <text class="zsub" x="60" y="473">rfqmodule · pomodule · contract-module</text>
+  </g>
+  <g class="zone">
+    <rect x="40" y="610" width="1720" height="155"/>
+    <text class="ztitle" x="60" y="640">Nhà cung cấp</text>
+    <text class="zsub" x="60" y="658">cổng ngoài · không cần đăng nhập</text>
+  </g>
+  <g class="zone">
+    <rect x="40" y="785" width="1720" height="150"/>
+    <text class="ztitle" x="60" y="815">Kho</text>
+    <text class="zsub" x="60" y="833">grnmodule · quality-module</text>
+  </g>
+  <g class="zone">
+    <rect x="40" y="955" width="1720" height="185"/>
+    <text class="ztitle" x="60" y="985">Tài chính</text>
+    <text class="zsub" x="60" y="1003">invoice-module · payment-module · dispute-module</text>
+  </g>
+
+  <!-- ── edges ─────────────────────────────── -->
+  <path class="edge dash" id="e-aipr-pr"      d="M318,170 L286,170"/>
+  <path class="edge dash" id="e-aipr-quotes"  d="M334,212 C310,290 306,400 320,461"/>
+  <path class="edge" id="e-pr-budget"         d="M175,212 C175,252 180,255 180,288"/>
+  <path class="edge" id="e-budget-appr"       d="M292,337 L326,337"/>
+  <path class="edge" id="e-appr-commit"       d="M582,337 L626,337"/>
+  <path class="edge" id="e-commit-rfq"        d="M700,387 C700,430 300,420 165,463"/>
+  <path class="edge" id="e-rfq-portal"        d="M165,562 C165,602 180,610 180,648"/>
+  <path class="edge" id="e-portal-supquote"   d="M292,692 L326,692"/>
+  <path class="edge" id="e-supquote-quotes"   d="M435,648 C435,608 425,600 425,562"/>
+  <path class="edge" id="e-quotes-award"      d="M552,512 L586,512"/>
+  <path class="edge" id="e-award-po"          d="M772,512 L806,512"/>
+  <path class="edge dash" id="e-po-contract"  d="M1012,512 L1046,512"/>
+  <path class="edge" id="e-po-supack"         d="M910,562 L910,646"/>
+  <path class="edge" id="e-supack-supship"    d="M1012,692 L1046,692"/>
+  <path class="edge" id="e-supship-grn"       d="M1160,737 L1163,811"/>
+  <path class="edge" id="e-grn-qc"            d="M1282,857 L1326,857"/>
+  <path class="edge" id="e-grn-supinv"        d="M1200,813 C1260,790 1360,780 1413,737"/>
+  <path class="edge" id="e-supinv-invoice"    d="M1470,737 C1560,800 1600,890 1608,986"/>
+  <path class="edge" id="e-invoice-matching"  d="M1498,1035 L1444,1035"/>
+  <path class="edge dash" id="e-matching-dispute" d="M1188,1035 L1134,1035"/>
+  <path class="edge dash" id="e-dispute-payment"  d="M918,1035 L834,1035"/>
+  <path class="edge" id="e-matching-payment"  d="M1210,1082 C1150,1122 900,1126 828,1084"/>
+  <path class="edge" id="e-payment-spent"     d="M628,1035 L544,1035"/>
+  <path class="edge dash" id="e-spent-commit" d="M470,988 C560,900 566,600 645,392"/>
+
+  <!-- edge labels -->
+  <text class="elbl" data-e="e-aipr-pr" x="300" y="158" text-anchor="middle">draft</text>
+  <text class="elbl" data-e="e-aipr-quotes" x="248" y="380">chấm điểm AI</text>
+  <text class="elbl" data-e="e-pr-budget" x="190" y="258">submit</text>
+  <text class="elbl" data-e="e-appr-commit" x="604" y="326" text-anchor="middle">approved</text>
+  <text class="elbl" data-e="e-commit-rfq" x="430" y="438" text-anchor="middle">PR đã duyệt → tìm nguồn</text>
+  <text class="elbl" data-e="e-rfq-portal" x="192" y="608">mời NCC · magic link</text>
+  <text class="elbl" data-e="e-supquote-quotes" x="446" y="600">nộp báo giá</text>
+  <text class="elbl" data-e="e-quotes-award" x="569" y="500" text-anchor="middle">chọn</text>
+  <text class="elbl" data-e="e-po-supack" x="920" y="608">gửi PO</text>
+  <text class="elbl" data-e="e-supship-grn" x="1172" y="780">hàng tới kho</text>
+  <text class="elbl" data-e="e-grn-supinv" x="1300" y="778" text-anchor="middle">đã xác nhận thực nhận</text>
+  <text class="elbl" data-e="e-supinv-invoice" x="1556" y="900">hóa đơn vào AP</text>
+  <text class="elbl" data-e="e-matching-dispute" x="1161" y="1024" text-anchor="middle">lệch</text>
+  <text class="elbl" data-e="e-dispute-payment" x="876" y="1024" text-anchor="middle">đã xử lý</text>
+  <text class="elbl" data-e="e-matching-payment" x="1020" y="1116" text-anchor="middle">khớp → duyệt chi</text>
+  <text class="elbl" data-e="e-spent-commit" x="576" y="700">cập nhật ngân sách</text>
+
+  <!-- ── lane 1: người yêu cầu ─────────────── -->
+  <g class="node" data-k="pr">
+    <rect x="70" y="130" width="210" height="80"/>
+    <text class="t" x="90" y="160">Tạo PR</text>
+    <text class="m" x="90" y="184">yêu cầu mua sắm · DRAFT → SUBMITTED</text>
+  </g>
+  <g class="node ai" data-k="aipr">
+    <rect x="320" y="130" width="230" height="80"/>
+    <text class="t" x="340" y="158">AI soạn PR</text>
+    <text class="k" x="340" y="176">RAG · pgvector</text>
+    <text class="m" x="340" y="196">mô tả nhu cầu → PR draft</text>
+  </g>
+
+  <!-- ── lane 2: phê duyệt &amp; ngân sách ─── -->
+  <g class="node gate" data-k="budgetcheck">
+    <rect x="70" y="290" width="220" height="95"/>
+    <text class="t" x="90" y="320">Kiểm tra ngân sách</text>
+    <text class="k" x="90" y="338">cổng chặn</text>
+    <text class="m" x="90" y="360">hạn mức cost center theo quý</text>
+  </g>
+  <g class="node gate" data-k="approval">
+    <rect x="330" y="290" width="250" height="95"/>
+    <text class="t" x="350" y="320">Phê duyệt đa cấp</text>
+    <text class="k" x="350" y="338">theo rule tổ chức</text>
+    <text class="m" x="350" y="360">Trưởng BP → Giám đốc → CEO</text>
+  </g>
+  <g class="node store" data-k="commit">
+    <rect x="630" y="290" width="220" height="95"/>
+    <text class="t" x="650" y="320">Cam kết ngân sách</text>
+    <text class="m" x="650" y="344">committedAmount ↑</text>
+    <text class="m" x="650" y="362">giữ chỗ tiền trước khi chi</text>
+  </g>
+
+  <!-- ── lane 3: thu mua ───────────────────── -->
+  <g class="node" data-k="rfq">
+    <rect x="70" y="465" width="190" height="95"/>
+    <text class="t" x="90" y="495">Tạo RFQ</text>
+    <text class="m" x="90" y="519">yêu cầu báo giá</text>
+    <text class="m" x="90" y="537">mời nhiều NCC</text>
+  </g>
+  <g class="node" data-k="quotes">
+    <rect x="300" y="465" width="250" height="95"/>
+    <text class="t" x="320" y="495">So sánh báo giá</text>
+    <text class="k" x="320" y="513">AI score · pros/cons</text>
+    <text class="m" x="320" y="535">counter-offer · Q&amp;A</text>
+  </g>
+  <g class="node" data-k="award">
+    <rect x="590" y="465" width="180" height="95"/>
+    <text class="t" x="610" y="495">Trao thầu</text>
+    <text class="m" x="610" y="519">chọn NCC thắng</text>
+    <text class="m" x="610" y="537">báo giá khác đóng</text>
+  </g>
+  <g class="node ok" data-k="po">
+    <rect x="810" y="465" width="200" height="95"/>
+    <text class="t" x="830" y="495">Phát hành PO</text>
+    <text class="k" x="830" y="513">đơn đặt hàng</text>
+    <text class="m" x="830" y="535">ISSUED → gửi NCC</text>
+  </g>
+  <g class="node" data-k="contract">
+    <rect x="1050" y="465" width="220" height="95"/>
+    <text class="t" x="1070" y="495">Hợp đồng</text>
+    <text class="m" x="1070" y="519">ký số hai bên</text>
+    <text class="m" x="1070" y="537">buyer + supplier</text>
+  </g>
+
+  <!-- ── lane 4: nhà cung cấp ──────────────── -->
+  <g class="node ext" data-k="portal">
+    <rect x="70" y="650" width="220" height="85"/>
+    <text class="t" x="90" y="680">Cổng NCC</text>
+    <text class="m" x="90" y="704">magic link · token 1 lần</text>
+    <text class="m" x="90" y="722">rate-limited · không login</text>
+  </g>
+  <g class="node ext" data-k="supquote">
+    <rect x="330" y="650" width="210" height="85"/>
+    <text class="t" x="350" y="680">NCC nộp báo giá</text>
+    <text class="m" x="350" y="704">giá · lead time</text>
+    <text class="m" x="350" y="722">điều khoản TT/GH</text>
+  </g>
+  <g class="node ext" data-k="supack">
+    <rect x="810" y="650" width="200" height="85"/>
+    <text class="t" x="830" y="680">NCC xác nhận PO</text>
+    <text class="m" x="830" y="704">ACKNOWLEDGED</text>
+  </g>
+  <g class="node ext" data-k="supship">
+    <rect x="1050" y="650" width="220" height="85"/>
+    <text class="t" x="1070" y="680">NCC giao hàng</text>
+    <text class="m" x="1070" y="704">ASN · tracking · carrier</text>
+    <text class="m" x="1070" y="722">PO → SHIPPED</text>
+  </g>
+  <g class="node ext" data-k="supinv">
+    <rect x="1310" y="650" width="210" height="85"/>
+    <text class="t" x="1330" y="680">NCC nộp hóa đơn</text>
+    <text class="m" x="1330" y="704">chỉ phần kho đã nhận</text>
+  </g>
+
+  <!-- ── lane 5: kho ───────────────────────── -->
+  <g class="node" data-k="grn">
+    <rect x="1050" y="815" width="230" height="85"/>
+    <text class="t" x="1070" y="845">Nhập kho (GRN)</text>
+    <text class="m" x="1070" y="869">SL thực nhận vs SL đặt</text>
+    <text class="m" x="1070" y="887">giao thiếu → gắn cờ</text>
+  </g>
+  <g class="node" data-k="qc">
+    <rect x="1330" y="815" width="200" height="85"/>
+    <text class="t" x="1350" y="845">Kiểm định QC</text>
+    <text class="m" x="1350" y="869">pass / fail · ảnh</text>
+    <text class="m" x="1350" y="887">chấm KPI nhà cung cấp</text>
+  </g>
+
+  <!-- ── lane 6: tài chính ─────────────────── -->
+  <g class="node" data-k="invoice">
+    <rect x="1500" y="990" width="220" height="90"/>
+    <text class="t" x="1520" y="1020">Hóa đơn</text>
+    <text class="m" x="1520" y="1044">subtotal · VAT · total</text>
+    <text class="m" x="1520" y="1062">SUBMITTED</text>
+  </g>
+  <g class="node gate" data-k="matching">
+    <rect x="1190" y="990" width="250" height="90"/>
+    <text class="t" x="1210" y="1020">Đối soát 3 bên</text>
+    <text class="k" x="1210" y="1038">cổng chặn</text>
+    <text class="m" x="1210" y="1060">PO ↔ GRN ↔ Invoice</text>
+  </g>
+  <g class="node bad" data-k="dispute">
+    <rect x="920" y="990" width="210" height="90"/>
+    <text class="t" x="940" y="1020">Tranh chấp</text>
+    <text class="k" x="940" y="1038">ngoại lệ</text>
+    <text class="m" x="940" y="1060">EXCEPTION_REVIEW</text>
+  </g>
+  <g class="node ok" data-k="payment">
+    <rect x="630" y="990" width="200" height="90"/>
+    <text class="t" x="650" y="1020">Thanh toán</text>
+    <text class="m" x="650" y="1044">lịch giải ngân</text>
+    <text class="m" x="650" y="1062">theo điều khoản Net 30</text>
+  </g>
+  <g class="node store" data-k="spent">
+    <rect x="290" y="990" width="250" height="90"/>
+    <text class="t" x="310" y="1020">Ghi nhận chi tiêu</text>
+    <text class="m" x="310" y="1044">spentAmount ↑ · committed ↓</text>
+    <text class="m" x="310" y="1062">khép vòng ngân sách</text>
+  </g>
+</svg>
+</div>
+
+<aside class="panel">
+  <div class="card" id="flowcap">
+    <div class="fname" id="f-name"></div>
+    <ol id="f-steps"></ol>
+  </div>
+
+  <div class="card" id="detail">
+    <h3 id="d-title">Bấm vào bất kỳ ô nào</h3>
+    <div class="meta" id="d-meta">chi tiết bước nghiệp vụ</div>
+    <p id="d-body">Mỗi ô trong sơ đồ đều bấm được. Các chip phía trên làm sáng từng luồng — Luồng chuẩn P2P, Phê duyệt, Tìm nguồn, Giao nhận &amp; đối soát, Ngoại lệ, và AI/RAG.</p>
+  </div>
+
+  <div class="src">OMS · NestJS 34 module · Prisma 62 model</div>
+</aside>
+</div>
+
+<script>
+const DETAIL = {
+  pr:          { t:"Tạo PR", m:"prmodule · purchase requisition", b:"Requester tạo yêu cầu mua sắm: tiêu đề, <b>cost center</b>, độ ưu tiên, ngày cần hàng, danh mục hàng hóa. Trạng thái <code>DRAFT</code> → <code>SUBMITTED</code>. Mọi thứ downstream (RFQ, PO, hóa đơn) đều truy vết ngược về PR này." },
+  aipr:        { t:"AI soạn PR (RAG)", m:"rag-pr-generator · pgvector", b:"Người dùng mô tả nhu cầu bằng ngôn ngữ tự nhiên. AI tìm sản phẩm/NCC liên quan từ <b>Vector DB</b> (embedding 768 chiều), rồi sinh PR draft: items, giá ước tính, cost center gợi ý, độ tin cậy. Người dùng xem trước, sửa, rồi submit — <b>AI không tự gửi</b>." },
+  budgetcheck: { t:"Kiểm tra ngân sách", m:"budget-module · cổng chặn", b:"Đối chiếu giá trị PR với <b>hạn mức cost center theo quý</b>. Vượt định mức không chặn cứng — nó nâng cấp yêu cầu lên cấp phê duyệt cao hơn (CFO/CEO). Đây là lý do ngân sách phải kiểm <b>trước</b> khi tốn công tìm nguồn." },
+  approval:    { t:"Phê duyệt đa cấp", m:"approval-module · rule-based", b:"Hệ thống tự chọn approver theo <b>quy tắc của tổ chức</b> (giá trị, phòng ban, loại chi). Chuỗi điển hình: Trưởng bộ phận → Giám đốc → CEO. Hỗ trợ từ chối kèm lý do và escalate. Mỗi quyết định ghi vào audit log." },
+  commit:      { t:"Cam kết ngân sách", m:"budgetAllocation · committedAmount", b:"PR được duyệt sẽ <b>giữ chỗ</b> tiền: <code>committedAmount</code> tăng nhưng <code>spentAmount</code> chưa đổi. Nhờ vậy hai PR không thể tiêu cùng một đồng ngân sách. Tiền chỉ chuyển sang 'đã chi' khi thanh toán thật diễn ra." },
+  rfq:         { t:"Tạo RFQ", m:"rfqmodule · request for quotation", b:"Từ PR đã duyệt, thu mua tạo RFQ và mời nhiều NCC. Mỗi NCC nhận email kèm <b>magic link</b> riêng — không cần tài khoản. RFQ có hạn chót, yêu cầu kỹ thuật, và danh mục hàng." },
+  quotes:      { t:"So sánh báo giá", m:"AI score · counter-offer · Q&A", b:"Các báo giá đổ về được AI chấm điểm (<code>aiScore</code>), nêu <b>ưu/nhược điểm</b> và đề xuất <code>ACCEPT</code> / <code>NEGOTIATE</code> / <code>REJECT</code>. Buyer có thể gửi <b>counter-offer</b> (trả giá) hoặc mở luồng Q&amp;A hỏi đáp với NCC." },
+  award:       { t:"Trao thầu", m:"award · rfq → quotation", b:"Chọn NCC thắng. Các báo giá còn lại của RFQ tự động đóng. Đây là điểm không quay đầu: từ đây hệ thống sinh PO." },
+  po:          { t:"Phát hành PO", m:"pomodule · purchase order", b:"PO sinh từ báo giá trúng, kế thừa giá và điều khoản. Trạng thái <code>ISSUED</code> rồi gửi NCC. PO là <b>bản gốc của sự thật</b> cho khâu đối soát 3 bên về sau." },
+  contract:    { t:"Hợp đồng", m:"contract-module · ký số", b:"Nhánh song song (không bắt buộc cho mọi PO). Hợp đồng khung/cung ứng được <b>ký số hai bên</b>: buyer ký trong app, supplier ký qua magic link. Trạng thái chuyển <code>PENDING_SIGNATURE</code> → <code>ACTIVE</code>." },
+  portal:      { t:"Cổng NCC", m:"external-token-module", b:"NCC thao tác <b>không cần đăng nhập</b>: token dùng một lần gắn với đúng một chứng từ, có rate-limit (<code>@Throttle</code>). Việc tạo/thu hồi token bị giới hạn cho PROCUREMENT + PLATFORM_ADMIN." },
+  supquote:    { t:"NCC nộp báo giá", m:"rfq-public/:token/submit", b:"NCC điền giá, lead time, điều khoản thanh toán/giao hàng qua magic link. Nộp xong token được đánh dấu đã dùng." },
+  supack:      { t:"NCC xác nhận PO", m:"po-public/:token/confirm", b:"NCC xác nhận nhận đơn → PO chuyển <code>ACKNOWLEDGED</code>. Sự kiện này kích hoạt chuỗi tự động phía sau (automation.service)." },
+  supship:     { t:"NCC giao hàng", m:"grn-public/:token/update · ASN", b:"NCC cập nhật vận đơn: mã tracking, carrier, ngày gửi, dự kiến tới. PO chuyển <code>SHIPPED</code>. Buyer theo dõi tiến độ ở trang giao hàng." },
+  supinv:      { t:"NCC nộp hóa đơn", m:"invoice · 3-way ready", b:"Ràng buộc quan trọng: NCC <b>chỉ được xuất hóa đơn cho phần kho đã xác nhận thực nhận</b> (GRN). Đây là chốt chặn đầu tiên chống hóa đơn khống." },
+  grn:         { t:"Nhập kho (GRN)", m:"grnmodule · goods receipt note", b:"Thủ kho nhập <b>số lượng thực nhận</b> so với số lượng đặt trên PO. Giao thiếu sẽ được gắn cờ và tự động tạo tín hiệu dispute ở khâu đối soát và Finance." },
+  qc:          { t:"Kiểm định QC", m:"quality-module · KPI", b:"Pass/Fail kèm ảnh bằng chứng. Kết quả nuôi <b>KPI nhà cung cấp</b>: giao đúng hạn (OTD), chất lượng, giá — chấm theo trọng số, ảnh hưởng trust score và phân hạng NCC." },
+  invoice:     { t:"Hóa đơn", m:"invoice-module · AP", b:"Hóa đơn NCC vào hàng đợi Accounts Payable: <code>subtotal</code>, thuế suất, <code>totalAmount</code>. Trạng thái <code>SUBMITTED</code> → chờ đối soát." },
+  matching:    { t:"Đối soát 3 bên", m:"PO ↔ GRN ↔ Invoice", b:"Trái tim kiểm soát chi. So khớp <b>số lượng</b> (PO đặt vs GRN nhận vs hóa đơn) và <b>đơn giá</b> (PO vs hóa đơn) trong dung sai cho phép. Khớp → <code>APPROVED</code>/<code>AUTO_APPROVED</code> và được duyệt chi. Lệch → <code>EXCEPTION_REVIEW</code>." },
+  dispute:     { t:"Tranh chấp", m:"dispute-module · ngoại lệ", b:"Lệch số lượng hoặc giá sẽ mở dispute gắn với PO/GRN/hóa đơn liên quan, kèm số tiền tranh chấp. Hóa đơn <b>bị chặn thanh toán</b> cho tới khi giải quyết xong — rồi mới nhập lại luồng chi." },
+  payment:     { t:"Thanh toán", m:"payment-module", b:"Chỉ hóa đơn đã đối soát khớp mới lên lịch giải ngân, theo điều khoản (ví dụ Net 30). Sinh bản ghi payment với phương thức, ngày, số tiền." },
+  spent:       { t:"Ghi nhận chi tiêu", m:"budget · khép vòng", b:"Thanh toán làm <code>spentAmount</code> tăng và <code>committedAmount</code> giảm tương ứng — tiền giữ chỗ trở thành tiền đã chi. <b>Vòng ngân sách khép lại</b> đúng chỗ nó bắt đầu, nên báo cáo chi tiêu luôn khớp với cam kết." },
+};
+
+const FLOWS = {
+  p2p: {
+    name: "Luồng chuẩn P2P — không ngoại lệ",
+    edges: ["e-pr-budget","e-budget-appr","e-appr-commit","e-commit-rfq","e-rfq-portal","e-portal-supquote","e-supquote-quotes","e-quotes-award","e-award-po","e-po-supack","e-supack-supship","e-supship-grn","e-grn-qc","e-grn-supinv","e-supinv-invoice","e-invoice-matching","e-matching-payment","e-payment-spent","e-spent-commit"],
+    nodes: ["pr","budgetcheck","approval","commit","rfq","portal","supquote","quotes","award","po","supack","supship","grn","qc","supinv","invoice","matching","payment","spent"],
+    steps: [
+      "PR → kiểm ngân sách → phê duyệt đa cấp → <b>cam kết</b> giữ chỗ tiền",
+      "RFQ mời NCC qua magic link → so sánh báo giá → trao thầu → phát hành PO",
+      "NCC xác nhận PO → giao hàng → kho nhập GRN + QC",
+      "NCC xuất hóa đơn (chỉ phần đã nhận) → <b>đối soát 3 bên</b> khớp → thanh toán",
+      "Chi tiêu ghi nhận, cam kết được giải phóng — <b>vòng ngân sách khép lại</b>"
+    ]
+  },
+  approve: {
+    name: "Phê duyệt & ngân sách — chặn trước khi tốn công",
+    edges: ["e-pr-budget","e-budget-appr","e-appr-commit"],
+    nodes: ["pr","budgetcheck","approval","commit"],
+    steps: [
+      "PR submit → đối chiếu hạn mức cost center theo quý",
+      "Vượt định mức <b>không chặn cứng</b> — nó nâng cấp lên cấp duyệt cao hơn",
+      "Chuỗi duyệt theo rule: Trưởng bộ phận → Giám đốc → CEO",
+      "Duyệt xong: <code>committedAmount</code> ↑ — tiền được giữ chỗ, hai PR không tiêu trùng"
+    ]
+  },
+  sourcing: {
+    name: "Tìm nguồn & trao thầu — NCC không cần tài khoản",
+    edges: ["e-commit-rfq","e-rfq-portal","e-portal-supquote","e-supquote-quotes","e-quotes-award","e-award-po"],
+    nodes: ["commit","rfq","portal","supquote","quotes","award","po"],
+    steps: [
+      "Từ PR đã duyệt, tạo RFQ và mời nhiều NCC",
+      "Mỗi NCC nhận <b>magic link</b> riêng — token một lần, có rate-limit",
+      "Báo giá về được AI chấm điểm; buyer có thể counter-offer hoặc hỏi Q&amp;A",
+      "Trao thầu → các báo giá khác đóng → sinh PO kế thừa giá &amp; điều khoản"
+    ]
+  },
+  receive: {
+    name: "Giao nhận & đối soát — chống hóa đơn khống",
+    edges: ["e-po-supack","e-supack-supship","e-supship-grn","e-grn-qc","e-grn-supinv","e-supinv-invoice","e-invoice-matching"],
+    nodes: ["po","supack","supship","grn","qc","supinv","invoice","matching"],
+    steps: [
+      "NCC xác nhận PO → cập nhật vận đơn (ASN) → hàng tới kho",
+      "Kho nhập <b>số lượng thực nhận</b>; QC pass/fail nuôi KPI nhà cung cấp",
+      "NCC <b>chỉ được xuất hóa đơn cho phần kho đã xác nhận</b> — chốt chặn thứ nhất",
+      "Đối soát 3 bên PO ↔ GRN ↔ Invoice khớp số lượng + đơn giá → duyệt chi"
+    ]
+  },
+  exception: {
+    name: "Ngoại lệ — lệch đối soát thì tiền dừng lại",
+    edges: ["e-matching-dispute","e-dispute-payment"],
+    nodes: ["matching","dispute","payment"],
+    steps: [
+      "Lệch số lượng (giao thiếu) hoặc lệch đơn giá vượt dung sai",
+      "Hóa đơn chuyển <code>EXCEPTION_REVIEW</code>, mở dispute gắn PO/GRN/hóa đơn",
+      "<b>Thanh toán bị chặn</b> cho tới khi tranh chấp được giải quyết",
+      "Giải quyết xong mới nhập lại luồng duyệt chi"
+    ]
+  },
+  ai: {
+    name: "AI / RAG — trợ lý, không phải người quyết",
+    edges: ["e-aipr-pr","e-aipr-quotes"],
+    nodes: ["aipr","pr","quotes"],
+    steps: [
+      "Mô tả nhu cầu bằng ngôn ngữ tự nhiên → RAG tìm sản phẩm/NCC từ Vector DB (pgvector)",
+      "AI sinh <b>PR draft</b>: items, giá ước tính, cost center gợi ý, độ tin cậy",
+      "Ở khâu báo giá, AI chấm điểm và đề xuất ACCEPT / NEGOTIATE / REJECT",
+      "<b>Người vẫn là người bấm nút</b> — AI chỉ soạn và gợi ý, không tự submit hay tự trao thầu"
+    ]
+  }
+};
+
+const stage = document.getElementById('stage');
+const nodes = document.querySelectorAll('.node');
+const edges = document.querySelectorAll('.edge');
+const elbls = document.querySelectorAll('.elbl');
+const chips = document.querySelectorAll('.chip');
+const fcap  = document.getElementById('flowcap');
+
+function setFlow(key) {
+  chips.forEach(c => c.classList.toggle('on', c.dataset.flow === key));
+  edges.forEach(e => e.classList.remove('lit'));
+  elbls.forEach(l => l.classList.remove('lit'));
+  nodes.forEach(n => n.classList.remove('lit'));
+  if (key === 'all') { stage.classList.remove('flowing'); fcap.classList.remove('show'); return; }
+  const f = FLOWS[key];
+  stage.classList.add('flowing');
+  f.edges.forEach(id => document.getElementById(id)?.classList.add('lit'));
+  elbls.forEach(l => { if (f.edges.includes(l.dataset.e)) l.classList.add('lit'); });
+  f.nodes.forEach(k => document.querySelector(`.node[data-k="${k}"]`)?.classList.add('lit'));
+  document.getElementById('f-name').textContent = f.name;
+  document.getElementById('f-steps').innerHTML = f.steps.map(s => `<li>${s}</li>`).join('');
+  fcap.classList.add('show');
+}
+chips.forEach(c => c.addEventListener('click', () => setFlow(c.dataset.flow)));
+
+nodes.forEach(n => n.addEventListener('click', () => {
+  nodes.forEach(x => x.classList.remove('sel'));
+  n.classList.add('sel');
+  const d = DETAIL[n.dataset.k];
+  if (!d) return;
+  document.getElementById('d-title').textContent = d.t;
+  document.getElementById('d-meta').textContent = d.m;
+  document.getElementById('d-body').innerHTML = d.b;
+}));
+
+document.getElementById('themeToggle').addEventListener('click', () => {
+  const dark = !document.documentElement.classList.contains('dark');
+  document.documentElement.classList.toggle('dark', dark);
+  localStorage.setItem('theme', dark ? 'dark' : 'light');
+});
+</script>
+</body>
+</html>
