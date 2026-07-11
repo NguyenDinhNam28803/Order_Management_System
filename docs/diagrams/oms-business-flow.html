@@ -103,7 +103,13 @@
   /* edges */
   .edge { stroke: var(--muted); stroke-width: 1.6; fill: none; marker-end: url(#a-mut); transition: opacity .2s ease, stroke .2s ease; }
   .edge.dash { stroke-dasharray: 5 4; }
+  .edge.auto { stroke: var(--ai); stroke-dasharray: 2 4; stroke-width: 1.8; marker-end: url(#a-ai); }
   .elbl { font-family: var(--mono); font-size: 10.5px; fill: var(--muted); transition: opacity .2s ease; }
+  .elbl.auto { fill: var(--ai); }
+
+  /* nhãn vòng đời trạng thái (dưới mỗi node) */
+  .slbl { font-family: var(--mono); font-size: 9.5px; fill: var(--accent); opacity: 0.9; pointer-events: none; }
+  .stage.flowing .slbl { opacity: 0.22; }
 
   /* flow highlighting */
   .stage.flowing .edge { opacity: 0.12; }
@@ -119,6 +125,29 @@
   .stage.flowing .node.lit rect { stroke: var(--accent); }
   @keyframes march { to { stroke-dashoffset: -12; } }
   @media (prefers-reduced-motion: reduce) { .stage.flowing .edge.lit { animation: none; } }
+
+  /* số thứ tự 12 bước trên spine */
+  .seq circle { fill: var(--accent); stroke: var(--bg); stroke-width: 2.5; }
+  .seq text { fill: var(--bg); font-family: var(--mono); font-weight: 700; font-size: 12.5px; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+  .stage.flowing .seq { opacity: 0.22; }
+
+  /* chú giải trong panel */
+  .legend .lg-title { font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 9px; }
+  .lg-row { display: flex; align-items: center; gap: 9px; font-size: 11.5px; line-height: 1.45; margin-bottom: 7px; color: var(--body); }
+  .lg-row:last-child { margin-bottom: 0; }
+  .sw { width: 17px; height: 17px; border-radius: 5px; border: 1.5px solid var(--line); flex: none; }
+  .sw.gate  { background: var(--accent-soft); border-color: var(--accent); }
+  .sw.store { background: var(--surface2); }
+  .sw.ok    { background: var(--ok-soft); border-color: var(--ok); }
+  .sw.bad   { background: var(--bad-soft); border-color: var(--bad); }
+  .sw.ai    { background: var(--ai-soft); border-color: var(--ai); border-style: dashed; }
+  .sw.ext   { background: transparent; border-style: dashed; }
+  .sw.seqsw { background: var(--accent); border-color: var(--accent); color: var(--bg); border-radius: 50%;
+              display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-weight: 700; font-size: 10px; }
+  .sw.auto  { background: transparent; border: none; border-top: 2px dashed var(--ai); border-radius: 0; height: 0; align-self: center; }
+  .sw.slbl-sw { background: transparent; border: 1px solid var(--accent); color: var(--accent); width: auto; padding: 0 4px;
+                display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-weight: 700; font-size: 8.5px; }
+  .lg-row code { font-family: var(--mono); font-size: 10.5px; background: var(--surface2); padding: 0 3px; border-radius: 3px; }
 
   /* ── cards trong panel (tĩnh, không che sơ đồ) ── */
   .card {
@@ -159,6 +188,7 @@
     <button class="chip" data-flow="sourcing">Tìm nguồn &amp; trao thầu</button>
     <button class="chip" data-flow="receive">Giao nhận &amp; đối soát</button>
     <button class="chip" data-flow="exception">Ngoại lệ: lệch đối soát</button>
+    <button class="chip" data-flow="automation">⚙ Tự động hóa</button>
     <button class="chip" data-flow="ai">AI / RAG</button>
   </div>
   <button id="themeToggle">Theme</button>
@@ -173,6 +203,9 @@
     </marker>
     <marker id="a-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
       <path d="M0,0 L10,5 L0,10 z" style="fill: var(--accent)"/>
+    </marker>
+    <marker id="a-ai" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" style="fill: var(--ai)"/>
     </marker>
   </defs>
 
@@ -214,16 +247,16 @@
   <path class="edge" id="e-pr-budget"         d="M175,212 C175,252 180,255 180,288"/>
   <path class="edge" id="e-budget-appr"       d="M292,337 L326,337"/>
   <path class="edge" id="e-appr-commit"       d="M582,337 L626,337"/>
-  <path class="edge" id="e-commit-rfq"        d="M700,387 C700,430 300,420 165,463"/>
+  <path class="edge auto" id="e-commit-rfq"   d="M700,387 C700,430 300,420 165,463"/>
   <path class="edge" id="e-rfq-portal"        d="M165,562 C165,602 180,610 180,648"/>
   <path class="edge" id="e-portal-supquote"   d="M292,692 L326,692"/>
   <path class="edge" id="e-supquote-quotes"   d="M435,648 C435,608 425,600 425,562"/>
   <path class="edge" id="e-quotes-award"      d="M552,512 L586,512"/>
-  <path class="edge" id="e-award-po"          d="M772,512 L806,512"/>
-  <path class="edge dash" id="e-po-contract"  d="M1012,512 L1046,512"/>
+  <path class="edge auto" id="e-award-po"     d="M772,512 L806,512"/>
+  <path class="edge auto" id="e-po-contract"  d="M1012,512 L1046,512"/>
   <path class="edge" id="e-po-supack"         d="M910,562 L910,646"/>
   <path class="edge" id="e-supack-supship"    d="M1012,692 L1046,692"/>
-  <path class="edge" id="e-supship-grn"       d="M1160,737 L1163,811"/>
+  <path class="edge auto" id="e-supship-grn"  d="M1160,737 L1163,811"/>
   <path class="edge" id="e-grn-qc"            d="M1282,857 L1326,857"/>
   <path class="edge" id="e-grn-supinv"        d="M1200,813 C1260,790 1360,780 1413,737"/>
   <path class="edge" id="e-supinv-invoice"    d="M1470,737 C1560,800 1600,890 1608,986"/>
@@ -239,12 +272,14 @@
   <text class="elbl" data-e="e-aipr-quotes" x="248" y="380">chấm điểm AI</text>
   <text class="elbl" data-e="e-pr-budget" x="190" y="258">submit</text>
   <text class="elbl" data-e="e-appr-commit" x="604" y="326" text-anchor="middle">approved</text>
-  <text class="elbl" data-e="e-commit-rfq" x="430" y="438" text-anchor="middle">PR đã duyệt → tìm nguồn</text>
+  <text class="elbl auto" data-e="e-commit-rfq" x="430" y="438" text-anchor="middle">⚙ PR duyệt → tự tạo RFQ</text>
   <text class="elbl" data-e="e-rfq-portal" x="192" y="608">mời NCC · magic link</text>
   <text class="elbl" data-e="e-supquote-quotes" x="446" y="600">nộp báo giá</text>
   <text class="elbl" data-e="e-quotes-award" x="569" y="500" text-anchor="middle">chọn</text>
+  <text class="elbl auto" data-e="e-award-po" x="789" y="500" text-anchor="middle">⚙ tự tạo PO</text>
+  <text class="elbl auto" data-e="e-po-contract" x="1029" y="500" text-anchor="middle">⚙ &gt; ngưỡng</text>
   <text class="elbl" data-e="e-po-supack" x="920" y="608">gửi PO</text>
-  <text class="elbl" data-e="e-supship-grn" x="1172" y="780">hàng tới kho</text>
+  <text class="elbl auto" data-e="e-supship-grn" x="1172" y="780">⚙ tự tạo GRN</text>
   <text class="elbl" data-e="e-grn-supinv" x="1300" y="778" text-anchor="middle">đã xác nhận thực nhận</text>
   <text class="elbl" data-e="e-supinv-invoice" x="1556" y="900">hóa đơn vào AP</text>
   <text class="elbl" data-e="e-matching-dispute" x="1161" y="1024" text-anchor="middle">lệch</text>
@@ -392,6 +427,37 @@
     <text class="m" x="310" y="1044">spentAmount ↑ · committed ↓</text>
     <text class="m" x="310" y="1062">khép vòng ngân sách</text>
   </g>
+  <!-- ── nhãn vòng đời trạng thái (enum thật) ── -->
+  <g class="statuses" aria-hidden="true">
+    <text class="slbl" x="78"   y="223">DRAFT → APPROVED → PO_CREATED</text>
+    <text class="slbl" x="338"  y="400">PENDING → APPROVED / ESCALATED</text>
+    <text class="slbl" x="78"   y="575">SENT → RECEIVED → AWARDED</text>
+    <text class="slbl" x="308"  y="575">SUBMITTED → ACCEPTED</text>
+    <text class="slbl" x="598"  y="575">AWARD_PENDING → AWARDED</text>
+    <text class="slbl" x="818"  y="575">ISSUED → ACK → SHIPPED → DONE</text>
+    <text class="slbl" x="1058" y="575">PENDING_SIGN → ACTIVE</text>
+    <text class="slbl" x="1058" y="915">COUNTING → CONFIRMED → POSTED</text>
+    <text class="slbl" x="1508" y="1097">SUBMITTED → MATCHING → PAID</text>
+    <text class="slbl" x="1198" y="1097">AUTO_APPROVED / EXCEPTION</text>
+    <text class="slbl" x="928"  y="1097">OPENED → HOLD → DECIDED</text>
+    <text class="slbl" x="638"  y="1097">PENDING → PROCESSING → DONE</text>
+  </g>
+
+  <!-- ── số thứ tự 12 bước spine P2P ────────── -->
+  <g class="seq" aria-hidden="true">
+    <g><circle cx="70" cy="130" r="13.5"/><text x="70" y="130">1</text></g>
+    <g><circle cx="70" cy="290" r="13.5"/><text x="70" y="290">2</text></g>
+    <g><circle cx="330" cy="290" r="13.5"/><text x="330" y="290">3</text></g>
+    <g><circle cx="630" cy="290" r="13.5"/><text x="630" y="290">4</text></g>
+    <g><circle cx="70" cy="465" r="13.5"/><text x="70" y="465">5</text></g>
+    <g><circle cx="590" cy="465" r="13.5"/><text x="590" y="465">6</text></g>
+    <g><circle cx="810" cy="465" r="13.5"/><text x="810" y="465">7</text></g>
+    <g><circle cx="1050" cy="815" r="13.5"/><text x="1050" y="815">8</text></g>
+    <g><circle cx="1500" cy="990" r="14.5"/><text x="1500" y="990">9</text></g>
+    <g><circle cx="1190" cy="990" r="14.5"/><text x="1190" y="990">10</text></g>
+    <g><circle cx="630" cy="990" r="14.5"/><text x="630" y="990">11</text></g>
+    <g><circle cx="290" cy="990" r="14.5"/><text x="290" y="990">12</text></g>
+  </g>
 </svg>
 </div>
 
@@ -407,7 +473,20 @@
     <p id="d-body">Mỗi ô trong sơ đồ đều bấm được. Các chip phía trên làm sáng từng luồng — Luồng chuẩn P2P, Phê duyệt, Tìm nguồn, Giao nhận &amp; đối soát, Ngoại lệ, và AI/RAG.</p>
   </div>
 
-  <div class="src">OMS · NestJS 34 module · Prisma 62 model</div>
+  <div class="card legend">
+    <div class="lg-title">Chú giải</div>
+    <div class="lg-row"><span class="sw seqsw">1</span> Thứ tự 12 bước của luồng P2P</div>
+    <div class="lg-row"><span class="sw gate"></span> Cổng kiểm soát — ngân sách · phê duyệt · đối soát</div>
+    <div class="lg-row"><span class="sw ok"></span> Bước hoàn tất — phát hành PO · thanh toán</div>
+    <div class="lg-row"><span class="sw store"></span> Trạng thái ngân sách — cam kết · chi tiêu</div>
+    <div class="lg-row"><span class="sw bad"></span> Ngoại lệ — tranh chấp, chặn thanh toán</div>
+    <div class="lg-row"><span class="sw ai"></span> AI / RAG — gợi ý, con người vẫn quyết</div>
+    <div class="lg-row"><span class="sw ext"></span> Cổng ngoài — nhà cung cấp, không cần login</div>
+    <div class="lg-row"><span class="sw auto"></span> ⚙ Liên kết tự động — <code>automation.service</code></div>
+    <div class="lg-row"><span class="sw slbl-sw">S→S</span> Nhãn xanh dưới node — vòng đời trạng thái (enum)</div>
+  </div>
+
+  <div class="src">OMS · NestJS 34 module · Prisma 62 model · bấm node để xem chi tiết</div>
 </aside>
 </div>
 
@@ -416,12 +495,12 @@ const DETAIL = {
   pr:          { t:"Tạo PR", m:"prmodule · purchase requisition", b:"Requester tạo yêu cầu mua sắm: tiêu đề, <b>cost center</b>, độ ưu tiên, ngày cần hàng, danh mục hàng hóa. Trạng thái <code>DRAFT</code> → <code>SUBMITTED</code>. Mọi thứ downstream (RFQ, PO, hóa đơn) đều truy vết ngược về PR này." },
   aipr:        { t:"AI soạn PR (RAG)", m:"rag-pr-generator · pgvector", b:"Người dùng mô tả nhu cầu bằng ngôn ngữ tự nhiên. AI tìm sản phẩm/NCC liên quan từ <b>Vector DB</b> (embedding 768 chiều), rồi sinh PR draft: items, giá ước tính, cost center gợi ý, độ tin cậy. Người dùng xem trước, sửa, rồi submit — <b>AI không tự gửi</b>." },
   budgetcheck: { t:"Kiểm tra ngân sách", m:"budget-module · cổng chặn", b:"Đối chiếu giá trị PR với <b>hạn mức cost center theo quý</b>. Vượt định mức không chặn cứng — nó nâng cấp yêu cầu lên cấp phê duyệt cao hơn (CFO/CEO). Đây là lý do ngân sách phải kiểm <b>trước</b> khi tốn công tìm nguồn." },
-  approval:    { t:"Phê duyệt đa cấp", m:"approval-module · rule-based", b:"Hệ thống tự chọn approver theo <b>quy tắc của tổ chức</b> (giá trị, phòng ban, loại chi). Chuỗi điển hình: Trưởng bộ phận → Giám đốc → CEO. Hỗ trợ từ chối kèm lý do và escalate. Mỗi quyết định ghi vào audit log." },
+  approval:    { t:"Phê duyệt đa cấp", m:"approval-module · rule-based", b:"Hệ thống tự chọn approver theo <b>quy tắc của tổ chức</b> (giá trị, phòng ban, loại chi). Chuỗi điển hình: Trưởng bộ phận → Giám đốc → CEO. Trạng thái <code>PENDING → APPROVED / REJECTED / ESCALATED / DELEGATED</code>. Khi duyệt xong, <code>handleDocumentApproved</code> <b>tự tạo RFQ</b> (giá ổn định) hoặc QuotationRequest (giá biến động). Mỗi quyết định ghi audit log." },
   commit:      { t:"Cam kết ngân sách", m:"budgetAllocation · committedAmount", b:"PR được duyệt sẽ <b>giữ chỗ</b> tiền: <code>committedAmount</code> tăng nhưng <code>spentAmount</code> chưa đổi. Nhờ vậy hai PR không thể tiêu cùng một đồng ngân sách. Tiền chỉ chuyển sang 'đã chi' khi thanh toán thật diễn ra." },
   rfq:         { t:"Tạo RFQ", m:"rfqmodule · request for quotation", b:"Từ PR đã duyệt, thu mua tạo RFQ và mời nhiều NCC. Mỗi NCC nhận email kèm <b>magic link</b> riêng — không cần tài khoản. RFQ có hạn chót, yêu cầu kỹ thuật, và danh mục hàng." },
   quotes:      { t:"So sánh báo giá", m:"AI score · counter-offer · Q&A", b:"Các báo giá đổ về được AI chấm điểm (<code>aiScore</code>), nêu <b>ưu/nhược điểm</b> và đề xuất <code>ACCEPT</code> / <code>NEGOTIATE</code> / <code>REJECT</code>. Buyer có thể gửi <b>counter-offer</b> (trả giá) hoặc mở luồng Q&amp;A hỏi đáp với NCC." },
-  award:       { t:"Trao thầu", m:"award · rfq → quotation", b:"Chọn NCC thắng. Các báo giá còn lại của RFQ tự động đóng. Đây là điểm không quay đầu: từ đây hệ thống sinh PO." },
-  po:          { t:"Phát hành PO", m:"pomodule · purchase order", b:"PO sinh từ báo giá trúng, kế thừa giá và điều khoản. Trạng thái <code>ISSUED</code> rồi gửi NCC. PO là <b>bản gốc của sự thật</b> cho khâu đối soát 3 bên về sau." },
+  award:       { t:"Trao thầu", m:"award · rfq → quotation", b:"Chọn NCC thắng. Các báo giá còn lại của RFQ tự động đóng. Đây là điểm không quay đầu: <code>handleRfqAwarded</code> <b>tự sinh PO</b> ở trạng thái <code>ISSUED</code> (phát hành luôn) mà không cần thao tác tay." },
+  po:          { t:"Phát hành PO", m:"pomodule · purchase order", b:"PO sinh <b>tự động</b> từ báo giá trúng, kế thừa giá và điều khoản (<code>ISSUED</code>). Nếu giá trị <b>vượt ngưỡng</b>, hợp đồng ký số được tự khởi tạo; khi NCC xác nhận PO, GRN cũng <b>tự tạo</b>. PO là <b>bản gốc của sự thật</b> cho đối soát 3 bên." },
   contract:    { t:"Hợp đồng", m:"contract-module · ký số", b:"Nhánh song song (không bắt buộc cho mọi PO). Hợp đồng khung/cung ứng được <b>ký số hai bên</b>: buyer ký trong app, supplier ký qua magic link. Trạng thái chuyển <code>PENDING_SIGNATURE</code> → <code>ACTIVE</code>." },
   portal:      { t:"Cổng NCC", m:"external-token-module", b:"NCC thao tác <b>không cần đăng nhập</b>: token dùng một lần gắn với đúng một chứng từ, có rate-limit (<code>@Throttle</code>). Việc tạo/thu hồi token bị giới hạn cho PROCUREMENT + PLATFORM_ADMIN." },
   supquote:    { t:"NCC nộp báo giá", m:"rfq-public/:token/submit", b:"NCC điền giá, lead time, điều khoản thanh toán/giao hàng qua magic link. Nộp xong token được đánh dấu đã dùng." },
@@ -492,6 +571,18 @@ const FLOWS = {
       "Hóa đơn chuyển <code>EXCEPTION_REVIEW</code>, mở dispute gắn PO/GRN/hóa đơn",
       "<b>Thanh toán bị chặn</b> cho tới khi tranh chấp được giải quyết",
       "Giải quyết xong mới nhập lại luồng duyệt chi"
+    ]
+  },
+  automation: {
+    name: "Tự động hóa — automation.service tự tạo chứng từ",
+    edges: ["e-commit-rfq","e-award-po","e-po-contract","e-supship-grn"],
+    nodes: ["pr","rfq","award","po","contract","supack","grn"],
+    steps: [
+      "PR được <b>duyệt</b> → <code>handleDocumentApproved</code> tự tạo RFQ (FLOW 1: giá ổn định) hoặc QuotationRequest (FLOW 2: giá biến động)",
+      "RFQ <b>trao thầu</b> → <code>handleRfqAwarded</code> tự sinh PO ở trạng thái <code>ISSUED</code> (phát hành luôn)",
+      "PO vượt <b>ngưỡng giá trị</b> → tự khởi tạo hợp đồng cần ký số",
+      "NCC <b>xác nhận PO</b> → <code>handlePoSupplierAccepted</code> tự tạo GRN chờ nhập kho",
+      "Con người vẫn quyết ở các <b>cổng chặn</b> (duyệt, đối soát); tự động chỉ nối các bước đã quyết"
     ]
   },
   ai: {
