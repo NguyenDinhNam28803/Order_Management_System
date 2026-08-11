@@ -4,7 +4,7 @@ import React, { useState, useMemo } from "react";
 import { TrendingUp, PieChart, Wallet, ArrowRight, Building, Download, ChevronDown } from "lucide-react";
 import PageHeader from "../../components/shared/PageHeader";
 import { useProcurement } from "../../context/ProcurementContext";
-import { formatVND } from "../../utils/formatUtils";
+import { formatVND, formatVNDCompact } from "../../utils/formatUtils";
 import { SimpleBarChart, DonutChart, StatsCard } from "../../components/charts";
 import { DataTable, DataTableColumn } from "../../components/shared/DataTable";
 
@@ -182,15 +182,17 @@ export default function SpendTrackingPage() {
                         <h4 className="text-xs font-bold uppercase tracking-widest text-[#64748B] leading-none">Phân Bổ Ngân Sách</h4>
                     </div>
                     <div className="p-6">
-                        <DonutChart 
+                        <DonutChart
                             title=""
+                            bare
+                            valueFormatter={formatVNDCompact}
                             data={[
                                 { label: 'Đã chi', value: stats.spent, color: '#10B981' },
                                 { label: 'Cam kết', value: stats.committed - stats.spent, color: '#2563EB' },
                                 { label: 'Còn lại', value: remaining, color: remaining < 0 ? '#EF4444' : '#8B5CF6' },
                             ]}
-                            centerLabel="Tổng"
-                            centerValue={formatVND(stats.allocated)}
+                            centerLabel="Tổng phân bổ"
+                            centerValue={formatVNDCompact(stats.allocated)}
                         />
                     </div>
                 </div>

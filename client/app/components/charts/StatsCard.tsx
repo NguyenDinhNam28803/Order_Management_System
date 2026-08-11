@@ -11,6 +11,8 @@ interface StatsCardProps {
   trend?: {
     value: number;
     isPositive: boolean;
+    /** Optional caption under the trend, e.g. "so kỳ trước". */
+    label?: string;
   };
   color?: "blue" | "green" | "amber" | "red" | "purple";
   className?: string;
@@ -53,12 +55,23 @@ export default function StatsCard({
             <Icon size={16} className={colorClasses[color].split(" ").pop()} />
           </div>
           {trend && (
-            <div
-              className={`flex items-center gap-1 text-[0.6875rem] font-semibold ${
-                trend.isPositive ? "text-emerald-600" : "text-rose-600"
-              }`}
-            >
-              {trend.isPositive ? "↑" : "↓"} {Math.abs(trend.value)}%
+            <div className="flex flex-col items-end">
+              <div
+                className={`flex items-center gap-1 text-[0.6875rem] font-semibold ${
+                  trend.value === 0
+                    ? "text-slate-400"
+                    : trend.isPositive
+                      ? "text-emerald-600"
+                      : "text-rose-600"
+                }`}
+              >
+                {trend.value === 0 ? "→" : trend.isPositive ? "↑" : "↓"} {Math.abs(trend.value)}%
+              </div>
+              {trend.label && (
+                <span className="text-[0.5625rem] text-slate-400 leading-none mt-0.5">
+                  {trend.label}
+                </span>
+              )}
             </div>
           )}
         </div>
@@ -66,7 +79,7 @@ export default function StatsCard({
         <p className="text-[0.6875rem] font-bold uppercase tracking-widest text-slate-500 mb-0.5">
           {title}
         </p>
-        <h3 className="text-2xl font-bold text-slate-900 leading-tight">{value}</h3>
+        <h3 className="text-2xl font-bold text-slate-900 leading-tight num-display">{value}</h3>
         {subValue && (
           <p className="text-xs text-slate-500 mt-0.5">{subValue}</p>
         )}

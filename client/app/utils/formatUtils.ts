@@ -68,6 +68,28 @@ export const formatVND = (val: number | string | object | undefined | null, incl
 };
 
 /**
+ * Compact VND for tight UI (chart legends, KPI cards): "4,5 tỷ" / "320 tr" / "12k".
+ * Handles Prisma Decimal like formatVND. Pass symbol=true to append " ₫".
+ */
+export const formatVNDCompact = (
+    val: number | string | object | undefined | null,
+    symbol: boolean = false,
+) => {
+    const num = convertPrismaDecimal(val);
+    if (val === undefined || val === null || val === '' || isNaN(num)) {
+        return symbol ? '0 ₫' : '0';
+    }
+    const sign = num < 0 ? '-' : '';
+    const abs = Math.abs(num);
+    let out: string;
+    if (abs >= 1e9) out = `${(abs / 1e9).toLocaleString('vi-VN', { maximumFractionDigits: 1 })} tỷ`;
+    else if (abs >= 1e6) out = `${(abs / 1e6).toLocaleString('vi-VN', { maximumFractionDigits: 1 })} tr`;
+    else if (abs >= 1e3) out = `${Math.round(abs / 1e3).toLocaleString('vi-VN')}k`;
+    else out = abs.toLocaleString('vi-VN');
+    return `${sign}${out}${symbol ? ' ₫' : ''}`;
+};
+
+/**
  * Parses a formatted string back into a number (removes commas)
  */
 export const parseMoney = (val: string) => {

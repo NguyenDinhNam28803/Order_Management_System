@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import PageHeader from "../../components/shared/PageHeader";
 import { useProcurement, SpendOverview, SpendBySupplier, SpendByCategory } from "../../context/ProcurementContext";
-import { formatVND } from "../../utils/formatUtils";
+import { formatVND, formatVNDCompact } from "../../utils/formatUtils";
 import { SimpleBarChart, DonutChart, StatsCard } from "../../components/charts";
 import ERPTable, { ERPTableColumn } from "../../components/shared/ERPTable";
 
@@ -155,11 +155,13 @@ export default function SpendReportPage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 px-6 md:px-8">
                 {/* Spend by Category Donut */}
                 <div className="lg:col-span-1 bg-[#F1F5F9] rounded-xl border border-slate-200 overflow-hidden shadow-2xl p-2">
-                    <DonutChart 
+                    <DonutChart
                         title="Tỉ trọng Chi phí theo Danh mục"
+                        bare
+                        valueFormatter={formatVNDCompact}
                         data={categoryChartData}
                         centerLabel="Tổng Chi"
-                        centerValue={overview?.totalSpent ? formatVND(overview.totalSpent, true) : "0"}
+                        centerValue={overview?.totalSpent ? formatVNDCompact(overview.totalSpent) : "0"}
                     />
                 </div>
 
