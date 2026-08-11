@@ -9,6 +9,7 @@ import { Trash2, FileText, Sparkles, Loader2, CheckCircle2, XCircle, ArrowLeft, 
 import { CreatePrDto } from "../../types/api-types";
 import { convertPrismaDecimal, formatVND } from "../../utils/formatUtils";
 import PageHeader from "../../components/shared/PageHeader";
+import { FEATURES, AI_DISABLED_MESSAGE } from "../../config/features";
 
 
 interface PrDraftResponse {
@@ -171,6 +172,7 @@ export default function CreatePRPage() {
     };
 
     const handleGenerateDraft = async () => {
+        if (!FEATURES.AI_ENABLED) return;
         if (!aiPrompt.trim()) return;
         setIsGenerating(true);
         setAiError(null);
@@ -327,18 +329,24 @@ export default function CreatePRPage() {
             {/* MODE TABS */}
             <div className="filter-tabs">
                 <button
-                    onClick={() => setActiveTab('ai')}
+                    onClick={() => { if (FEATURES.AI_ENABLED) setActiveTab('ai'); }}
+                    disabled={!FEATURES.AI_ENABLED}
+                    title={!FEATURES.AI_ENABLED ? AI_DISABLED_MESSAGE : undefined}
                     className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all ${
-                        activeTab === 'ai'
-                            ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/30'
-                            : 'bg-[#F1F5F9] text-slate-600 border border-[rgba(148,163,184,0.1)] hover:text-slate-800'
+                        !FEATURES.AI_ENABLED
+                            ? 'bg-[#F1F5F9] text-slate-400 border border-[rgba(148,163,184,0.1)] opacity-60 cursor-not-allowed'
+                            : activeTab === 'ai'
+                                ? 'bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/30'
+                                : 'bg-[#F1F5F9] text-slate-600 border border-[rgba(148,163,184,0.1)] hover:text-slate-800'
                     }`}
                 >
                     <Bot size={14} />
                     Tạo bằng AI Chat
-                    {aiDraft && (
+                    {!FEATURES.AI_ENABLED ? (
+                        <span className="ml-1 px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-full text-[9px] normal-case tracking-normal font-bold">Đang phát triển</span>
+                    ) : aiDraft ? (
                         <span className="ml-1 w-2 h-2 rounded-full bg-emerald-400 animate-pulse inline-block" />
-                    )}
+                    ) : null}
                 </button>
                 <button
                     onClick={() => setActiveTab('manual')}
@@ -359,7 +367,7 @@ export default function CreatePRPage() {
             </div>
 
             {/* AI MODE TAB */}
-            {activeTab === 'ai' && (
+            {FEATURES.AI_ENABLED && activeTab === 'ai' && (
                 <div className="animate-in fade-in duration-500 space-y-6">
                     <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-hidden">
                         <div className="p-6 border-b border-slate-200">

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { PR, PRItem, useProcurement, Organization, CompanyType, KycStatus } from "../../../context/ProcurementContext";
+import { FEATURES, AI_DISABLED_MESSAGE } from "../../../config/features";
 import { 
     FileText, 
     Building2, 
@@ -92,6 +93,7 @@ export default function CreateRFQPage() {
 
     // Auto-trigger AI khi targetPR đã load xong và có items
     useEffect(() => {
+        if (!FEATURES.AI_ENABLED) return;
         if (targetPR && targetPR.items && targetPR.items.length > 0) {
             fetchAiSuggestions();
         }
@@ -121,6 +123,7 @@ export default function CreateRFQPage() {
 
     // AI Suggestion function - Connected to RAG (Real Data)
     const fetchAiSuggestions = async () => {
+        if (!FEATURES.AI_ENABLED) return;
         if (!targetPR || !targetPR.items || targetPR.items.length === 0) {
             return;
         }
@@ -484,7 +487,11 @@ export default function CreateRFQPage() {
                             {/* AI status — auto-triggered on page load */}
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2 text-[11px]">
-                                    {isAiLoading ? (
+                                    {!FEATURES.AI_ENABLED ? (
+                                        <span className="text-slate-400 flex items-center gap-1.5" title={AI_DISABLED_MESSAGE}>
+                                            <Sparkles size={13} /> {AI_DISABLED_MESSAGE}
+                                        </span>
+                                    ) : isAiLoading ? (
                                         <span className="text-violet-400 flex items-center gap-1.5">
                                             <Loader2 size={13} className="animate-spin" />
                                             AI đang phân tích sản phẩm…

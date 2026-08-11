@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Sparkles, MessageSquare, FilePlus, X, Brain } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useProcurement } from "../context/ProcurementContext";
+import { FEATURES, AI_DISABLED_MESSAGE } from "../config/features";
 
 const RAGChat       = dynamic(() => import("./RAGChat"),       { ssr: false });
 const AIPrGenerator = dynamic(() => import("./AIPrGenerator"), { ssr: false });
@@ -19,6 +20,7 @@ export default function GlobalAISearch() {
     // Keyboard: ⌘/Ctrl + K
     useEffect(() => {
         const handler = (e: KeyboardEvent) => {
+            if (!FEATURES.AI_ENABLED) return;
             if ((e.metaKey || e.ctrlKey) && e.key === "k") {
                 e.preventDefault();
                 setIsOpen(v => {
@@ -34,6 +36,25 @@ export default function GlobalAISearch() {
 
     const handleClose = () => { setIsOpen(false); setAiMode("menu"); };
     const handleOpen  = () => { setIsOpen(true);  setAiMode("menu"); };
+
+    // AI feature paused — show a disabled launcher with a hover hint.
+    if (!FEATURES.AI_ENABLED) {
+        return (
+            <button
+                type="button"
+                disabled
+                title={AI_DISABLED_MESSAGE}
+                aria-label={AI_DISABLED_MESSAGE}
+                className="fixed bottom-6 right-5 z-50 rounded-full
+                           bg-slate-300 text-slate-500 shadow-lg
+                           border border-white/10 cursor-not-allowed opacity-70
+                           flex items-center justify-center"
+                style={{ width: 52, height: 52 }}
+            >
+                <Sparkles size={22} />
+            </button>
+        );
+    }
 
     return (
         <>

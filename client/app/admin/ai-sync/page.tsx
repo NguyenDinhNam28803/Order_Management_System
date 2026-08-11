@@ -8,6 +8,8 @@ import {
 } from "lucide-react";
 import { useProcurement } from "../../context/ProcurementContext";
 import ConfirmDialog from "../../components/shared/ConfirmDialog";
+import { FEATURES } from "../../config/features";
+import AiDisabledNotice from "../../components/AiDisabledNotice";
 
 const SYNC_ENTITIES = [
     {
@@ -158,6 +160,9 @@ export default function AISyncPage() {
             setEmailIngestStatus("error");
         }
     }, [apiFetch, emailLimit]);
+
+    // AI feature paused — see FEATURES.AI_ENABLED
+    if (!FEATURES.AI_ENABLED) return <AiDisabledNotice />;
 
     return (
         <div className="animate-fade-in">

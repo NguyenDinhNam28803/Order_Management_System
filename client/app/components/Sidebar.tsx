@@ -10,6 +10,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useProcurement } from "../context/ProcurementContext";
+import { FEATURES, AI_DISABLED_MESSAGE } from "../config/features";
 
 const roleMapping: Record<string, { label: string; class: string; dot: string }> = {
     "REQUESTER": { label: "Người yêu cầu", class: "role-requester", dot: "#94A3B8" },
@@ -30,6 +31,7 @@ interface NavItem {
     icon: React.ComponentType<{ size?: number; className?: string }>;
     path: string;
     roles: string[];
+    aiGated?: boolean;
 }
 
 interface NavGroup {
@@ -123,7 +125,7 @@ const navigation: NavGroup[] = [
             { name: "Quản lý Phòng ban", icon: Building, path: "/admin/departments", roles: ["PLATFORM_ADMIN"] },
             { name: "Quản lý Cost Center", icon: ShieldAlert, path: "/admin/cost-centers", roles: ["PLATFORM_ADMIN"] },
             { name: "Nhật ký hệ thống", icon: History, path: "/admin/audit-logs", roles: ["PLATFORM_ADMIN"] },
-            { name: "AI Admin / RAG Sync", icon: Brain, path: "/admin/ai-sync", roles: ["PLATFORM_ADMIN"] },
+            { name: "AI Admin / RAG Sync", icon: Brain, path: "/admin/ai-sync", roles: ["PLATFORM_ADMIN"], aiGated: true },
             { name: "Cài đặt hệ thống", icon: Settings, path: "/settings", roles: ["PLATFORM_ADMIN"] },
         ]
     },
@@ -230,6 +232,22 @@ export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
                                 <div className="space-y-0.5">
                                     {visibleItems.map((item) => {
                                         const isActive = pathname === item.path || (item.path !== "/" && pathname.startsWith(`${item.path}/`));
+                                        // AI feature paused — render this entry disabled with a hover hint.
+                                        if (item.aiGated && !FEATURES.AI_ENABLED) {
+                                            return (
+                                                <div
+                                                    key={item.name}
+                                                    title={AI_DISABLED_MESSAGE}
+                                                    aria-disabled="true"
+                                                    className="sidebar-item relative opacity-40 cursor-not-allowed"
+                                                >
+                                                    <item.icon size={14} className="shrink-0 text-slate-500" aria-hidden="true" />
+                                                    <span className="whitespace-nowrap font-medium text-[12px] truncate leading-snug">
+                                                        {item.name}
+                                                    </span>
+                                                </div>
+                                            );
+                                        }
                                         return (
                                             <Link
                                                 key={item.name}

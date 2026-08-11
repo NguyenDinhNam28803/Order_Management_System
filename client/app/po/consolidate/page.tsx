@@ -5,6 +5,7 @@ import {
   useProcurement, PR, PRItem, ConsolidatePRsResult,
 } from "../../context/ProcurementContext";
 import { Organization } from "@/app/types/api-types";
+import { FEATURES, AI_DISABLED_MESSAGE } from "../../config/features";
 import {
   GitMerge, CheckSquare, Square, ChevronRight, Loader2,
   AlertTriangle, CheckCircle2, Building2, Package, ArrowRight,
@@ -96,6 +97,7 @@ export default function POConsolidatePage() {
 
   // Auto-trigger AI mỗi khi chọn >= 2 PR
   useEffect(() => {
+    if (!FEATURES.AI_ENABLED) return;
     if (selectedPrIds.length < 2) {
       setShowAiPanel(false);
       setAiSuggestions([]);
@@ -134,6 +136,7 @@ export default function POConsolidatePage() {
 
   // AI RAG suggestion — dùng items từ các PR đã chọn
   const fetchAiSuggestions = async () => {
+    if (!FEATURES.AI_ENABLED) return;
     const selectedPRs = approvedPRs.filter((p: PR) => selectedPrIds.includes(p.id));
     const allItems = selectedPRs.flatMap((p: PR) => p.items ?? []);
     if (allItems.length === 0) return;
@@ -575,7 +578,11 @@ export default function POConsolidatePage() {
 
                 {/* AI status — auto-trigger, no manual button needed */}
                 <div className="flex items-center gap-2 text-[10px]">
-                  {selectedPrIds.length < 2 ? (
+                  {!FEATURES.AI_ENABLED ? (
+                    <span className="text-slate-400 italic flex items-center gap-1.5" title={AI_DISABLED_MESSAGE}>
+                      <Sparkles size={11} /> {AI_DISABLED_MESSAGE}
+                    </span>
+                  ) : selectedPrIds.length < 2 ? (
                     <span className="text-slate-900 italic flex items-center gap-1.5">
                       <Sparkles size={11} className="text-slate-900" />
                       Chọn ≥ 2 PR để AI tự động gợi ý nhà cung cấp

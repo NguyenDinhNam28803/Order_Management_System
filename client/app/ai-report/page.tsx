@@ -4,12 +4,17 @@ import React, { useState } from "react";
 import { Zap, AlertTriangle, CheckCircle2, Shield, Info, ArrowLeft, Send, FileText } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { FEATURES } from "../config/features";
+import AiDisabledNotice from "../components/AiDisabledNotice";
 
 export default function AIReportPage() {
     const router = useRouter();
     const [selection, setSelection] = useState("AI");
     const [overrideReason, setOverrideReason] = useState("");
     const [isConfirmed, setIsConfirmed] = useState(false);
+
+    // AI feature paused — see FEATURES.AI_ENABLED
+    if (!FEATURES.AI_ENABLED) return <AiDisabledNotice />;
 
     const handleConfirm = () => {
         setIsConfirmed(true);
