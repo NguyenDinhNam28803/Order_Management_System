@@ -3,6 +3,10 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserModuleDto } from './dto/create-user-module.dto';
 import { UpdateUserModuleDto } from './dto/update-user-module.dto';
 import Bcypt from 'bcrypt';
+import {
+  USER_SAFE_SELECT,
+  USER_SAFE_SELECT_WITH_DEPT,
+} from '../common/user-select';
 
 @Injectable()
 export class UserRepository {
@@ -16,6 +20,7 @@ export class UserRepository {
         ...data,
         passwordHash: hashedPassword,
       },
+      select: USER_SAFE_SELECT,
     });
   }
 
@@ -38,21 +43,17 @@ export class UserRepository {
 
   async findAll() {
     return this.prisma.user.findMany({
-      include: {
-        department: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
+      select: USER_SAFE_SELECT_WITH_DEPT,
+      orderBy: { createdAt: 'desc' },
+      take: 200,
     });
   }
 
   async findById(id: string) {
     return this.prisma.user.findUnique({
       where: { id },
-      include: {
+      select: {
+        ...USER_SAFE_SELECT,
         department: {
           select: {
             id: true,
@@ -72,17 +73,13 @@ export class UserRepository {
     });
   }
 
+  // Luồng xác thực dùng repository riêng của auth-module (vốn cần đọc
+  // passwordHash), nên hàm này chỉ phục vụ tra cứu thông thường và trả bản
+  // an toàn.
   async findByEmail(email: string) {
     return this.prisma.user.findUnique({
       where: { email },
-      include: {
-        department: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
+      select: USER_SAFE_SELECT_WITH_DEPT,
     });
   }
 
@@ -90,20 +87,14 @@ export class UserRepository {
     return this.prisma.user.update({
       where: { id },
       data,
-      include: {
-        department: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
+      select: USER_SAFE_SELECT_WITH_DEPT,
     });
   }
 
   async delete(id: string) {
     return this.prisma.user.delete({
       where: { id },
+      select: USER_SAFE_SELECT,
     });
   }
 }

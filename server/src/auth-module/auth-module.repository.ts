@@ -11,7 +11,8 @@ import { HashPasswordService } from '../hash-password/hash-password.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { User, UserRole } from '@prisma/client';
+import { UserRole } from '@prisma/client';
+import { SafeUser, toSafeUser } from '../common/user-select';
 import * as bcrypt from 'bcrypt';
 import { NotificationModuleService } from '../notification-module/notification-module.service';
 
@@ -21,7 +22,7 @@ export interface AuthTokens {
 }
 
 export interface AuthResponse extends AuthTokens {
-  user: Omit<User, 'passwordHash' | 'hashedRefreshToken'>;
+  user: SafeUser;
 }
 
 @Injectable()
@@ -89,10 +90,8 @@ export class AuthModuleRepository {
       )
       .catch(() => {});
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { passwordHash, hashedRefreshToken, ...userInfo } = user;
     return {
-      user: userInfo,
+      user: toSafeUser(user),
       ...tokens,
     };
   }
@@ -131,9 +130,8 @@ export class AuthModuleRepository {
       const tokens = await this.generateToken(user);
       await this.updateRefreshTokenHash(user.id, tokens.refreshToken);
 
-      const { passwordHash: _, hashedRefreshToken: __, ...userInfo } = user;
       return {
-        user: userInfo,
+        user: toSafeUser(user),
         ...tokens,
       };
     } catch (error: unknown) {
