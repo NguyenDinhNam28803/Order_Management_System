@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Cron, CronExpression } from '@nestjs/schedule';
 import * as imaps from 'imap-simple';
 import type * as Imap from 'imap';
 import { EmbeddingService } from './embedding.service';
@@ -248,12 +247,15 @@ export class EmailRagService {
     this.logger.log(`Ingested single email into RAG: "${email.subject}"`);
   }
 
-  // ─── 3. Cron job tự động sync mỗi 5 phút ──────────────────────────────────
+  // ─── 3. Sync thủ công ─────────────────────────────────────────────────────
+  // EMAIL AUTO-SYNC DISABLED — cron 5 phút đã gỡ.
+  // Bật lại: khôi phục `import { Cron, CronExpression } from '@nestjs/schedule';`
+  // và decorator `@Cron(CronExpression.EVERY_5_MINUTES)` ngay dưới đây.
   /**
-   * Tự động pull email mới và cập nhật vector store mỗi 5 phút.
+   * Pull email mới và cập nhật vector store. Hiện chỉ chạy khi được gọi tay
+   * (POST /rag/emails/ingest), không còn scheduler nào tự kích hoạt.
    * Nhờ ON CONFLICT trong SQL, email đã ingest sẽ không bị duplicate.
    */
-  @Cron(CronExpression.EVERY_5_MINUTES)
   async autoSyncEmails(): Promise<void> {
     try {
       this.logger.log('Auto-syncing emails to RAG...');

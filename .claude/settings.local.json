@@ -72,7 +72,13 @@
       "PowerShell($content = [System.IO.File]::ReadAllBytes\\(\"D:\\\\Order_management_system\\\\client\\\\app\\\\pr\\\\create\\\\page.tsx\"\\); $text = [System.Text.Encoding]::UTF8.GetString\\($content\\); $lines = $text -split \"`n\"; $depth = 0; for \\($i = 509; $i -le 1065; $i++\\) { $line = $lines[$i]; $opens = \\([regex]::Matches\\($line, '<\\(?!/\\)\\(?!\\\\!\\)\\(?!--\\)[A-Za-z]'\\)\\).Count; $closes = \\([regex]::Matches\\($line, '</[A-Za-z]'\\)\\).Count; $depth += $opens - $closes; if \\([Math]::Abs\\($opens - $closes\\) -gt 0 -or $i -ge 1055\\) { Write-Host \"$\\($i+1\\) \\(net=$\\($opens-$closes\\) depth=$depth\\): $\\($line.Substring\\(0, [Math]::Min\\(70, $line.Length\\)\\)\\)\" } })",
       "PowerShell($content = [System.IO.File]::ReadAllBytes\\(\"D:\\\\Order_management_system\\\\client\\\\app\\\\pr\\\\create\\\\page.tsx\"\\); $text = [System.Text.Encoding]::UTF8.GetString\\($content\\); $lines = $text -split \"`n\"; $total = $lines.Length; Write-Host \"Total lines: $total\"; for \\($i = $total - 40; $i -le $total - 1; $i++\\) { if \\($i -ge 0\\) { Write-Host \"$\\($i+1\\): '$\\($lines[$i]\\)'\" } })",
       "Bash(awk 'NR>=947 && NR<=1065' \"D:\\\\Order_management_system\\\\client\\\\app\\\\pr\\\\create\\\\page.tsx\")",
-      "Bash(awk 'NR>=947 && NR<=1065 {printf \"%d\\\\t%s\\\\n\", NR, $0}' \"D:\\\\Order_management_system\\\\client\\\\app\\\\pr\\\\create\\\\page.tsx\")"
+      "Bash(awk 'NR>=947 && NR<=1065 {printf \"%d\\\\t%s\\\\n\", NR, $0}' \"D:\\\\Order_management_system\\\\client\\\\app\\\\pr\\\\create\\\\page.tsx\")",
+      "Bash(git pull *)",
+      "Bash(git checkout *)",
+      "Bash(git add *)",
+      "Bash(git commit -m 'docs: spec for pausing frontend AI feature *)",
+      "Bash(npm --prefix /d/Order_management_system/server run start:dev)",
+      "Bash(npm --prefix /d/Order_management_system/client run dev)"
     ]
   }
 }
