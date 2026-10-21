@@ -47,9 +47,7 @@ export class DecimalInterceptor implements NestInterceptor {
       const result: Record<string, unknown> = {};
       for (const key in data as Record<string, unknown>) {
         if (Object.prototype.hasOwnProperty.call(data, key)) {
-          result[key] = this.serialize(
-            (data as Record<string, unknown>)[key],
-          );
+          result[key] = this.serialize((data as Record<string, unknown>)[key]);
         }
       }
       return result;

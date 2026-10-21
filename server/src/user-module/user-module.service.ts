@@ -10,6 +10,7 @@ import { UpdateUserModuleDto } from './dto/update-user-module.dto';
 import { UserRepository } from './user.repository';
 import { NotificationModuleService } from '../notification-module/notification-module.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { USER_SAFE_SELECT_WITH_DEPT } from '../common/user-select';
 import { CreateUserDelegationDto } from './dto/user-delegation.dto';
 import { JwtPayload } from '../auth-module/interfaces/jwt-payload.interface';
 import type { EmailEventType } from '../notification-module/email-template.service';
@@ -59,9 +60,9 @@ export class UserModuleService {
       // Filter users by organization
       const users = await this.prisma.user.findMany({
         where: { orgId: filters.orgId },
-        include: {
-          department: true,
-        },
+        select: USER_SAFE_SELECT_WITH_DEPT,
+        orderBy: { createdAt: 'desc' },
+        take: 200,
       });
       return users;
     }
