@@ -618,7 +618,6 @@ export default function CreatePRPage() {
                                 </div>
                             </div>
                         </div>
-                    </div>
 
                     {/* Step 2 — Danh mục hàng hóa */}
                     <div className="erp-card overflow-hidden">
@@ -723,6 +722,7 @@ export default function CreatePRPage() {
                                 </table>
                             </div>
                         </div>
+                    </div>
 
                         {/* Step 3 — Budget Allocations */}
                         {budgetAllocations && budgetAllocations.length > 0 && (
